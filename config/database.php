@@ -65,7 +65,7 @@ return [
 
         'source_db' => [ // Database sis (sumber)
             'driver' => env('DB_SOURCE_CONNECTION', 'mysql'),
-            'host' => env('DB_SOURCE_HOST', '127.0.0.1'),
+            'host' => env('DB_SOURCE_HOST', '192.168.16.43'),
             'port' => env('DB_SOURCE_PORT', '3306'),
             'database' => env('DB_SOURCE_DATABASE', 'sis'),
             'username' => env('DB_SOURCE_USERNAME', 'niko'),
