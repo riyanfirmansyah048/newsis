@@ -14,5 +14,8 @@ comand
 - php artisan make:filament-resource NameResource
 - php artisan make:livewire BppbProductsTable
 
+container
+- docker exec -it laravel_app bash
+
 teknologi baru
 - Null-safe operator
