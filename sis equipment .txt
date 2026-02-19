@@ -1,0 +1,18 @@
+sis equipment 
+- Laravel 12
+- filament version 4.x
+- Spatie 6.24.0
+- log activity spatie
+- laravel-dompdf
+- picqer/php-barcode-generator (untuk membuat barcode di halaman service)
+- Auth Designer (plugin untuk tampilan Auth)
+
+
+comand
+- php artisan make:seeder NameSeeder
+- php artisan migrate:fresh --seed
+- php artisan make:filament-resource NameResource
+- php artisan make:livewire BppbProductsTable
+
+teknologi baru
+- Null-safe operator

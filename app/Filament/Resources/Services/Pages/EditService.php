@@ -1,0 +1,95 @@
+<?php
+
+namespace App\Filament\Resources\Services\Pages;
+
+use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
+use App\Filament\Resources\Services\ServiceResource;
+
+class EditService extends EditRecord
+{
+    protected static string $resource = ServiceResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
+            Action::make('reject')
+                ->label('Reject')
+                ->action('rejectRecord')
+                ->color('warning')
+                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 3),
+            Action::make('approve')
+                ->label('Approve')
+                ->action('approveRecord')
+                ->color('success')
+                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 3),
+            Action::make('finish')
+                ->label('Selesai (Barang di IT)')
+                ->action('finishRecord')
+                ->color('success')
+                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 4),
+            Action::make('finishall')
+                ->label('Selesai (Barang Sudah Diserahkan)')
+                ->action('finishAllRecord')
+                ->color('success')
+                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 6),
+        ];
+    }
+
+    public function rejectRecord()
+    {
+        $this->record->update([
+            'status_id' => 2,
+            'received_date' => Carbon::now(),
+            'solution_id' => 6,
+        ]);
+        Notification::make()
+            ->title('Pengajuan service berhasil ditolak!')
+            ->success()
+            ->send();
+
+        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record->getKey()]));
+    }
+    public function approveRecord()
+    {
+        $this->record->update([
+            'status_id' => 4,
+            'received_date' => Carbon::now(),
+        ]);
+        Notification::make()
+            ->title('Barang Di terima di IT')
+            ->success()
+            ->send();
+        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record->getKey()]));
+    }
+    public function finishRecord()
+    {
+        $this->record->update([
+            'status_id' => 6,
+        ]);
+        Notification::make()
+            ->title('Selesai (Barang di IT)')
+            ->success()
+            ->send();
+        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record->getKey()]));
+    }
+    public function finishAllRecord()
+    {
+        $this->record->update([
+            'status_id' => 7,
+        ]);
+        Notification::make()
+            ->title('Selesai (Barang Sudah Diserahkan)')
+            ->success()
+            ->send();
+        $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record->getKey()]));
+    }
+}

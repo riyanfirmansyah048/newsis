@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Filament\Resources\Expeditions\Pages;
+
+use App\Models\ExpeditionDetail;
+use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Expeditions\ExpeditionResource;
+
+class CreateExpedition extends CreateRecord
+{
+    protected static string $resource = ExpeditionResource::class;
+
+    // simpan field "include_items" di variabel sementara
+    protected array $selectedItems = [];
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Pisahkan include_items karena tidak termasuk kolom di tabel expeditions
+        $this->selectedItems = $data['include_items'] ?? [];
+        unset($data['include_items']);
+
+        return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        $record = $this->getRecord();
+
+        // Ambil bppb yang dipilih + relasi PO-nya
+        $bppb = $record->bppb()->with('purchase_orders')->first();
+        $poId = $bppb?->purchase_orders->first()?->id; // Ensure correct relationship and access the first PO ID
+
+        foreach ($this->selectedItems as $itemString) {
+            [$id, $productFormId] = explode('|', $itemString);
+
+            ExpeditionDetail::create([
+                'expedition_id'   => $record->id,
+                'type_id'         => $id,
+                'product_form_id' => $productFormId,
+                'po_id'           => $poId, // ⬅️ Dimasukkan ke detail
+            ]);
+        }
+    }
+}

@@ -1,0 +1,501 @@
+<?php
+
+namespace App\Filament\Resources\Bppbs\Schemas;
+
+use App\Models\Ink;
+
+use Filament\Forms;
+use App\Models\Item;
+use App\Models\User;
+use App\Models\Brand;
+use App\Models\Brand_ink;
+use App\Models\Vendor;
+// use App\Models\Section;
+use App\Models\Category;
+use App\Models\Software;
+use App\Models\Brand_software;
+use App\Models\Category_ink;
+use App\Models\Category_software;
+use Filament\Schemas\Schema;
+use App\Models\Purchase_order;
+use Illuminate\Support\Collection;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ViewField;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+
+class BppbForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        $record = $schema->getRecord();
+        return $schema
+            ->components([
+                Section::make('Informasi BPPB')
+                    ->columnSpanFull()
+                    ->schema([
+                        ViewField::make('info_bppb')
+                            ->dehydrated(false)
+                            ->visible(fn($record) => $record !== null)
+                            ->view('filament.components.info-bppb')
+                            ->viewData([
+                                'noBppb' => $record->noBppb ?? '',
+                                'name' => $record->user->name ?? '',
+                                'NIK' => $record->user->NIK ?? '',
+                                'created_at' => $record->created_at ?? '',
+                                'company' => $record->user->company->companyName ?? '',
+                                'regional' => $record->user->regional->regionalName ?? '',
+                                'businessunit' => $record->user->businessunit->businessUnitName ?? '',
+                                'department' => $record->user->department->departmentName ?? '',
+                                'subdepartment' => $record->user->subdepartment->subDepartmentName ?? '',
+                                'section' => $record->user->section->sectionName ?? '',
+                                'position' => $record->user->position->positionName ?? '',
+                                'received_date' => $record->received_date ?? '',
+                                'status' => $record->status->name ?? '',
+                                'status_id' => $record->status_id ?? '',
+                                'bppb_items' => $record ? $record->bppb_item->map(function ($item) {
+                                    return [
+                                        'id' => $item->id,
+                                        'item_id' => $item->item_id,
+                                        'category' => $item->category->name ?? '',
+                                        'brand' => $item->brand->name ?? '',
+                                        'name' => $item->item->name ?? '',
+                                        'qty' => $item->qty,
+                                        'purchase_order_id' => $item->purchase_order_id,
+                                        'description' => $item->description,
+                                    ];
+                                })->toArray() : [],
+                                'bppb_inks' => $record ? $record->bppb_ink->map(function ($ink) {
+                                    return [
+                                        'id' => $ink->id,
+                                        'ink_id' => $ink->ink_id,
+                                        'category' => $ink->category->name ?? '',
+                                        'brand' => $ink->brand->name ?? '',
+                                        'name' => $ink->ink->name ?? '',
+                                        'qty' => $ink->qty,
+                                        'purchase_order_id' => $ink->purchase_order_id,
+                                        'description' => $ink->description,
+                                    ];
+                                })->toArray() : [],
+                                'bppb_softwares' => $record ? $record->bppb_software->map(function ($software) {
+                                    return [
+                                        'id' => $software->id,
+                                        'software_id' => $software->software_id,
+                                        'category' => $software->category->name ?? '',
+                                        'brand' => $software->brand->name ?? '',
+                                        'name' => $software->software->name ?? '',
+                                        'qty' => $software->qty,
+                                        'purchase_order_id' => $software->purchase_order_id,
+                                        'description' => $software->description,
+                                    ];
+                                })->toArray() : [],
+                                'purchase_orders' => $record ? $record->purchase_orders->map(function ($po) {
+                                    return [
+                                        'id' => $po->id,
+                                        'bppb_id' => $po->bppb_id,
+                                        'noPo' => $po->noPo,
+                                        'vendor' => $po->vendor->vendorName ?? '',
+                                        'datePo' => $po->datePo,
+                                    ];
+                                })->toArray() : [],
+                                'bpb' => $record ? $record->purchase_orders->flatMap->bpb->map(function ($bpb) {
+                                    return [
+                                        'id' => $bpb->id,
+                                        'noBpb' => $bpb->noBpb,
+                                        'user_id' => $bpb->user_id,
+                                        'po_id' => $bpb->po_id,
+                                        'created_at' => $bpb->created_at,
+                                    ];
+                                })->toArray() : [],
+
+                            ]),
+                        Toggle::make('manual_no_bppb')
+                            ->label('Input No. BPPB Manual')
+                            ->visible(fn() => auth()->user()->hasRole('admin'))
+                            ->reactive()
+                            ->afterStateUpdated(function (Set $set, $state) {
+                                if (!$state) {
+                                    $set('noBppb', null);
+                                    $set('bppb_type_id', 1);
+                                    $set('user_id', auth()->id()); // Set otomatis user aktif
+                                } else {
+                                    $set('bppb_type_id', 2);
+                                    $set('user_id', null);
+                                }
+                            })
+                            ->dehydrated(false),
+
+                        // Hidden user_id (untuk toggle OFF)
+                        Hidden::make('user_id')
+                            ->default(fn(Get $get) => request()->query('user_service_id') ?: (!$get('manual_no_bppb') ? auth()->id() : null))
+                            ->visible(fn(Get $get) => !$get('manual_no_bppb')) // hanya muncul saat toggle off
+                            ->dehydrated(fn(Get $get) => !$get('manual_no_bppb')), // hanya dikirim saat toggle off
+
+                        // Select user_id (untuk toggle ON)
+                        Select::make('user_id')
+                            ->label('Nama Karyawan')
+                            ->searchable()
+                            ->required()
+                            ->options(User::all()->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
+                                $user = User::find($key);
+                                return [$key => $item . ' - ' . $user->NIK];
+                            }))
+                            ->visible(fn(Get $get) => $get('manual_no_bppb')) // hanya tampil saat toggle on
+                            ->dehydrated(fn(Get $get) => $get('manual_no_bppb')) // hanya dikirim saat toggle on
+                            ->reactive(),
+                        // Hidden::make('user_id')
+                        //     ->default(fn() => request()->query('user_service_id') ?: auth()->id()),
+                        TextInput::make('noBppb')
+                            ->label('No. BPPB')
+                            ->placeholder('Masukkan No. BPPB')
+                            ->visible(fn(Get $get) => $get('manual_no_bppb'))
+                            ->required(fn(Get $get) => $get('manual_no_bppb')),
+                        Hidden::make('bppb_type_id')
+                            ->default(1), // Default value is 1
+                        Textarea::make('description')
+                            ->label('Keterangan BPPB'),
+                        // Hidden::make('bppb_type_id')
+                        //     ->default(fn() => request()->query('bppb_type_id') ?? 1),
+                        Hidden::make('service_id')
+                            ->default(fn() => request()->query('service_id')),
+                        Hidden::make('user_service_id')
+                            ->default(fn() => request()->query('user_service_id')),
+                    ]),
+
+                Section::make('Daftar Barang')
+                    ->columnSpanFull()
+                    ->collapsed()
+                    ->schema([
+                        Repeater::make('bppb_item')
+                            ->relationship('bppb_item')
+                            ->label('')
+                            ->helperText('Silakan isi daftar barang yang akan diajukan')
+                            ->schema([
+                                Select::make('category_id')
+                                    ->label('Kategori Barang')
+                                    ->placeholder('Pilih Kategori Barang')
+                                    ->options(Category::all()->pluck('name', 'id'))
+                                    ->required()
+                                    ->live()
+                                    ->searchable()
+                                    ->afterStateUpdated(function (Set $set) {
+                                        $set('brand_id', null);
+                                        $set('item_id', null);
+                                    })
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $item = Item::find($get('item_id'));
+                                        if ($item) {
+                                            $set('category_id', $item->category_id);
+                                        }
+                                    })
+                                    ->dehydrated(false),
+                                Select::make('brand_id')
+                                    ->label('Merek Barang')
+                                    ->placeholder('Pilih Merek Barang')
+                                    ->options(fn(Get $get): Collection => Brand::query()
+                                        ->where('category_id', $get('category_id'))
+                                        ->pluck('name', 'id'))
+                                    ->required()
+                                    ->searchable()
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set) {
+                                        $set('item_id', null);
+                                    })
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $item = Item::find($get('item_id'));
+                                        if ($item) {
+                                            $set('brand_id', $item->brand_id);
+                                        }
+                                    })
+                                    ->dehydrated(false),
+                                Select::make('item_id')
+                                    ->label('Nama Barang')
+                                    ->placeholder('Pilih Barang')
+                                    ->options(fn(Get $get): Collection => Item::query()
+                                        ->where('brand_id', $get('brand_id'))
+                                        ->pluck('name', 'id'))
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $item = Item::find($get('item_id'));
+                                        if ($item) {
+                                            $set('item_id', $item->id);
+                                        }
+                                    })
+                                    ->required()
+                                    ->live()
+                                    ->searchable(),
+                                TextInput::make('qty')
+                                    ->label('Qty')
+                                    ->required()
+                                    ->numeric()
+                                    ->columnSpanFull(),
+                                Textarea::make('description')
+                                    ->label('Keterangan')
+                                    ->columnSpanFull(),
+                                Select::make('purchase_order_id')
+                                    ->visible(fn($record) => $record !== null)
+                                    ->label('Purchase Order')
+                                    // ->required()
+                                    ->placeholder('Pilih Purchase Order')
+                                    ->options(fn(Get $get): Collection => Purchase_order::query()
+                                        ->where('bppb_id', $record->id)
+                                        ->get()
+                                        ->mapWithKeys(function ($po) {
+                                            return [$po->id => $po->noPo . ' - ' . $po->vendor->vendorName];
+                                        }))
+                                    ->columnSpanFull()
+                                    ->createOptionForm([
+                                        Hidden::make('bppb_id')
+                                            ->default(fn() => $record ? $record->id : null),
+                                        Hidden::make('user_id')
+                                            ->default(auth()->id()),
+                                        TextInput::make('noPo')
+                                            ->label('No. PO')
+                                            ->required()
+                                            ->columnSpanFull(),
+                                        Select::make('vendor_id')
+                                            ->label('Vendor')
+                                            ->placeholder('Pilih Vendor')
+                                            ->options(Vendor::all()->pluck('vendorName', 'id'))
+                                            ->required()
+                                            ->searchable(),
+                                        TextInput::make('datePo')
+                                            ->label('Tanggal PO')
+                                            ->required()
+                                            ->columnSpanFull()
+                                            ->type('date'),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        return Purchase_order::create($data)->id;
+                                    })
+                                    ->searchable(),
+                            ])
+                            ->default([])
+                            ->columns(3)
+                            ->maxItems(15)
+                            ->createItemButtonLabel('Tambah Barang'),
+                    ]),
+
+                Section::make('Daftar Tinta')
+                    ->columnSpanFull()
+                    ->collapsed()
+                    ->schema([
+                        Repeater::make('bppb_ink')
+                            ->relationship('bppb_ink')
+                            ->label('')
+                            ->helperText('Silakan isi daftar Tinta yang akan diajukan')
+                            ->schema([
+                                Select::make('category_ink_id')
+                                    ->label('Kategori Tinta')
+                                    ->placeholder('Pilih Kategori Tinta')
+                                    ->options(Category_ink::all()->pluck('name', 'id'))
+                                    ->required()
+                                    ->live()
+                                    ->searchable()
+                                    ->afterStateUpdated(function (Set $set) {
+                                        $set('brand_ink_id', null);
+                                        $set('ink_id', null);
+                                    })
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $ink = Ink::find($get('ink_id'));
+                                        if ($ink) {
+                                            $set('category_ink_id', $ink->category_ink_id);
+                                        }
+                                    })
+                                    ->dehydrated(false),
+                                Select::make('brand_ink_id')
+                                    ->label('Merek Tinta')
+                                    ->placeholder('Pilih Merek Tinta')
+                                    ->options(fn(Get $get): Collection => Brand_ink::query()
+                                        ->where('category_ink_id', $get('category_ink_id'))
+                                        ->pluck('name', 'id'))
+                                    ->required()
+                                    ->searchable()
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set) {
+                                        $set('ink_id', null);
+                                    })
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $ink = Ink::find($get('ink_id'));
+                                        if ($ink) {
+                                            $set('brand_ink_id', $ink->brand_ink_id);
+                                        }
+                                    })
+                                    ->dehydrated(false),
+                                Select::make('ink_id')
+                                    ->label('Nama Tinta')
+                                    ->placeholder('Pilih Tinta')
+                                    ->options(fn(Get $get): Collection => Ink::query()
+                                        ->where('brand_ink_id', $get('brand_ink_id'))
+                                        ->pluck('name', 'id'))
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $ink = Ink::find($get('ink_id'));
+                                        if ($ink) {
+                                            $set('ink_id', $ink->id);
+                                        }
+                                    })
+                                    ->required()
+                                    ->live()
+                                    ->searchable(),
+                                TextInput::make('qty')
+                                    ->label('Qty')
+                                    ->required()
+                                    ->numeric()
+                                    ->columnSpanFull(),
+                                Textarea::make('description')
+                                    ->label('Keterangan')
+                                    ->columnSpanFull(),
+                                Select::make('purchase_order_id')
+                                    ->visible(fn($record) => $record !== null)
+                                    ->label('Purchase Order')
+                                    ->required()
+                                    ->placeholder('Pilih Purchase Order')
+                                    ->options(fn(Get $get): Collection => Purchase_order::query()
+                                        ->where('bppb_id', $record->id)
+                                        ->get()
+                                        ->mapWithKeys(function ($po) {
+                                            return [$po->id => $po->noPo . ' - ' . $po->vendor->vendorName];
+                                        }))
+                                    ->columnSpanFull()
+                                    ->createOptionForm([
+                                        Hidden::make('bppb_id')
+                                            ->default(fn() => $record ? $record->id : null),
+                                        Hidden::make('user_id')
+                                            ->default(auth()->id()),
+                                        TextInput::make('noPo')
+                                            ->label('No. PO')
+                                            ->required()
+                                            ->columnSpanFull(),
+                                        Select::make('vendor_id')
+                                            ->label('Vendor')
+                                            ->placeholder('Pilih Vendor')
+                                            ->options(Vendor::all()->pluck('vendorName', 'id'))
+                                            ->required()
+                                            ->searchable(),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        return Purchase_order::create($data)->id;
+                                    })
+                                    ->searchable(),
+                            ])
+                            ->default([])
+                            ->columns(3)
+                            ->maxItems(15)
+                            ->createItemButtonLabel('Tambah Tinta'),
+                    ]),
+
+                Section::make('Daftar Software')
+                    ->columnSpanFull()
+                    ->collapsed()
+                    ->schema([
+                        Repeater::make('bppb_software')
+                            ->relationship('bppb_software')
+                            ->label('')
+                            ->helperText('Silakan isi daftar Software yang akan diajukan')
+                            ->schema([
+                                Select::make('category_software_id')
+                                    ->label('Kategori Software')
+                                    ->placeholder('Pilih Kategori Software')
+                                    ->options(Category_software::all()->pluck('name', 'id'))
+                                    ->required()
+                                    ->live()
+                                    ->searchable()
+                                    ->afterStateUpdated(function (Set $set) {
+                                        $set('brand_software_id', null);
+                                        $set('software_id', null);
+                                    })
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $software = Software::find($get('software_id'));
+                                        if ($software) {
+                                            $set('category_software_id', $software->category_software_id);
+                                        }
+                                    })
+                                    ->dehydrated(false),
+                                Select::make('brand_software_id')
+                                    ->label('Merek Software')
+                                    ->placeholder('Pilih Merek Software')
+                                    ->options(fn(Get $get): Collection => Brand_software::query()
+                                        ->where('category_software_id', $get('category_software_id'))
+                                        ->pluck('name', 'id'))
+                                    ->required()
+                                    ->searchable()
+                                    ->live()
+                                    ->afterStateUpdated(function (Set $set) {
+                                        $set('software_id', null);
+                                    })
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $software = Software::find($get('software_id'));
+                                        if ($software) {
+                                            $set('brand_software_id', $software->brand_software_id);
+                                        }
+                                    })
+                                    ->dehydrated(false),
+                                Select::make('software_id')
+                                    ->label('Nama Software')
+                                    ->placeholder('Pilih Software')
+                                    ->options(fn(Get $get): Collection => Software::query()
+                                        ->where('brand_software_id', $get('brand_software_id'))
+                                        ->pluck('name', 'id'))
+                                    ->afterStateHydrated(function (Set $set, Get $get) {
+                                        $software = Software::find($get('software_id'));
+                                        if ($software) {
+                                            $set('software_id', $software->id);
+                                        }
+                                    })
+                                    ->required()
+                                    ->live()
+                                    ->searchable(),
+                                TextInput::make('qty')
+                                    ->label('Qty')
+                                    ->required()
+                                    ->numeric()
+                                    ->columnSpanFull(),
+                                Textarea::make('description')
+                                    ->label('Keterangan')
+                                    ->columnSpanFull(),
+                                Select::make('purchase_order_id')
+                                    ->visible(fn($record) => $record !== null)
+                                    ->label('Purchase Order')
+                                    ->required()
+                                    ->placeholder('Pilih Purchase Order')
+                                    ->options(fn(Get $get): Collection => Purchase_order::query()
+                                        ->where('bppb_id', $record->id)
+                                        ->get()
+                                        ->mapWithKeys(function ($po) {
+                                            return [$po->id => $po->noPo . ' - ' . $po->vendor->vendorName];
+                                        }))
+                                    ->columnSpanFull()
+                                    ->createOptionForm([
+                                        Hidden::make('bppb_id')
+                                            ->default(fn() => $record ? $record->id : null),
+                                        Hidden::make('user_id')
+                                            ->default(auth()->id()),
+                                        TextInput::make('noPo')
+                                            ->label('No. PO')
+                                            ->required()
+                                            ->columnSpanFull(),
+                                        Select::make('vendor_id')
+                                            ->label('Vendor')
+                                            ->placeholder('Pilih Vendor')
+                                            ->options(Vendor::all()->pluck('vendorName', 'id'))
+                                            ->required()
+                                            ->searchable(),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        return Purchase_order::create($data)->id;
+                                    })
+                                    ->searchable(),
+                            ])
+                            ->default([])
+                            ->columns(3)
+                            ->maxItems(15)
+                            ->createItemButtonLabel('Tambah Software'),
+                    ])
+            ]);
+    }
+}

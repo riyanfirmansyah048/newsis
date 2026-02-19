@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Filament\Resources\Emails\Pages;
+
+use App\Filament\Resources\Emails\EmailResource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditEmail extends EditRecord
+{
+    protected static string $resource = EmailResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
+        ];
+    }
+}
