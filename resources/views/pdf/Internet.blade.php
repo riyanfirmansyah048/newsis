@@ -1,12 +1,14 @@
 @if (Auth::check())
     <!DOCTYPE html>
     <html lang="en">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>{{ $title }}</title>
     </head>
+
     <body>
         <font face='Arial, Helvetica, sans-serif'>
             <div class="container" style="width: 185mm; height: 275mm; background-color: white;">
@@ -15,12 +17,13 @@
                         <td>
                             <center>
                                 {{-- <img src="{{ asset('storage/sanbe-logo.gif') }}" alt="SANBE"> --}}
-                                <img src="{{ public_path('storage/sanbe-logo.gif') }}">
+                                {{-- <img src="{{ public_path('storage/sanbe-logo.gif') }}"> --}}
+                                <img src="{{ asset('img/sanbe-logo.gif') }}">
                             </center>
                         </td>
                         <td>
                             <div align="center">
-                                <h2>	
+                                <h2>
                                     INTERNET REQUEST KARYAWAN</h2>
                             </div>
                         </td>
@@ -52,7 +55,9 @@
                     Dengan hormat,
                     <br>
                     <br>
-                    Setelah membaca dan mengerti serta menyetujui aturan-aturan yang berlaku seperti yang tercantum dalam Sanbe Internal Sistem, maka yang bertanda tangan dibawah ini, mengajukan permohonan pembuatan Akses Internet :
+                    Setelah membaca dan mengerti serta menyetujui aturan-aturan yang berlaku seperti yang tercantum
+                    dalam Sanbe Internal Sistem, maka yang bertanda tangan dibawah ini, mengajukan permohonan pembuatan
+                    Akses Internet :
                 </p>
                 <center>
                     <table border="0">
@@ -110,10 +115,18 @@
                 <center>
                     <table border="1" style="width: 100%">
                         <tr>
-                            <td style="width: 25%;"><center><b>Requestor</b></center></td>
-                            <td style="width: 25%;"><center><b>Manager / Supervisor</b></center></td>
-                            <td style="width: 25%;"><center><b>Owner</b></center></td>
-                            <td style="width: 25%;"><center><b>IT Approval</b></center></td>
+                            <td style="width: 25%;">
+                                <center><b>Requestor</b></center>
+                            </td>
+                            <td style="width: 25%;">
+                                <center><b>Manager / Supervisor</b></center>
+                            </td>
+                            <td style="width: 25%;">
+                                <center><b>Owner</b></center>
+                            </td>
+                            <td style="width: 25%;">
+                                <center><b>IT Approval</b></center>
+                            </td>
                         </tr>
                         <tr>
                             <td>
@@ -152,5 +165,6 @@
             </div>
         </font>
     </body>
+
     </html>
 @endif

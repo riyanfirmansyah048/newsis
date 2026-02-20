@@ -64,15 +64,18 @@ class ServiceForm
                     ->schema([
                         Select::make('user_id')
                             ->label('Nama Karyawan')
-                            ->required()
-                            ->options(User::all()->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
-                                $user = User::find($key);
-                                return [$key => $item . ' - ' . $user->NIK];
-                            }))
+                            ->searchable()
+                            ->getSearchResultsUsing(
+                                fn(string $search) =>
+                                User::where('name', 'like', "%{$search}%")
+                                    ->limit(20)
+                                    ->get()
+                                    ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
+                            )
+                            ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
                             ->default(auth()->id())
-                            ->columnSpanFull()
                             ->disabled()
-                            ->searchable(),
+                            ->required(),
                         TextInput::make('serialNumberItem')
                             ->label('No. Seri Barang')
                             ->columnSpanFull(),
@@ -81,10 +84,13 @@ class ServiceForm
                             ->required(),
                         Select::make('ic_id')
                             ->label('IC yang mengerjakan')
-                            ->options(User::all()->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
-                                $user = User::find($key);
-                                return [$key => $item . ' - ' . $user->NIK];
-                            }))
+                            ->getSearchResultsUsing(
+                                fn(string $search) =>
+                                User::where('name', 'like', "%{$search}%")
+                                    ->limit(20)
+                                    ->get()
+                                    ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
+                            )
                             ->columnSpanFull()
                             ->visible(fn(Get $get) => auth()->user()->can('update-service') && $get('status_id') !== 2)
                             ->searchable(),
