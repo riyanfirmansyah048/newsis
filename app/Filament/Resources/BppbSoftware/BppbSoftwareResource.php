@@ -30,6 +30,7 @@ class BppbSoftwareResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
+
     public static function getNavigationGroup(): ?string
     {
         return 'Transaksi';
