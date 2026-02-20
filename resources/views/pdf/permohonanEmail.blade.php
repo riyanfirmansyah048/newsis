@@ -142,6 +142,10 @@
             </table>
         </font>
     @endif
+
+    {{-- <script>
+        window.print();
+    </script> --}}
 </body>
 
 </html>

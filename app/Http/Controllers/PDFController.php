@@ -73,9 +73,9 @@ class PDFController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.konfigurasiEmail', compact('email', 'title'));
 
-        return $pdf->stream('Konfigurasi Email-' . now() . '.pdf');
+        // return $pdf->stream('Konfigurasi Email-' . now() . '.pdf');
 
-        // return view('pdf.KonfigurasiEmail', compact('email', 'title'));
+        return view('pdf.KonfigurasiEmail', compact('email', 'title'));
     }
 
     public function internet($id)
