@@ -58,7 +58,6 @@ class UserForm
                             ->required()
                             ->label('Username'),
                         TextInput::make('email')
-                            ->required()
                             ->unique(ignoreRecord: true)
                             ->email(),
                         TextInput::make('password')
@@ -96,7 +95,6 @@ class UserForm
                             ->columnSpanFull(),
                         Textarea::make('address')
                             ->label('Alamat')
-                            ->required()
                             ->columnSpanFull(),
                         Select::make('idCompany')
                             ->label('Perusahaan')
@@ -174,8 +172,7 @@ class UserForm
                             ->afterStateUpdated(function (Set $set) {
                                 $set('idSection', null);
                             })
-                            ->searchable()
-                            ->required(),
+                            ->searchable(),
                         Select::make('idSection')
                             ->label('Sub Section/Bagian')
                             ->placeholder('Pilih section/bagian')
