@@ -23,10 +23,22 @@ class BppbSoftwareResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     // protected static ?string $recordTitleAttribute = 'name';
-    protected static ?string $modelLabel = 'BPPB Software';
-    protected static ?string $navigationLabel = 'BPPB Software';
-    protected static ?string $pluralModelLabel = 'BPPB Software';
-    protected static bool $shouldRegisterNavigation = false;
+    protected static ?string $modelLabel = 'Software';
+    protected static ?string $navigationLabel = 'Management Software';
+    protected static ?string $pluralModelLabel = 'Software';
+    // protected static bool $shouldRegisterNavigation = true;
+
+    protected static ?int $navigationSort = 7;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Transaksi';
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -60,5 +72,10 @@ class BppbSoftwareResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+    // CRUD data--------------------------------------------------------------
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->hasRole('admin');
     }
 }
