@@ -142,10 +142,13 @@ class BppbForm
                             ->label('Nama Karyawan')
                             ->searchable()
                             ->required()
-                            ->options(User::all()->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
-                                $user = User::find($key);
-                                return [$key => $item . ' - ' . $user->NIK];
-                            }))
+                            ->getSearchResultsUsing(
+                                fn(string $search) =>
+                                User::where('name', 'like', "%{$search}%")
+                                    ->limit(20)
+                                    ->pluck('name', 'id')
+                            )
+                            ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
                             ->visible(fn(Get $get) => $get('manual_no_bppb')) // hanya tampil saat toggle on
                             ->dehydrated(fn(Get $get) => $get('manual_no_bppb')) // hanya dikirim saat toggle on
                             ->reactive(),
