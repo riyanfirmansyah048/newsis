@@ -60,12 +60,12 @@ return [
             'report' => false,
         ],
 
-        'photo_profiles' => [
-            'driver' => 'local',
-            'root' => public_path('photo-profiles'),
-            'url' => env('APP_URL') . '/photo-profiles',
-            'visibility' => 'public',
-        ],
+        // 'photo_profiles' => [
+        //     'driver' => 'local',
+        //     'root' => public_path('photo-profiles'),
+        //     'url' => env('APP_URL') . '/photo-profiles',
+        //     'visibility' => 'public',
+        // ],
     ],
 
     /*

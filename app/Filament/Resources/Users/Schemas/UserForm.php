@@ -36,14 +36,14 @@ class UserForm
                     ->columns(1)
                     ->columnSpanFull()
                     ->schema([
-                        FileUpload::make('image')
-                            ->label('Foto Profile')
-                            ->image()
-                            ->imageEditor()
-                            ->avatar()
-                            ->directory('profiles')
-                            ->visibility('public')
-                            ->columnSpanFull(),
+                        // FileUpload::make('image')
+                        //     ->label('Foto Profile')
+                        //     ->image()
+                        //     ->imageEditor()
+                        //     ->avatar()
+                        //     ->directory('profiles')
+                        //     ->visibility('public')
+                        //     ->columnSpanFull(),
                         TextInput::make('name')
                             ->required()
                             ->label('Nama Lengkap')

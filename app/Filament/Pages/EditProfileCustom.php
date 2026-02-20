@@ -213,15 +213,15 @@ class EditProfileCustom extends BaseEditProfile
                     //     ->visibility('public')
                     //     ->columnSpanFull(),
 
-                    FileUpload::make('image')
-                        ->label('Foto Profile')
-                        ->image()
-                        ->imageEditor()
-                        ->avatar()
-                        ->disk('photo_profiles') // 🔥 disk custom
-                        ->directory('/')          // langsung ke folder itu
-                        ->visibility('public')
-                        ->columnSpanFull(),
+                    // FileUpload::make('image')
+                    //     ->label('Foto Profile')
+                    //     ->image()
+                    //     ->imageEditor()
+                    //     ->avatar()
+                    //     ->disk('photo_profiles') // 🔥 disk custom
+                    //     ->directory('/')          // langsung ke folder itu
+                    //     ->visibility('public')
+                    //     ->columnSpanFull(),
 
                     // ======================
                     // PASSWORD
