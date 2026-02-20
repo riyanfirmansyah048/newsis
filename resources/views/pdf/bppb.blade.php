@@ -39,7 +39,7 @@
                         <td></td>
                         <td>Sub. Departement</td>
                         <td>:</td>
-                        <td>{{ $bppb->user->subdepartment->subDepartmentName }}</td>
+                        <td>{{ $bppb->user->subdepartment->subDepartmentName ?? 'null' }}</td>
                     </tr>
                     <tr>
                         <td>Tanggal BPPB</td>
