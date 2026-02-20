@@ -17,8 +17,8 @@
                         <td>
                             <center>
                                 {{-- <img style="width: 45%" src="{{ asset('storage/sanbe-logo.gif') }}" alt="SANBE"> --}}
-                                {{-- <img style="width: 45%" src="{{ public_path('storage/sanbe-logo.gif') }}"> --}}
-                                <img style="width: 45%" src="{{ asset('img/sanbe-logo.gif') }}">
+                                <img style="width: 45%" src="{{ public_path('img/sanbe-logo.gif') }}">
+                                {{-- <img style="width: 45%" src="{{ asset('img/sanbe-logo.gif') }}"> --}}
                             </center>
                         </td>
                         <td>
