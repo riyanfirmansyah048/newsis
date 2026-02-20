@@ -110,10 +110,11 @@ class EditBppbSoftware extends EditRecord
                 Select::make('pemohonIT')
                     ->label('Pemohon IT')
                     ->required()
-                    ->options(User::all()->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
-                        $user = User::find($key);
-                        return [$key => $item . ' - ' . $user->NIK];
-                    }))
+                    ->options(
+                        User::select('id', 'name', 'NIK')
+                            ->get()
+                            ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
+                    )
                     ->columnSpan(6)
                     ->searchable(),
                 TextInput::make('userPemohon')
