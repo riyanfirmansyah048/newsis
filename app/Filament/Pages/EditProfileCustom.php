@@ -204,12 +204,22 @@ class EditProfileCustom extends BaseEditProfile
                     // FOTO PROFIL
                     // ======================
 
+                    // FileUpload::make('image')
+                    //     ->label('Foto Profile')
+                    //     ->image()
+                    //     ->imageEditor()
+                    //     ->avatar()
+                    //     ->directory('profiles')
+                    //     ->visibility('public')
+                    //     ->columnSpanFull(),
+
                     FileUpload::make('image')
                         ->label('Foto Profile')
                         ->image()
                         ->imageEditor()
                         ->avatar()
-                        ->directory('profiles')
+                        ->disk('photo_profiles') // 🔥 disk custom
+                        ->directory('/')          // langsung ke folder itu
                         ->visibility('public')
                         ->columnSpanFull(),
 
