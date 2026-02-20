@@ -105,6 +105,12 @@ class RolePermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'update-user', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'delete-user', 'guard_name' => 'web']);
 
+        Permission::firstOrCreate(['name' => 'access-bppb-software', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'create-bppb-software', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'read-bppb-software', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'update-bppb-software', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'delete-bppb-software', 'guard_name' => 'web']);
+
         // membuat role
         Role::firstOrCreate(['id' => 2, 'name' => 'admin', 'guard_name' => 'web']); //Super User
         Role::firstOrCreate(['id' => 4, 'name' => 'guest', 'guard_name' => 'web']); //Bebas
@@ -207,6 +213,12 @@ class RolePermissionSeeder extends Seeder
             'read-user',
             'update-user',
             'delete-user',
+
+            'access-bppb-software',
+            'create-bppb-software',
+            'read-bppb-software',
+            'update-bppb-software',
+            'delete-bppb-software',
         ]);
         // end admin_________________________________________________________
         $roleUser->syncPermissions([

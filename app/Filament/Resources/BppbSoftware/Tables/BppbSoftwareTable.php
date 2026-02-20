@@ -22,6 +22,9 @@ class BppbSoftwareTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('qty'),
+                TextColumn::make('userPemohon')
+                    ->label('Pemohon')
+                    ->searchable(),
                 TextColumn::make('bppb.noBppb')
                     ->label('No BPPB')
                     ->searchable()
@@ -31,6 +34,7 @@ class BppbSoftwareTable
                     ->searchable()
                     ->sortable(),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
                 TrashedFilter::make(),
             ])

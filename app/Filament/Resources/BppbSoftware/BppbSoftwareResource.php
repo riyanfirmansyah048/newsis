@@ -14,6 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BppbSoftwareResource extends Resource
@@ -34,11 +35,6 @@ class BppbSoftwareResource extends Resource
     public static function getNavigationGroup(): ?string
     {
         return 'Transaksi';
-    }
-
-    public static function canCreate(): bool
-    {
-        return false;
     }
 
     public static function form(Schema $schema): Schema
@@ -75,8 +71,29 @@ class BppbSoftwareResource extends Resource
             ]);
     }
     // CRUD data--------------------------------------------------------------
-    public static function canViewAny(): bool
+    // public static function canViewAny(): bool
+    // {
+    //     return auth()->user()->hasRole('admin');
+    // }
+    // CRUD data--------------------------------------------------------------
+    public static function canAccess(): bool
     {
-        return auth()->user()->hasRole('admin');
+        return auth()->user()->can('access-bppb-software');
+    }
+    public static function canCreate(): bool
+    {
+        return auth()->user()->can('create-bppb-software');
+    }
+    public static function canView(Model $record): bool
+    {
+        return auth()->user()->can('read-bppb-software', $record);
+    }
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()->can('update-bppb-software', $record);
+    }
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->can('delete-bppb-software', $record);
     }
 }
