@@ -145,8 +145,12 @@ class BppbForm
                             ->getSearchResultsUsing(
                                 fn(string $search) =>
                                 User::where('name', 'like', "%{$search}%")
+                                    ->orWhere('NIK', 'like', "%{$search}%")
                                     ->limit(20)
-                                    ->pluck('name', 'id')
+                                    ->get()
+                                    ->mapWithKeys(fn($user) => [
+                                        $user->id => $user->name . ' - ' . $user->NIK,
+                                    ])
                             )
                             ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
                             ->visible(fn(Get $get) => $get('manual_no_bppb')) // hanya tampil saat toggle on
