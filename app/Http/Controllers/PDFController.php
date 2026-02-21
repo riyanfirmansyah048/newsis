@@ -75,7 +75,7 @@ class PDFController extends Controller
 
         // return $pdf->stream('Konfigurasi Email-' . now() . '.pdf');
 
-        return view('pdf.KonfigurasiEmail', compact('email', 'title'));
+        return view('pdf.konfigurasiEmail', compact('email', 'title'));
     }
 
     public function internet($id)
