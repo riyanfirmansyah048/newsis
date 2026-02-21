@@ -70,14 +70,14 @@ class EmailsTable
                 ]),
                 Action::make('Print')
                     ->url(fn(Email $record) => route('permohonanemail.print', $record->id))
-                    // ->openUrlInNewTab()
+                    ->openUrlInNewTab()
                     ->icon('heroicon-o-printer')
                     ->color('success')
                     ->tooltip('Cetak permohonan email')
                     ->visible(fn(Email $record) => $record->activeStatus == 0),
                 Action::make('Print')
                     ->url(fn(Email $record) => route('konfigurasiemail.print', $record->id))
-                    // ->openUrlInNewTab()
+                    ->openUrlInNewTab()
                     ->icon('heroicon-o-printer')
                     ->color('warning')
                     ->tooltip('Cetak konfigurasi email')

@@ -16,8 +16,8 @@
                     <tr>
                         <td>
                             <center>
-                                {{-- <img style="width: 45%" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE"> --}}
-                                <img style="width: 45%" src="{{ public_path('img/sanbe-logo.gif') }}">
+                                <img style="width: 45%" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                                {{-- <img style="width: 45%" src="{{ public_path('img/sanbe-logo.gif') }}"> --}}
                                 {{-- <img style="width: 45%" src="{{ asset('img/sanbe-logo.gif') }}"> --}}
                             </center>
                         </td>
@@ -148,9 +148,9 @@
         </font>
     @endif
 
-    {{-- <script>
+    <script>
         window.print();
-    </script> --}}
+    </script>
 </body>
 
 </html>
