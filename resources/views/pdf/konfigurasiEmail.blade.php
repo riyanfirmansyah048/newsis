@@ -140,7 +140,8 @@
                     </li>
                     <li>
                         Ketika muncul dialog Outgoing server <b>(SMTP) Password Required, masukan password</b>
-                        <b>{{ $email->passwordEmail }}</b>
+                        {{-- <b>{{ $email->passwordEmail }}</b> --}}
+                        <b>S@nbe2019</b>
                     </li>
                 </ol>
                 </p>

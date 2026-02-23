@@ -34,7 +34,11 @@ class EmailForm
                     ->default(auth()->id())
                     ->required()
                     ->reactive()
-                    ->unique(ignoreRecord: true)
+                    ->unique(
+                        ignoreRecord: true,
+                        modifyRuleUsing: fn($rule) =>
+                        $rule->whereNull('deleted_at')
+                    )
                     ->afterStateUpdated(function (Set $set, $state) {
                         $user = User::find($state);
                         if ($user) {
@@ -62,14 +66,14 @@ class EmailForm
                     ->disabled()
                     ->required(),
 
-                Hidden::make('idCompany')
-                    ->default(fn() => auth()->user()->idCompany)
-                    ->required(),
+                // Hidden::make('idCompany')
+                //     ->default(fn() => auth()->user()->idCompany)
+                //     ->required(),
 
-                Hidden::make('idUser')
-                    ->default(fn() => auth()->id())
-                    ->unique(ignoreRecord: true)
-                    ->required(),
+                // Hidden::make('idUser')
+                //     ->default(fn() => auth()->id())
+                //     ->unique(ignoreRecord: true)
+                //     ->required(),
 
                 Select::make('idDomainEmail')
                     ->label('Nama Domain')
