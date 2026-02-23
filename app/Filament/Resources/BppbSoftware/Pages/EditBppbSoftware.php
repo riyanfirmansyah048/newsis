@@ -33,9 +33,20 @@ class EditBppbSoftware extends EditRecord
             RestoreAction::make(),
         ];
     }
+    // protected function getRedirectUrl(): string
+    // {
+    //     return BppbResource::getUrl('edit', ['record' => $this->record->bppb_id]);
+    // }
+
     protected function getRedirectUrl(): string
     {
-        return BppbResource::getUrl('edit', ['record' => $this->record->bppb_id]);
+        // Jika admin → balik ke parent BPPB
+        if (auth()->user()->hasRole('admin')) {
+            return BppbResource::getUrl('edit', ['record' => $this->record->bppb_id]);
+        }
+
+        // Jika bukan admin → tetap di halaman edit software
+        return static::$resource::getUrl('edit', ['record' => $this->record]);
     }
 
     public function form(Schema $schema): Schema

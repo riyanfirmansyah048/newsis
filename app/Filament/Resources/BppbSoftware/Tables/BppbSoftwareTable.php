@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\BppbSoftware\Tables;
 
+use App\Models\Bppb_software;
+use Dom\Text;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\BulkActionGroup;
@@ -16,12 +18,24 @@ class BppbSoftwareTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->query(function () {
+                $query = Bppb_software::query();
+
+                if (!auth()->user()?->hasRole('admin')) {
+                    $query->where('pemohonIT', auth()->id());
+                }
+
+                return $query;
+            })
             ->columns([
                 TextColumn::make('software.name')
                     ->label('Nama Software')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('qty'),
+                TextColumn::make('user.name')
+                    ->label('Pemohon IT')
+                    ->searchable(),
                 TextColumn::make('userPemohon')
                     ->label('Pemohon')
                     ->searchable(),
