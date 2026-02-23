@@ -25,8 +25,14 @@ class ActivityLogsTable
                     ->badge()
                     ->color('primary'),
                 TextColumn::make('description')
-                    ->label('Activity')
-                    ->wrap(),
+                    ->label('Action')
+                    ->badge()
+                    ->color(fn($state) => match (true) {
+                        str_contains($state, 'created') => 'success',
+                        str_contains($state, 'updated') => 'warning',
+                        str_contains($state, 'deleted') => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('subject_type')
                     ->label('Model')
                     ->formatStateUsing(fn($state) => class_basename($state))
