@@ -123,7 +123,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->image
-            ? asset('photo-profiles/' . $this->image)
+            ? asset($this->image)
             : null;
     }
 
