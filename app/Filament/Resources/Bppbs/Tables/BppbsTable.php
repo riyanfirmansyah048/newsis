@@ -80,6 +80,7 @@ class BppbsTable
                     ->icon('heroicon-o-printer')
                     ->color('success')
                     ->url(fn(Bppb $record) => route('bppb.print', $record->id))
+                    // ->openUrlInNewTab()
                     ->visible(
                         fn(Bppb $record) =>
                         auth()->user()?->hasRole('admin')

@@ -45,7 +45,7 @@ class EditProfileCustom extends BaseEditProfile
             // DATA AKUN
             // ======================
             FormSection::make('Profile Information')
-                ->collapsed()
+                ->collapsed(false)
                 ->schema([
                     TextInput::make('email')
                         ->label('Email')
