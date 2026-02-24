@@ -129,6 +129,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
+        //upload
         return $this->image
             ? Storage::url($this->image)
             : null;

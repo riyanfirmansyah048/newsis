@@ -226,12 +226,12 @@ class EditProfileCustom extends BaseEditProfile
                     FileUpload::make('image')
                         ->label('Foto Profile')
                         ->image()
-                        ->avatar() // tampil bulat
+                        ->avatar()
                         ->imageEditor()
-                        ->disk('public') // WAJIB
-                        ->directory('photo-profiles') // storage/app/public/photo-profiles
+                        ->disk('public')
+                        ->directory('photo-profiles')
                         ->visibility('public')
-                        ->maxSize(2048) // 2MB
+                        ->maxSize(2048)
                         ->columnSpanFull(),
 
                     // ======================
