@@ -223,6 +223,17 @@ class EditProfileCustom extends BaseEditProfile
                     //     ->visibility('public')
                     //     ->columnSpanFull(),
 
+                    FileUpload::make('image')
+                        ->label('Foto Profile')
+                        ->image()
+                        ->avatar() // tampil bulat
+                        ->imageEditor()
+                        ->disk('public') // WAJIB
+                        ->directory('photo-profiles') // storage/app/public/photo-profiles
+                        ->visibility('public')
+                        ->maxSize(2048) // 2MB
+                        ->columnSpanFull(),
+
                     // ======================
                     // PASSWORD
                     // ======================
