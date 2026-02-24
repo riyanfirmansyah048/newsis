@@ -203,6 +203,7 @@ class EditProfileCustom extends BaseEditProfile
                     // ======================
                     // FOTO PROFIL
                     // ======================
+                    //upload foto
 
                     // FileUpload::make('image')
                     //     ->label('Foto Profile')
