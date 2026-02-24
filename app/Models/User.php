@@ -120,20 +120,19 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     //     return $this->image ? asset('storage/' . $this->image) : null;
     // }
 
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->image
+            ? asset($this->image)
+            : null;
+    }
+
     // public function getFilamentAvatarUrl(): ?string
     // {
     //     return $this->image
-    //         ? asset($this->image)
+    //         ? Storage::url($this->image)
     //         : null;
     // }
-
-    public function getFilamentAvatarUrl(): ?string
-    {
-        //upload
-        return $this->image
-            ? Storage::url($this->image)
-            : null;
-    }
 
     // set user registration default role
     protected static function boot()

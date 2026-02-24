@@ -19,7 +19,6 @@
 /storage/*.key
 /storage/pail
 /vendor
-/public/photo-profiles/*
 Homestead.json
 Homestead.yaml
 Thumbs.db

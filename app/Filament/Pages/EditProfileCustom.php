@@ -223,16 +223,16 @@ class EditProfileCustom extends BaseEditProfile
                     //     ->visibility('public')
                     //     ->columnSpanFull(),
 
-                    FileUpload::make('image')
-                        ->label('Foto Profile')
-                        ->image()
-                        ->avatar()
-                        ->imageEditor()
-                        ->disk('public')
-                        ->directory('photo-profiles')
-                        ->visibility('public')
-                        ->maxSize(2048)
-                        ->columnSpanFull(),
+                    // FileUpload::make('image')
+                    //     ->label('Foto Profile')
+                    //     ->image()
+                    //     ->avatar()
+                    //     ->imageEditor()
+                    //     ->disk('public')
+                    //     ->directory('photo-profiles')
+                    //     ->visibility('public')
+                    //     ->maxSize(2048)
+                    //     ->columnSpanFull(),
 
                     // ======================
                     // PASSWORD
