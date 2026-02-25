@@ -65,7 +65,7 @@
                             <tr>
                                 <td><b>Pemohon</b></td>
                                 <td>:</td>
-                                <td>{{ $service->user->NIK . ' / ' }}</td>
+                                <td>{{ $service->user->NIK . ' / ' . $service->user->name }}</td>
                             </tr>
                             <tr>
                                 <td><b>Jabatan</b></td>
