@@ -91,6 +91,7 @@ class ServiceForm
                                     ->get()
                                     ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
                             )
+                            ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
                             ->columnSpanFull()
                             ->visible(fn(Get $get) => auth()->user()->can('update-service') && $get('status_id') !== 2)
                             ->searchable(),
