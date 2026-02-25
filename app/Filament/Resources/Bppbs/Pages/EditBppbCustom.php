@@ -93,44 +93,92 @@ class EditBppbCustom extends Page implements HasForms
             'status' => $record->status?->name ?? '',
             'status_id' => $record->status_id ?? '',
 
-            'bppb_items' => $record?->bppb_item?->map(fn($item) => [
-                'id' => $item->id,
-                'item_id' => $item->item_id,
-                'category' => $item->category?->name ?? '',
-                'brand' => $item->brand?->name ?? '',
-                'name' => $item->item?->name ?? '',
-                'qty' => $item->qty,
-                'purchase_order_id' => $item->purchase_order_id,
-                'description' => $item->description,
-            ])->toArray() ?? [],
+            // 'bppb_items' => $record?->bppb_item?->map(fn($item) => [
+            //     'id' => $item->id,
+            //     'item_id' => $item->item_id,
+            //     'category' => $item->category?->name ?? '',
+            //     'brand' => $item->brand?->name ?? '',
+            //     'name' => $item->item?->name ?? '',
+            //     'qty' => $item->qty,
+            //     'purchase_order_id' => $item->purchase_order_id,
+            //     'description' => $item->description,
+            // ])->toArray() ?? [],
 
-            'bppb_inks' => $record?->bppb_ink?->map(fn($ink) => [
-                'id' => $ink->id,
-                'ink_id' => $ink->ink_id,
-                'category' => $ink->category?->name ?? '',
-                'brand' => $ink->brand?->name ?? '',
-                'name' => $ink->ink?->name ?? '',
-                'qty' => $ink->qty,
-                'purchase_order_id' => $ink->purchase_order_id,
-                'description' => $ink->description,
-            ])->toArray() ?? [],
+            'bppb_items' => $record?->bppb_item()
+                ->whereNull('deleted_at') // filter soft delete
+                ->get()
+                ->map(fn($item) => [
+                    'id' => $item->id,
+                    'item_id' => $item->item_id,
+                    'category' => $item->category?->name ?? '',
+                    'brand' => $item->brand?->name ?? '',
+                    'name' => $item->item?->name ?? '',
+                    'qty' => $item->qty,
+                    'purchase_order_id' => $item->purchase_order_id,
+                    'description' => $item->description,
+                ])->toArray() ?? [],
 
-            'bppb_softwares' => $record?->bppb_software?->map(fn($software) => [
-                'id' => $software->id,
-                'software_id' => $software->software_id,
-                'category' => $software->category?->name ?? '',
-                'brand' => $software->brand?->name ?? '',
-                'name' => $software->software?->name ?? '',
-                'qty' => $software->qty,
-                'purchase_order_id' => $software->purchase_order_id,
-                'description' => $software->description,
-                'noBppbPemohon' => $software->noBppbPemohon,
-                'pemohonIT' => $software->user?->name ?? '',
-                'userPemohon' => $software->userPemohon,
-                'departementPemohon' => $software->departementPemohon,
-                'lokasiPemohon' => $software->lokasiPemohon,
-                'serialNumber' => $software->serialNumber,
-            ])->toArray() ?? [],
+            // 'bppb_inks' => $record?->bppb_ink?->map(fn($ink) => [
+            //     'id' => $ink->id,
+            //     'ink_id' => $ink->ink_id,
+            //     'category' => $ink->category?->name ?? '',
+            //     'brand' => $ink->brand?->name ?? '',
+            //     'name' => $ink->ink?->name ?? '',
+            //     'qty' => $ink->qty,
+            //     'purchase_order_id' => $ink->purchase_order_id,
+            //     'description' => $ink->description,
+            // ])->toArray() ?? [],
+
+            'bppb_inks' => $record?->bppb_ink()
+                ->whereNull('deleted_at') // kalau tinta juga soft delete
+                ->get()
+                ->map(fn($ink) => [
+                    'id' => $ink->id,
+                    'ink_id' => $ink->ink_id,
+                    'category' => $ink->category?->name ?? '',
+                    'brand' => $ink->brand?->name ?? '',
+                    'name' => $ink->ink?->name ?? '',
+                    'qty' => $ink->qty,
+                    'purchase_order_id' => $ink->purchase_order_id,
+                    'description' => $ink->description,
+                ])->toArray() ?? [],
+
+            // 'bppb_softwares' => $record?->bppb_software?->map(fn($software) => [
+            //     'id' => $software->id,
+            //     'software_id' => $software->software_id,
+            //     'category' => $software->category?->name ?? '',
+            //     'brand' => $software->brand?->name ?? '',
+            //     'name' => $software->software?->name ?? '',
+            //     'qty' => $software->qty,
+            //     'purchase_order_id' => $software->purchase_order_id,
+            //     'description' => $software->description,
+            //     'noBppbPemohon' => $software->noBppbPemohon,
+            //     'pemohonIT' => $software->user?->name ?? '',
+            //     'userPemohon' => $software->userPemohon,
+            //     'departementPemohon' => $software->departementPemohon,
+            //     'lokasiPemohon' => $software->lokasiPemohon,
+            //     'serialNumber' => $software->serialNumber,
+            // ])->toArray() ?? [],
+
+            'bppb_softwares' => $record?->bppb_software()
+                ->whereNull('deleted_at') // kalau software soft delete
+                ->get()
+                ->map(fn($software) => [
+                    'id' => $software->id,
+                    'software_id' => $software->software_id,
+                    'category' => $software->category?->name ?? '',
+                    'brand' => $software->brand?->name ?? '',
+                    'name' => $software->software?->name ?? '',
+                    'qty' => $software->qty,
+                    'purchase_order_id' => $software->purchase_order_id,
+                    'description' => $software->description,
+                    'noBppbPemohon' => $software->noBppbPemohon,
+                    'pemohonIT' => $software->user?->name ?? '',
+                    'userPemohon' => $software->userPemohon,
+                    'departementPemohon' => $software->departementPemohon,
+                    'lokasiPemohon' => $software->lokasiPemohon,
+                    'serialNumber' => $software->serialNumber,
+                ])->toArray() ?? [],
         ];
     }
 

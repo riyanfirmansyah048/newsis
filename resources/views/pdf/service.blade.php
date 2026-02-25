@@ -43,8 +43,19 @@
                             <tr>
                                 <td colspan="3">
                                     {{-- Barcode --}}
-                                    <img src="data:image/png;base64,{{ base64_encode(new \Picqer\Barcode\BarcodeGeneratorPNG()->getBarcode($service->noService, \Picqer\Barcode\BarcodeGeneratorPNG::TYPE_CODE_128)) }}"
-                                        alt="Barcode" style="width: 200px; height: 60px;">
+                                    {{-- <img src="data:image/png;base64,{{ base64_encode(new \Picqer\Barcode\BarcodeGeneratorPNG()->getBarcode($service->noService, \Picqer\Barcode\BarcodeGeneratorPNG::TYPE_CODE_128)) }}"
+                                        alt="Barcode" style="width: 200px; height: 60px;"> --}}
+
+                                    @php
+                                        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+                                        $barcode = $generator->getBarcode(
+                                            $service->noService,
+                                            $generator::TYPE_CODE_128,
+                                        );
+                                    @endphp
+
+                                    <img src="data:image/png;base64,{{ base64_encode($barcode) }}" alt="Barcode"
+                                        style="width: 200px; height: 60px;">
                                 </td>
                             </tr>
                         </table>
