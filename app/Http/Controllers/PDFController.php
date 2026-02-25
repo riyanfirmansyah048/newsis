@@ -44,9 +44,9 @@ class PDFController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.bpb', compact('bpb', 'title'));
 
-        return $pdf->stream('BPB-' . now() . '.pdf');
+        // return $pdf->stream('BPB-' . now() . '.pdf');
 
-        // return view('pdf.bpb', compact('bpb', 'title'));
+        return view('pdf.bpb', compact('bpb', 'title'));
     }
     public function permohonanEmailPrint($id)
     {

@@ -9,21 +9,38 @@
         <title>{{ $title }}</title>
     </head>
 
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            /* ukuran default */
+        }
+
+        table {
+            font-size: 10pt;
+        }
+
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+        }
+    </style>
+
     <body>
-        <font face='Arial, Helvetica, sans-serif'>
-            <table style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td>
-                        <div align="center">
-                            <u>
-                                <h2>BUKTI PENERIMAAN BARANG</h2>
-                            </u>
-                            <h2>No : {{ $bpb->noBpb }}</h2>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </font>
+        {{-- <font face='Arial, Helvetica, sans-serif'> --}}
+        <table style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <div align="center">
+                        <u>
+                            <h2>BUKTI PENERIMAAN BARANG</h2>
+                        </u>
+                        <h2>No : {{ $bpb->noBpb }}</h2>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        {{-- </font> --}}
         <table style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
             <tr>
                 <td>Sesuai dengan PO (No. BPPB)</td>
@@ -150,6 +167,10 @@
         </table>
         <br>
         KETERANGAN ( Lembar putih : Keuangan, Lembar merah : Purchasing, Lembar kuning : Pemohon )
+
+        <script>
+            window.print();
+        </script>
     </body>
 
     </html>

@@ -62,10 +62,9 @@ class BppbsTable
             ->defaultSort('created_at', 'desc')
             ->filters([
                 TrashedFilter::make(),
-                SelectFilter::make('status_id')
-                    ->multiple()
-                    ->label('Status BPPB')
-                    ->options(Bppb_status::all()->pluck('name', 'id')->toArray()),
+                SelectFilter::make('status')
+                    ->relationship('status', 'name')
+                    ->multiple(),
             ])
             ->recordActions([
                 ActionGroup::make([
