@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Expeditions\Pages;
 
 use App\Filament\Resources\Expeditions\ExpeditionResource;
+use App\Models\Expedition;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -15,6 +17,11 @@ class EditExpedition extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('Print')
+                ->url(fn(Expedition $record) => route('expedition.print', $record->id))
+                // ->openUrlInNewTab()
+                ->icon('heroicon-o-printer')
+                ->color('success'),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),
