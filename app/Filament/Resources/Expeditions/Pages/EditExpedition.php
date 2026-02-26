@@ -20,4 +20,20 @@ class EditExpedition extends EditRecord
             RestoreAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $record = $this->record;
+
+        $details = \App\Models\ExpeditionDetail::where('expedition_id', $record->id)->get();
+
+        $data['include_items'] = $details
+            ->map(
+                fn($detail) =>
+                $detail->type_id . '|' . $detail->product_form_id
+            )
+            ->toArray();
+
+        return $data;
+    }
 }
