@@ -18,17 +18,39 @@ class ExpeditionForm
             ->components([
                 Select::make('bppb_id')
                     ->label('No. Bppb')
-                    ->options(
-                        Bppb::query()
-                            ->whereHas('user')
-                            ->get()
-                            ->mapWithKeys(function ($bppb) {
-                                return [$bppb->id => "{$bppb->noBppb} - {$bppb->user->name} ({$bppb->user->NIK})"];
-                            })
-                    )
                     ->searchable()
                     ->required()
                     ->reactive()
+                    ->searchDebounce(500)
+                    ->getSearchResultsUsing(function (string $search) {
+
+                        if (blank($search) || strlen($search) < 2) {
+                            return []; // 🔥 kosong dulu sampai user ketik min 2 huruf
+                        }
+
+                        return Bppb::query()
+                            ->with('user')
+                            ->whereHas('user')
+                            ->where(function ($query) use ($search) {
+                                $query->where('noBppb', 'like', "%{$search}%")
+                                    ->orWhereHas('user', function ($q) use ($search) {
+                                        $q->where('name', 'like', "%{$search}%")
+                                            ->orWhere('NIK', 'like', "%{$search}%");
+                                    });
+                            })
+                            ->limit(20)
+                            ->get()
+                            ->mapWithKeys(fn($bppb) => [
+                                $bppb->id => "{$bppb->noBppb} - {$bppb->user->name} ({$bppb->user->NIK})",
+                            ]);
+                    })
+                    ->getOptionLabelUsing(function ($value) {
+                        $bppb = \App\Models\Bppb::with('user')->find($value);
+
+                        return $bppb
+                            ? "{$bppb->noBppb} - {$bppb->user->name} ({$bppb->user->NIK})"
+                            : null;
+                    })
                     ->columnSpanFull(),
                 TextInput::make('expeditor')
                     ->label('Karyawan Ekspedisi')
