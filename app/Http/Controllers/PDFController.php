@@ -145,6 +145,6 @@ class PDFController extends Controller
         $expedition->save();
 
         // return $pdf->stream('Expedition -' . now() . '.pdf');
-        return view('pdf.Expedition', compact('expedition', 'title'));
+        return view('pdf.expedition', compact('expedition', 'title'));
     }
 }
