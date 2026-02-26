@@ -24,17 +24,17 @@ class Purchase_order extends Model
 
     public function bppb_items()
     {
-        return $this->hasMany(Bppb_item::class);
+        return $this->hasMany(Bppb_item::class, 'purchase_order_id');
     }
 
     public function bppb_inks()
     {
-        return $this->hasMany(Bppb_ink::class);
+        return $this->hasMany(Bppb_ink::class, 'purchase_order_id');
     }
 
     public function bppb_softwares()
     {
-        return $this->hasMany(Bppb_software::class);
+        return $this->hasMany(Bppb_software::class, 'purchase_order_id');
     }
 
     public function vendor()

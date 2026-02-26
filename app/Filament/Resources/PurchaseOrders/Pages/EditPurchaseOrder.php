@@ -20,4 +20,46 @@ class EditPurchaseOrder extends EditRecord
             RestoreAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $record = $this->record;
+
+        // =========================
+        // BARANG
+        // =========================
+        $data['po_items'] = $record->bppb_items
+            ->groupBy('item_id')
+            ->map(fn($group) => [
+                'item_id' => $group->first()->item_id,
+                'qty' => $group->count(),
+            ])
+            ->values()
+            ->toArray();
+        // =========================
+        // TINTA
+        // =========================
+        $data['po_inks'] = $record->bppb_inks
+            ->groupBy('ink_id')
+            ->map(fn($group) => [
+                'ink_id' => $group->first()->ink_id,
+                'qty' => $group->count(),
+            ])
+            ->values()
+            ->toArray();
+
+        // =========================
+        // SOFTWARE
+        // =========================
+        $data['po_softwares'] = $record->bppb_softwares
+            ->groupBy('software_id')
+            ->map(fn($group) => [
+                'software_id' => $group->first()->software_id,
+                'qty' => $group->count(),
+            ])
+            ->values()
+            ->toArray();
+
+        return $data;
+    }
 }

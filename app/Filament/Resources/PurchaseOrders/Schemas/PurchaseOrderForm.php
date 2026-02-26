@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources\PurchaseOrders\Schemas;
 
-use App\Models\Bppb;
-use App\Models\Bppb_item;
 use App\Models\Bppb_ink;
+use App\Models\Bppb_item;
 use App\Models\Bppb_software;
+use App\Models\Bppb;
 use App\Models\Vendor;
-use Filament\Schemas\Schema;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class PurchaseOrderForm
 {
@@ -49,9 +50,8 @@ class PurchaseOrderForm
                         ->searchable()
                         ->required(),
 
-                    TextInput::make('datePo')
+                    DatePicker::make('datePo')
                         ->label('Tanggal Purchase Order')
-                        ->type('date')
                         ->required(),
                 ])
                 ->columns(3)
@@ -97,7 +97,31 @@ class PurchaseOrderForm
                                 ->label('Qty')
                                 ->numeric()
                                 ->minValue(1)
-                                ->required(),
+                                ->required()
+                                ->live()
+                                ->rules([
+                                    function (callable $get) {
+                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+
+                                            $bppbId = $get('../../bppb_id');
+                                            $itemId = $get('item_id');
+
+                                            if (!$itemId || !$bppbId) {
+                                                return;
+                                            }
+
+                                            $sisaQty = \App\Models\Bppb_item::query()
+                                                ->where('bppb_id', $bppbId)
+                                                ->where('item_id', $itemId)
+                                                ->whereNull('purchase_order_id')
+                                                ->count(); // atau sum('qty') kalau memang pakai qty kolom
+
+                                            if ($value > $sisaQty) {
+                                                $fail("Qty melebihi jumlah yang belum diproses. Sisa tersedia: {$sisaQty}");
+                                            }
+                                        };
+                                    },
+                                ]),
                         ])
                         ->columns(2)
                         ->dehydrated(false)
@@ -143,11 +167,40 @@ class PurchaseOrderForm
                                 ->searchable()
                                 ->required(),
 
+                            // TextInput::make('qty')
+                            //     ->label('Qty')
+                            //     ->numeric()
+                            //     ->minValue(1)
+                            //     ->required(),
                             TextInput::make('qty')
                                 ->label('Qty')
                                 ->numeric()
                                 ->minValue(1)
-                                ->required(),
+                                ->required()
+                                ->live() // supaya realtime
+                                ->rules([
+                                    function (callable $get) {
+                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+
+                                            $inkId = $get('ink_id');
+                                            $bppbId = $get('../../bppb_id');
+
+                                            if (!$inkId || !$bppbId) {
+                                                return;
+                                            }
+
+                                            $sisaQty = \App\Models\Bppb_ink::query()
+                                                ->where('bppb_id', $bppbId)
+                                                ->where('ink_id', $inkId)
+                                                ->whereNull('purchase_order_id')
+                                                ->count();
+
+                                            if ($value > $sisaQty) {
+                                                $fail("Qty melebihi jumlah yang belum diproses. Sisa tersedia: {$sisaQty}");
+                                            }
+                                        };
+                                    },
+                                ]),
                         ])
                         ->columns(2)
                         ->dehydrated(false)
@@ -193,11 +246,41 @@ class PurchaseOrderForm
                                 ->searchable()
                                 ->required(),
 
+                            // TextInput::make('qty')
+                            //     ->label('Qty')
+                            //     ->numeric()
+                            //     ->minValue(1)
+                            //     ->required(),
+
                             TextInput::make('qty')
                                 ->label('Qty')
                                 ->numeric()
                                 ->minValue(1)
-                                ->required(),
+                                ->required()
+                                ->live()
+                                ->rules([
+                                    function (callable $get) {
+                                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+
+                                            $softwareId = $get('software_id');
+                                            $bppbId = $get('../../bppb_id');
+
+                                            if (!$softwareId || !$bppbId) {
+                                                return;
+                                            }
+
+                                            $sisaQty = \App\Models\Bppb_software::query()
+                                                ->where('bppb_id', $bppbId)
+                                                ->where('software_id', $softwareId)
+                                                ->whereNull('purchase_order_id')
+                                                ->count();
+
+                                            if ($value > $sisaQty) {
+                                                $fail("Qty melebihi jumlah yang belum diproses. Sisa tersedia: {$sisaQty}");
+                                            }
+                                        };
+                                    },
+                                ]),
                         ])
                         ->columns(2)
                         ->dehydrated(false)

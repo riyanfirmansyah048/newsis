@@ -50,14 +50,33 @@ class ViewPurchaseOrder extends ViewRecord
 
                 // ITEMS
                 Section::make('Daftar Barang')
-                    ->collapsed()
+                    ->collapsed(false)
                     ->schema([
-                        RepeatableEntry::make('bppb_items')
+                        RepeatableEntry::make('grouped_items')
                             ->label('List Barang')
+                            ->state(function () {
+
+                                return $this->record
+                                    ->bppb_items()
+                                    ->with('item') // eager load langsung dari query
+                                    ->get()
+                                    ->groupBy('item_id')
+                                    ->map(function ($group) {
+
+                                        return [
+                                            'name' => $group->first()->item->name ?? '-',
+                                            'total_qty' => $group->count(), // atau sum('qty')
+                                        ];
+                                    })
+                                    ->values()
+                                    ->toArray();
+                            })
                             ->schema([
-                                TextEntry::make('item.name')
+                                TextEntry::make('name')
                                     ->label('Nama Barang'),
-                                TextEntry::make('qty')
+
+                                TextEntry::make('total_qty')
+                                    ->label('Qty'),
                             ])
                             ->columns(2),
                     ])
@@ -65,14 +84,33 @@ class ViewPurchaseOrder extends ViewRecord
 
                 // INKS
                 Section::make('Daftar Tinta')
-                    ->collapsed()
+                    ->collapsed(false)
                     ->schema([
-                        RepeatableEntry::make('bppb_inks')
+                        RepeatableEntry::make('grouped_inks')
                             ->label('List Tinta')
+                            ->state(function () {
+
+                                return $this->record
+                                    ->bppb_inks()
+                                    ->with('ink')
+                                    ->get()
+                                    ->groupBy('ink_id')
+                                    ->map(function ($group) {
+
+                                        return [
+                                            'name' => $group->first()->ink->name ?? '-',
+                                            'total_qty' => $group->count(), // atau sum('qty')
+                                        ];
+                                    })
+                                    ->values()
+                                    ->toArray();
+                            })
                             ->schema([
-                                TextEntry::make('ink.name')
+                                TextEntry::make('name')
                                     ->label('Nama Tinta'),
-                                TextEntry::make('qty'),
+
+                                TextEntry::make('total_qty')
+                                    ->label('Qty'),
                             ])
                             ->columns(2),
                     ])
@@ -80,14 +118,33 @@ class ViewPurchaseOrder extends ViewRecord
 
                 // SOFTWARES
                 Section::make('Daftar Software')
-                    ->collapsed()
+                    ->collapsed(false)
                     ->schema([
-                        RepeatableEntry::make('bppb_softwares')
+                        RepeatableEntry::make('grouped_softwares')
                             ->label('List Software')
+                            ->state(function () {
+
+                                return $this->record
+                                    ->bppb_softwares()
+                                    ->with('software')
+                                    ->get()
+                                    ->groupBy('software_id')
+                                    ->map(function ($group) {
+
+                                        return [
+                                            'name' => $group->first()->software->name ?? '-',
+                                            'total_qty' => $group->count(), // atau sum('qty')
+                                        ];
+                                    })
+                                    ->values()
+                                    ->toArray();
+                            })
                             ->schema([
-                                TextEntry::make('software.name')
+                                TextEntry::make('name')
                                     ->label('Nama Software'),
-                                TextEntry::make('qty'),
+
+                                TextEntry::make('total_qty')
+                                    ->label('Qty'),
                             ])
                             ->columns(2),
                     ])
