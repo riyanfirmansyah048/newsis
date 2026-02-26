@@ -309,6 +309,18 @@ class EditBppbCustom extends Page implements HasForms
                 ->action('finishRecord')
                 ->color('success')
                 ->visible(fn() => ($this->record->status_id === 5 || $this->record->status_id === 7)),
+
+            Action::make('Print')
+                ->label('Print')
+                ->icon('heroicon-o-printer')
+                ->color('success')
+                ->url(fn() => route('bppb.print', $this->record->id))
+                ->openUrlInNewTab()
+                ->visible(
+                    fn() =>
+                    auth()->user()?->hasRole('admin')
+                        || in_array($this->record->status_id, [1, 2, 3])
+                )
         ];
     }
 
