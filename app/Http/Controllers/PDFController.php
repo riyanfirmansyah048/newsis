@@ -144,7 +144,7 @@ class PDFController extends Controller
         $expedition->datePrint = now();
         $expedition->save();
 
-        return $pdf->stream('Expedition -' . now() . '.pdf');
-        // return view('pdf.Expedition', compact('expedition', 'title'));
+        // return $pdf->stream('Expedition -' . now() . '.pdf');
+        return view('pdf.Expedition', compact('expedition', 'title'));
     }
 }

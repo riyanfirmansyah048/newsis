@@ -19,7 +19,7 @@ class EditExpedition extends EditRecord
         return [
             Action::make('Print')
                 ->url(fn(Expedition $record) => route('expedition.print', $record->id))
-                // ->openUrlInNewTab()
+                ->openUrlInNewTab()
                 ->icon('heroicon-o-printer')
                 ->color('success'),
             DeleteAction::make(),

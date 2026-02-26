@@ -110,6 +110,7 @@
                     <td>
                         <br>
                         <br>
+                        <br>
                     </td>
                     <td></td>
                     <td></td>
@@ -139,6 +140,10 @@
             </table>
         </center>
         {{-- </font> --}}
+
+        <script>
+            window.print();
+        </script>
     </body>
 
     </html>
