@@ -110,7 +110,7 @@ class PurchaseOrderForm
                                                 return;
                                             }
 
-                                            $sisaQty = \App\Models\Bppb_item::query()
+                                            $sisaQty = Bppb_item::query()
                                                 ->where('bppb_id', $bppbId)
                                                 ->where('item_id', $itemId)
                                                 ->whereNull('purchase_order_id')
@@ -189,7 +189,7 @@ class PurchaseOrderForm
                                                 return;
                                             }
 
-                                            $sisaQty = \App\Models\Bppb_ink::query()
+                                            $sisaQty = Bppb_ink::query()
                                                 ->where('bppb_id', $bppbId)
                                                 ->where('ink_id', $inkId)
                                                 ->whereNull('purchase_order_id')
@@ -269,7 +269,7 @@ class PurchaseOrderForm
                                                 return;
                                             }
 
-                                            $sisaQty = \App\Models\Bppb_software::query()
+                                            $sisaQty = Bppb_software::query()
                                                 ->where('bppb_id', $bppbId)
                                                 ->where('software_id', $softwareId)
                                                 ->whereNull('purchase_order_id')
