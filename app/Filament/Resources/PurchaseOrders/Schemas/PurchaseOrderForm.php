@@ -124,7 +124,7 @@ class PurchaseOrderForm
                                 ]),
                         ])
                         ->columns(2)
-                        ->dehydrated(false)
+                        // ->dehydrated(false)
                         ->defaultItems(0)
                         ->createItemButtonLabel('Tambah Barang')
                         ->helperText('Silakan isi daftar barang dalam Purchase Order'),
@@ -203,7 +203,7 @@ class PurchaseOrderForm
                                 ]),
                         ])
                         ->columns(2)
-                        ->dehydrated(false)
+                        // ->dehydrated(false)
                         ->defaultItems(0)
                         ->createItemButtonLabel('Tambah Tinta')
                         ->helperText('Silakan isi daftar tinta dalam Purchase Order'),
@@ -283,7 +283,7 @@ class PurchaseOrderForm
                                 ]),
                         ])
                         ->columns(2)
-                        ->dehydrated(false)
+                        // ->dehydrated(false)
                         ->defaultItems(0)
                         ->createItemButtonLabel('Tambah Software')
                         ->helperText('Silakan isi daftar software dalam Purchase Order'),
