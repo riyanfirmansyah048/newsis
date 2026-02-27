@@ -82,6 +82,7 @@ class BppbInkForm
                     ->columnSpanFull(),
                 Textarea::make('description')
                     ->label('Keterangan')
+                    ->helperText('Opsional, bisa diisi dengan spesifikasi Tinta atau catatan lainnya')
                     ->columnSpanFull(),
             ])
             ->columns(3);

@@ -166,7 +166,8 @@ class BppbForm
                         Hidden::make('bppb_type_id')
                             ->default(1), // Default value is 1
                         Textarea::make('description')
-                            ->label('Keterangan BPPB'),
+                            ->label('Keterangan BPPB')
+                            ->helperText('Opsional, bisa diisi dengan catatan atau informasi tambahan terkait BPPB'),
                         // Hidden::make('bppb_type_id')
                         //     ->default(fn() => request()->query('bppb_type_id') ?? 1),
                         Hidden::make('service_id')
@@ -243,6 +244,7 @@ class BppbForm
                                     ->columnSpanFull(),
                                 Textarea::make('description')
                                     ->label('Keterangan')
+                                    ->helperText('Opsional, bisa diisi dengan spesifikasi barang atau catatan lainnya')
                                     ->columnSpanFull(),
                                 Select::make('purchase_order_id')
                                     ->visible(fn($record) => $record !== null)
@@ -356,6 +358,7 @@ class BppbForm
                                     ->columnSpanFull(),
                                 Textarea::make('description')
                                     ->label('Keterangan')
+                                    ->helperText('Opsional, bisa diisi dengan spesifikasi Tinta atau catatan lainnya')
                                     ->columnSpanFull(),
                                 Select::make('purchase_order_id')
                                     ->visible(fn($record) => $record !== null)
@@ -464,6 +467,7 @@ class BppbForm
                                     ->columnSpanFull(),
                                 Textarea::make('description')
                                     ->label('Keterangan')
+                                    ->helperText('Opsional, bisa diisi dengan spesifikasi software atau catatan lainnya')
                                     ->columnSpanFull(),
                                 Select::make('purchase_order_id')
                                     ->visible(fn($record) => $record !== null)

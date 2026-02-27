@@ -82,6 +82,7 @@ class BppbSoftwareForm
                     ->columnSpanFull(),
                 Textarea::make('description')
                     ->label('Keterangan')
+                    ->helperText('Opsional, bisa diisi dengan spesifikasi software atau catatan lainnya')
                     ->columnSpanFull(),
             ])
             ->columns(3);

@@ -82,6 +82,7 @@ class BppbItemForm
                     ->columnSpanFull(),
                 Textarea::make('description')
                     ->label('Keterangan')
+                    ->helperText('Opsional, bisa diisi dengan spesifikasi barang atau catatan lainnya')
                     ->columnSpanFull(),
             ])
             ->columns(3);
