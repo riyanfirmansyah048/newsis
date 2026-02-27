@@ -17,6 +17,18 @@ class EditExpedition extends EditRecord
 
     protected array $selectedItems = [];
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            // DeleteAction::make(),
+            Action::make('Print')
+                ->url(fn(Expedition $record) => route('expedition.print', $record->id))
+                ->openUrlInNewTab()
+                ->icon('heroicon-o-printer')
+                ->color('success'),
+        ];
+    }
+
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $details = ExpeditionDetail::where(

@@ -107,7 +107,13 @@
                     @endphp
                     @foreach ($items as $item)
                         <tr>
-                            <td>{{ $item->item->name }}</td>
+                            <td>
+                                {{ $item->item->name }}
+                                @if (!empty($item->description))
+                                    <br>
+                                    <b>keterangan : </b> {{ $item->description }}
+                                @endif
+                            </td>
                             <td>
                                 <center>{{ $item->qty }}</center>
                             </td>
@@ -126,7 +132,13 @@
                     @endphp
                     @foreach ($inks as $ink)
                         <tr>
-                            <td>{{ $ink->ink->name }}</td>
+                            <td>
+                                {{ $ink->ink->name }}
+                                @if (!empty($ink->description))
+                                    <br>
+                                    <b>keterangan : </b> {{ $ink->description }}
+                                @endif
+                            </td>
                             <td>
                                 <center>{{ $ink->qty }}</center>
                             </td>
@@ -145,7 +157,13 @@
                     @endphp
                     @foreach ($softwareList as $software)
                         <tr>
-                            <td>{{ $software->software->name }}</td>
+                            <td>
+                                {{ $software->software->name }}
+                                @if (!empty($software->description))
+                                    <br>
+                                    <b>keterangan : </b> {{ $software->description }}
+                                @endif
+                            </td>
                             <td>
                                 <center>{{ $software->qty }}</center>
                             </td>

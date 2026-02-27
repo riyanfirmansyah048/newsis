@@ -36,6 +36,11 @@ class Expedition extends Model
         return $this->hasMany(ExpeditionDetail::class, 'expedition_id');
     }
 
+    public function purchaseOrder()
+    {
+        return $this->belongsTo(Purchase_order::class, 'po_id');
+    }
+
     protected static function boot()
     {
         parent::boot();

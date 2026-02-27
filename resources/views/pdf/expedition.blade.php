@@ -91,8 +91,16 @@
                             <td>
                                 <center>{{ $loop->iteration }}</center>
                             </td>
-                            <td>{{ $item->nama_barang }}</td>
-                            <td>{{ $item->qty }}</td>
+                            <td>
+                                {{ $item->nama_barang }}
+                                <br>
+                                <b>No. BPPB : </b>{{ $item->purchaseOrder->bppb->noBppb }}
+                                <br>
+                                <b>No. PO : </b>{{ $item->purchaseOrder->noPo }}
+                            </td>
+                            <td>
+                                <center>{{ $item->qty }}</center>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
