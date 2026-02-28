@@ -18,6 +18,33 @@ use Illuminate\Http\Request;
 
 class PDFController extends Controller
 {
+    public function suratJalanPrint($id)
+    {
+        $service = Service::with([
+            'user.company',
+            'user.department',
+            'user.position',
+            'vendor',
+            'item.brand',
+            'item.category',
+            'status',
+            'serviceSolution',
+        ])->find($id);
+
+        if (!$service) {
+            return redirect()->back()->with('error', 'Data Service tidak ditemukan.');
+        }
+
+        $title = 'Print Surat Jalan - ' . ($service->noService ?? 'Unknown');
+
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadView('pdf.surat-jalan', compact('service', 'title'));
+
+        // return $pdf->stream('Surat-Jalan-' . now() . '.pdf');
+
+        return view('pdf.surat-jalan', compact('service', 'title'));
+    }
+
     public function bppbPrint($id)
     {
         $bppb = Bppb::with('bppb_item', 'bppb_ink', 'bppb_software', 'user', 'status',)->find($id);

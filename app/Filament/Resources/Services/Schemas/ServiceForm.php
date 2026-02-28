@@ -199,6 +199,17 @@ class ServiceForm
                             ->options(Vendor::all()->pluck('vendorName', 'id'))
                             ->columnSpanFull()
                             ->searchable(),
+
+                        Action::make('print_surat_jalan')
+                            ->label('Print Surat Jalan')
+                            ->icon('heroicon-o-printer')
+                            ->color('success')
+                            ->url(fn($record) => route('service.print-surat-jalan', $record->id))
+                            ->openUrlInNewTab()
+                            ->visible(fn(Get $get) => auth()->user()->can('update-service')
+                                && $get('status_id') !== 2
+                                && $get('solution_id') == 2),
+
                         Textarea::make('analisa')
                             ->label('Analisa')
                             ->visible(fn(Get $get) => auth()->user()->can('update-service')

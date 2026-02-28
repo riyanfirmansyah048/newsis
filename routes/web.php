@@ -15,4 +15,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/internet/{id}/print', [PDFController::class, 'internet'])->name('internet.print');
     Route::get('/service/{id}/print', [PDFController::class, 'servicePrint'])->name('service.print');
     Route::get('/expedition/{id}/print', [PDFController::class, 'expeditionPrint'])->name('expedition.print');
+
+    Route::get('/service/{id}/print-surat-jalan', [PDFController::class, 'suratJalanPrint'])->name('service.print-surat-jalan');
 });
