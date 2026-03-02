@@ -54,31 +54,61 @@ class Bppb extends Model
     {
         parent::boot();
 
+        // static::creating(function ($model) {
+        //     if (!app()->runningInConsole()) {
+        //         $kodeDepartemen = Auth::user()?->department?->code ?? 'XXX'; // Default jika tidak ada kode
+
+        //         $bulanRomawi = self::convertToRoman(Carbon::now()->month);
+
+        //         $tahun = Carbon::now()->format('y');
+
+        //         $userId = $model->user_id;
+
+        //         $jumlahBppb = self::whereHas('user', function ($query) use ($userId) {
+        //             $query->where('id', $userId)
+        //                 ->whereHas('department');
+        //         })
+        //             ->whereMonth('created_at', Carbon::now()->month)
+        //             ->whereYear('created_at', Carbon::now()->year)
+        //             ->count();
+
+        //         $nomorUrut = str_pad($jumlahBppb + 1, 3, '0', STR_PAD_LEFT);
+
+        //         $model->number = $nomorUrut;
+        //         if ($model->bppb_type_id != 2) {
+        //             $model->noBppb = "{$nomorUrut}/{$kodeDepartemen}/{$bulanRomawi}/{$tahun}";
+        //         }
+
+        //         $model->status_id = 3;
+        //     }
+        // });
+
         static::creating(function ($model) {
             if (!app()->runningInConsole()) {
-                $kodeDepartemen = Auth::user()?->department?->code ?? 'XXX'; // Default jika tidak ada kode
 
-                $bulanRomawi = self::convertToRoman(Carbon::now()->month);
+                $user = Auth::user();
+                $departmentId = $user?->idDepartment;
 
-                $tahun = Carbon::now()->format('y');
+                $bulan = Carbon::now()->month;
+                $tahun = Carbon::now()->year;
 
-                $userId = $model->user_id;
-
-                $jumlahBppb = self::whereHas('user', function ($query) use ($userId) {
-                    $query->where('id', $userId)
-                        ->whereHas('department');
-                })
-                    ->whereMonth('created_at', Carbon::now()->month)
-                    ->whereYear('created_at', Carbon::now()->year)
+                $jumlahBppb = self::withTrashed()
+                    ->whereMonth('created_at', $bulan)
+                    ->whereYear('created_at', $tahun)
+                    ->whereHas('user', function ($query) use ($departmentId) {
+                        $query->where('idDepartment', $departmentId);
+                    })
                     ->count();
 
                 $nomorUrut = str_pad($jumlahBppb + 1, 3, '0', STR_PAD_LEFT);
 
                 $model->number = $nomorUrut;
-                if ($model->bppb_type_id != 2) {
-                    $model->noBppb = "{$nomorUrut}/{$kodeDepartemen}/{$bulanRomawi}/{$tahun}";
-                }
 
+                $kodeDepartemen = $user?->department?->code ?? 'XXX';
+                $bulanRomawi = self::convertToRoman($bulan);
+                $tahunShort = Carbon::now()->format('y');
+
+                $model->noBppb = "{$nomorUrut}/{$kodeDepartemen}/{$bulanRomawi}/{$tahunShort}";
                 $model->status_id = 3;
             }
         });
