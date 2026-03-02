@@ -18,6 +18,15 @@ class CreatePurchaseOrder extends CreateRecord
         return BppbResource::getUrl('edit', ['record' => $this->record->bppb_id]);
     }
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        unset($data['po_items']);
+        unset($data['po_inks']);
+        unset($data['po_softwares']);
+
+        return $data;
+    }
+
     protected function afterCreate(): void
     {
         // Ambil data repeater dari form
