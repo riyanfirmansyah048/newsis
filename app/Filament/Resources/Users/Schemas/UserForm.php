@@ -69,6 +69,13 @@ class UserForm
                             ->maxLength(32)
                             ->visible(fn(string $context) => $context === 'create' || $context === 'edit')
                             ->dehydrated(fn($state) => filled($state)),
+                        Select::make('gender')
+                            ->label('Jenis Kelamin')
+                            ->options([
+                                '1' => 'Laki-laki',
+                                '2' => 'Perempuan',
+                            ])
+                            ->required(),
                         MultiSelect::make('roles')
                             ->relationship('roles', 'name')
                             ->label('Roles')
