@@ -19,10 +19,21 @@ class BpbsTable
     public static function configure(Table $table): Table
     {
         return $table
+            // ->query(
+            //     auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
+            //         ? Bpb::query() // Jika admin, tampilkan semua data
+            //         : Bpb::query()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
+            // )
             ->query(
-                auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
-                    ? Bpb::query() // Jika admin, tampilkan semua data
-                    : Bpb::query()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
+                auth()->user()->hasRole('admin')
+                    ? Bpb::query()->whereHas('purchase_order.bppb', function ($q) {
+                        $q->where('bppb_type_id', 1);
+                    })
+                    : Bpb::query()
+                    ->where('user_id', auth()->id())
+                    ->whereHas('purchase_order.bppb', function ($q) {
+                        $q->where('bppb_type_id', 1);
+                    })
             )
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
