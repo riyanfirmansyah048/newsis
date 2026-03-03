@@ -38,9 +38,9 @@ class BpbsTable
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
                 TextColumn::make('noBpb')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('user.name')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('dateBpb')
                     ->dateTime()
