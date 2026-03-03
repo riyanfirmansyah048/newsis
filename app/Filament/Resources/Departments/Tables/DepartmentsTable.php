@@ -28,9 +28,11 @@ class DepartmentsTable
                     ->searchable(),
                 TextColumn::make('departmentName')
                     ->label('Departemen')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('code')
                     ->label('Kode')
+                    ->sortable()
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

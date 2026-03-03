@@ -86,30 +86,34 @@ class Bppb extends Model
         static::creating(function ($model) {
             if (!app()->runningInConsole()) {
 
-                $user = Auth::user();
-                $departmentId = $user?->idDepartment;
+                if (!empty($model->noBppb)) {
+                    $model->status_id = 3;
+                } else {
+                    $user = Auth::user();
+                    $departmentId = $user?->idDepartment;
 
-                $bulan = Carbon::now()->month;
-                $tahun = Carbon::now()->year;
+                    $bulan = Carbon::now()->month;
+                    $tahun = Carbon::now()->year;
 
-                $jumlahBppb = self::withTrashed()
-                    ->whereMonth('created_at', $bulan)
-                    ->whereYear('created_at', $tahun)
-                    ->whereHas('user', function ($query) use ($departmentId) {
-                        $query->where('idDepartment', $departmentId);
-                    })
-                    ->count();
+                    $jumlahBppb = self::withTrashed()
+                        ->whereMonth('created_at', $bulan)
+                        ->whereYear('created_at', $tahun)
+                        ->whereHas('user', function ($query) use ($departmentId) {
+                            $query->where('idDepartment', $departmentId);
+                        })
+                        ->count();
 
-                $nomorUrut = str_pad($jumlahBppb + 1, 3, '0', STR_PAD_LEFT);
+                    $nomorUrut = str_pad($jumlahBppb + 1, 3, '0', STR_PAD_LEFT);
 
-                $model->number = $nomorUrut;
+                    $model->number = $nomorUrut;
 
-                $kodeDepartemen = $user?->department?->code ?? 'XXX';
-                $bulanRomawi = self::convertToRoman($bulan);
-                $tahunShort = Carbon::now()->format('y');
+                    $kodeDepartemen = $user?->department?->code ?? 'XXX';
+                    $bulanRomawi = self::convertToRoman($bulan);
+                    $tahunShort = Carbon::now()->format('y');
 
-                $model->noBppb = "{$nomorUrut}/{$kodeDepartemen}/{$bulanRomawi}/{$tahunShort}";
-                $model->status_id = 3;
+                    $model->noBppb = "{$nomorUrut}/{$kodeDepartemen}/{$bulanRomawi}/{$tahunShort}";
+                    $model->status_id = 3;
+                }
             }
         });
     }
