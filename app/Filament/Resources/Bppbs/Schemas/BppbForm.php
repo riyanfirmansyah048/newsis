@@ -185,58 +185,75 @@ class BppbForm
                             ->label('')
                             ->helperText('Silakan isi daftar barang yang akan diajukan')
                             ->schema([
-                                Select::make('category_id')
-                                    ->label('Kategori Barang')
-                                    ->placeholder('Pilih Kategori Barang')
-                                    ->options(Category::all()->pluck('name', 'id'))
-                                    ->required()
-                                    ->live()
-                                    ->searchable()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('brand_id', null);
-                                        $set('item_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $item = Item::find($get('item_id'));
-                                        if ($item) {
-                                            $set('category_id', $item->category_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
-                                Select::make('brand_id')
-                                    ->label('Merek Barang')
-                                    ->placeholder('Pilih Merek Barang')
-                                    ->options(fn(Get $get): Collection => Brand::query()
-                                        ->where('category_id', $get('category_id'))
-                                        ->pluck('name', 'id'))
-                                    ->required()
-                                    ->searchable()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('item_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $item = Item::find($get('item_id'));
-                                        if ($item) {
-                                            $set('brand_id', $item->brand_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
+                                // Select::make('category_id')
+                                //     ->label('Kategori Barang')
+                                //     ->placeholder('Pilih Kategori Barang')
+                                //     ->options(Category::all()->pluck('name', 'id'))
+                                //     ->required()
+                                //     ->live()
+                                //     ->searchable()
+                                //     ->afterStateUpdated(function (Set $set) {
+                                //         $set('brand_id', null);
+                                //         $set('item_id', null);
+                                //     })
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $item = Item::find($get('item_id'));
+                                //         if ($item) {
+                                //             $set('category_id', $item->category_id);
+                                //         }
+                                //     })
+                                //     ->dehydrated(false),
+                                // Select::make('brand_id')
+                                //     ->label('Merek Barang')
+                                //     ->placeholder('Pilih Merek Barang')
+                                //     ->options(fn(Get $get): Collection => Brand::query()
+                                //         ->where('category_id', $get('category_id'))
+                                //         ->pluck('name', 'id'))
+                                //     ->required()
+                                //     ->searchable()
+                                //     ->live()
+                                //     ->afterStateUpdated(function (Set $set) {
+                                //         $set('item_id', null);
+                                //     })
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $item = Item::find($get('item_id'));
+                                //         if ($item) {
+                                //             $set('brand_id', $item->brand_id);
+                                //         }
+                                //     })
+                                //     ->dehydrated(false),
+                                // Select::make('item_id')
+                                //     ->label('Nama Barang')
+                                //     ->placeholder('Pilih Barang')
+                                //     ->options(fn(Get $get): Collection => Item::query()
+                                //         ->where('brand_id', $get('brand_id'))
+                                //         ->pluck('name', 'id'))
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $item = Item::find($get('item_id'));
+                                //         if ($item) {
+                                //             $set('item_id', $item->id);
+                                //         }
+                                //     })
+                                //     ->required()
+                                //     ->live()
+                                //     ->searchable(),
                                 Select::make('item_id')
                                     ->label('Nama Barang')
-                                    ->placeholder('Pilih Barang')
-                                    ->options(fn(Get $get): Collection => Item::query()
-                                        ->where('brand_id', $get('brand_id'))
-                                        ->pluck('name', 'id'))
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $item = Item::find($get('item_id'));
-                                        if ($item) {
-                                            $set('item_id', $item->id);
-                                        }
-                                    })
-                                    ->required()
+                                    ->placeholder('Pilih Nama Barang...')
+                                    ->searchable()
                                     ->live()
-                                    ->searchable(),
+                                    ->getSearchResultsUsing(function (string $search): array {
+                                        return Item::query()
+                                            ->where('name', 'like', "%{$search}%")
+                                            ->limit(20)
+                                            ->pluck('name', 'id')
+                                            ->toArray();
+                                    })
+                                    ->getOptionLabelUsing(function ($value): ?string {
+                                        return Item::find($value)?->name;
+                                    })
+                                    ->columnSpanFull()
+                                    ->required(),
                                 TextInput::make('qty')
                                     ->label('Qty')
                                     ->required()
@@ -299,58 +316,75 @@ class BppbForm
                             ->label('')
                             ->helperText('Silakan isi daftar Tinta yang akan diajukan')
                             ->schema([
-                                Select::make('category_ink_id')
-                                    ->label('Kategori Tinta')
-                                    ->placeholder('Pilih Kategori Tinta')
-                                    ->options(Category_ink::all()->pluck('name', 'id'))
-                                    ->required()
-                                    ->live()
-                                    ->searchable()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('brand_ink_id', null);
-                                        $set('ink_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $ink = Ink::find($get('ink_id'));
-                                        if ($ink) {
-                                            $set('category_ink_id', $ink->category_ink_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
-                                Select::make('brand_ink_id')
-                                    ->label('Merek Tinta')
-                                    ->placeholder('Pilih Merek Tinta')
-                                    ->options(fn(Get $get): Collection => Brand_ink::query()
-                                        ->where('category_ink_id', $get('category_ink_id'))
-                                        ->pluck('name', 'id'))
-                                    ->required()
-                                    ->searchable()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('ink_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $ink = Ink::find($get('ink_id'));
-                                        if ($ink) {
-                                            $set('brand_ink_id', $ink->brand_ink_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
+                                // Select::make('category_ink_id')
+                                //     ->label('Kategori Tinta')
+                                //     ->placeholder('Pilih Kategori Tinta')
+                                //     ->options(Category_ink::all()->pluck('name', 'id'))
+                                //     ->required()
+                                //     ->live()
+                                //     ->searchable()
+                                //     ->afterStateUpdated(function (Set $set) {
+                                //         $set('brand_ink_id', null);
+                                //         $set('ink_id', null);
+                                //     })
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $ink = Ink::find($get('ink_id'));
+                                //         if ($ink) {
+                                //             $set('category_ink_id', $ink->category_ink_id);
+                                //         }
+                                //     })
+                                //     ->dehydrated(false),
+                                // Select::make('brand_ink_id')
+                                //     ->label('Merek Tinta')
+                                //     ->placeholder('Pilih Merek Tinta')
+                                //     ->options(fn(Get $get): Collection => Brand_ink::query()
+                                //         ->where('category_ink_id', $get('category_ink_id'))
+                                //         ->pluck('name', 'id'))
+                                //     ->required()
+                                //     ->searchable()
+                                //     ->live()
+                                //     ->afterStateUpdated(function (Set $set) {
+                                //         $set('ink_id', null);
+                                //     })
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $ink = Ink::find($get('ink_id'));
+                                //         if ($ink) {
+                                //             $set('brand_ink_id', $ink->brand_ink_id);
+                                //         }
+                                //     })
+                                //     ->dehydrated(false),
+                                // Select::make('ink_id')
+                                //     ->label('Nama Tinta')
+                                //     ->placeholder('Pilih Tinta')
+                                //     ->options(fn(Get $get): Collection => Ink::query()
+                                //         ->where('brand_ink_id', $get('brand_ink_id'))
+                                //         ->pluck('name', 'id'))
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $ink = Ink::find($get('ink_id'));
+                                //         if ($ink) {
+                                //             $set('ink_id', $ink->id);
+                                //         }
+                                //     })
+                                //     ->required()
+                                //     ->live()
+                                //     ->searchable(),
                                 Select::make('ink_id')
                                     ->label('Nama Tinta')
-                                    ->placeholder('Pilih Tinta')
-                                    ->options(fn(Get $get): Collection => Ink::query()
-                                        ->where('brand_ink_id', $get('brand_ink_id'))
-                                        ->pluck('name', 'id'))
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $ink = Ink::find($get('ink_id'));
-                                        if ($ink) {
-                                            $set('ink_id', $ink->id);
-                                        }
-                                    })
-                                    ->required()
+                                    ->placeholder('Pilih Nama Tinta...')
+                                    ->searchable()
                                     ->live()
-                                    ->searchable(),
+                                    ->getSearchResultsUsing(function (string $search): array {
+                                        return Ink::query()
+                                            ->where('name', 'like', "%{$search}%")
+                                            ->limit(20)
+                                            ->pluck('name', 'id')
+                                            ->toArray();
+                                    })
+                                    ->getOptionLabelUsing(function ($value): ?string {
+                                        return Ink::find($value)?->name;
+                                    })
+                                    ->columnSpanFull()
+                                    ->required(),
                                 TextInput::make('qty')
                                     ->label('Qty')
                                     ->required()
@@ -408,58 +442,75 @@ class BppbForm
                             ->label('')
                             ->helperText('Silakan isi daftar Software yang akan diajukan')
                             ->schema([
-                                Select::make('category_software_id')
-                                    ->label('Kategori Software')
-                                    ->placeholder('Pilih Kategori Software')
-                                    ->options(Category_software::all()->pluck('name', 'id'))
-                                    ->required()
-                                    ->live()
-                                    ->searchable()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('brand_software_id', null);
-                                        $set('software_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $software = Software::find($get('software_id'));
-                                        if ($software) {
-                                            $set('category_software_id', $software->category_software_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
-                                Select::make('brand_software_id')
-                                    ->label('Merek Software')
-                                    ->placeholder('Pilih Merek Software')
-                                    ->options(fn(Get $get): Collection => Brand_software::query()
-                                        ->where('category_software_id', $get('category_software_id'))
-                                        ->pluck('name', 'id'))
-                                    ->required()
-                                    ->searchable()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('software_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $software = Software::find($get('software_id'));
-                                        if ($software) {
-                                            $set('brand_software_id', $software->brand_software_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
+                                // Select::make('category_software_id')
+                                //     ->label('Kategori Software')
+                                //     ->placeholder('Pilih Kategori Software')
+                                //     ->options(Category_software::all()->pluck('name', 'id'))
+                                //     ->required()
+                                //     ->live()
+                                //     ->searchable()
+                                //     ->afterStateUpdated(function (Set $set) {
+                                //         $set('brand_software_id', null);
+                                //         $set('software_id', null);
+                                //     })
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $software = Software::find($get('software_id'));
+                                //         if ($software) {
+                                //             $set('category_software_id', $software->category_software_id);
+                                //         }
+                                //     })
+                                //     ->dehydrated(false),
+                                // Select::make('brand_software_id')
+                                //     ->label('Merek Software')
+                                //     ->placeholder('Pilih Merek Software')
+                                //     ->options(fn(Get $get): Collection => Brand_software::query()
+                                //         ->where('category_software_id', $get('category_software_id'))
+                                //         ->pluck('name', 'id'))
+                                //     ->required()
+                                //     ->searchable()
+                                //     ->live()
+                                //     ->afterStateUpdated(function (Set $set) {
+                                //         $set('software_id', null);
+                                //     })
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $software = Software::find($get('software_id'));
+                                //         if ($software) {
+                                //             $set('brand_software_id', $software->brand_software_id);
+                                //         }
+                                //     })
+                                //     ->dehydrated(false),
+                                // Select::make('software_id')
+                                //     ->label('Nama Software')
+                                //     ->placeholder('Pilih Software')
+                                //     ->options(fn(Get $get): Collection => Software::query()
+                                //         ->where('brand_software_id', $get('brand_software_id'))
+                                //         ->pluck('name', 'id'))
+                                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                                //         $software = Software::find($get('software_id'));
+                                //         if ($software) {
+                                //             $set('software_id', $software->id);
+                                //         }
+                                //     })
+                                //     ->required()
+                                //     ->live()
+                                //     ->searchable(),
                                 Select::make('software_id')
                                     ->label('Nama Software')
-                                    ->placeholder('Pilih Software')
-                                    ->options(fn(Get $get): Collection => Software::query()
-                                        ->where('brand_software_id', $get('brand_software_id'))
-                                        ->pluck('name', 'id'))
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $software = Software::find($get('software_id'));
-                                        if ($software) {
-                                            $set('software_id', $software->id);
-                                        }
-                                    })
-                                    ->required()
+                                    ->placeholder('Pilih Nama Software...')
+                                    ->searchable()
                                     ->live()
-                                    ->searchable(),
+                                    ->getSearchResultsUsing(function (string $search): array {
+                                        return Software::query()
+                                            ->where('name', 'like', "%{$search}%")
+                                            ->limit(20)
+                                            ->pluck('name', 'id')
+                                            ->toArray();
+                                    })
+                                    ->getOptionLabelUsing(function ($value): ?string {
+                                        return Software::find($value)?->name;
+                                    })
+                                    ->columnSpanFull()
+                                    ->required(),
                                 TextInput::make('qty')
                                     ->label('Qty')
                                     ->required()

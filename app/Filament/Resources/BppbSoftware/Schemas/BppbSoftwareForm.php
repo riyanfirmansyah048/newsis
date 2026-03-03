@@ -23,58 +23,75 @@ class BppbSoftwareForm
                 Hidden::make('bppb_id')
                     ->columnSpanFull()
                     ->default(fn() => request()->get('bppb_id')),
-                Select::make('category_software_id')
-                    ->label('Kategori Software')
-                    ->placeholder('Pilih Kategori Software')
-                    ->options(Category_software::all()->pluck('name', 'id'))
-                    ->required()
-                    ->live()
-                    ->searchable()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('brand_software_id', null);
-                        $set('software_id', null);
-                    })
-                    ->afterStateHydrated(function (Set $set, Get $get) {
-                        $software = Software::find($get('software_id'));
-                        if ($software) {
-                            $set('category_software_id', $software->category_software_id);
-                        }
-                    })
-                    ->dehydrated(false),
-                Select::make('brand_software_id')
-                    ->label('Merek Software')
-                    ->placeholder('Pilih Merek Software')
-                    ->options(fn(Get $get): Collection => Brand_software::query()
-                        ->where('category_software_id', $get('category_software_id'))
-                        ->pluck('name', 'id'))
-                    ->required()
-                    ->searchable()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('software_id', null);
-                    })
-                    ->afterStateHydrated(function (Set $set, Get $get) {
-                        $software = Software::find($get('software_id'));
-                        if ($software) {
-                            $set('brand_software_id', $software->brand_software_id);
-                        }
-                    })
-                    ->dehydrated(false),
+                // Select::make('category_software_id')
+                //     ->label('Kategori Software')
+                //     ->placeholder('Pilih Kategori Software')
+                //     ->options(Category_software::all()->pluck('name', 'id'))
+                //     ->required()
+                //     ->live()
+                //     ->searchable()
+                //     ->afterStateUpdated(function (Set $set) {
+                //         $set('brand_software_id', null);
+                //         $set('software_id', null);
+                //     })
+                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                //         $software = Software::find($get('software_id'));
+                //         if ($software) {
+                //             $set('category_software_id', $software->category_software_id);
+                //         }
+                //     })
+                //     ->dehydrated(false),
+                // Select::make('brand_software_id')
+                //     ->label('Merek Software')
+                //     ->placeholder('Pilih Merek Software')
+                //     ->options(fn(Get $get): Collection => Brand_software::query()
+                //         ->where('category_software_id', $get('category_software_id'))
+                //         ->pluck('name', 'id'))
+                //     ->required()
+                //     ->searchable()
+                //     ->live()
+                //     ->afterStateUpdated(function (Set $set) {
+                //         $set('software_id', null);
+                //     })
+                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                //         $software = Software::find($get('software_id'));
+                //         if ($software) {
+                //             $set('brand_software_id', $software->brand_software_id);
+                //         }
+                //     })
+                //     ->dehydrated(false),
+                // Select::make('software_id')
+                //     ->label('Nama Software')
+                //     ->placeholder('Pilih Software')
+                //     ->options(fn(Get $get): Collection => Software::query()
+                //         ->where('brand_software_id', $get('brand_software_id'))
+                //         ->pluck('name', 'id'))
+                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                //         $software = Software::find($get('software_id'));
+                //         if ($software) {
+                //             $set('software_id', $software->id);
+                //         }
+                //     })
+                //     ->required()
+                //     ->live()
+                //     ->searchable(),
                 Select::make('software_id')
                     ->label('Nama Software')
-                    ->placeholder('Pilih Software')
-                    ->options(fn(Get $get): Collection => Software::query()
-                        ->where('brand_software_id', $get('brand_software_id'))
-                        ->pluck('name', 'id'))
-                    ->afterStateHydrated(function (Set $set, Get $get) {
-                        $software = Software::find($get('software_id'));
-                        if ($software) {
-                            $set('software_id', $software->id);
-                        }
-                    })
-                    ->required()
+                    ->placeholder('Pilih Nama Software...')
+                    ->searchable()
                     ->live()
-                    ->searchable(),
+                    ->getSearchResultsUsing(function (string $search): array {
+                        return Software::query()
+                            ->where('name', 'like', "%{$search}%")
+                            ->limit(20)
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        return Software::find($value)?->name;
+                    })
+                    ->columnSpanFull()
+                    ->required(),
                 TextInput::make('qty')
                     ->label('Qty')
                     ->required()

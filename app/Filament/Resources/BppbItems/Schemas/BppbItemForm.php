@@ -23,58 +23,75 @@ class BppbItemForm
                 Hidden::make('bppb_id')
                     ->columnSpanFull()
                     ->default(fn() => request()->get('bppb_id')),
-                Select::make('category_id')
-                    ->label('Kategori Barang')
-                    ->placeholder('Pilih Kategori Barang')
-                    ->options(Category::all()->pluck('name', 'id'))
-                    ->required()
-                    ->live()
-                    ->searchable()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('brand_id', null);
-                        $set('item_id', null);
-                    })
-                    ->afterStateHydrated(function (Set $set, Get $get) {
-                        $item = Item::find($get('item_id'));
-                        if ($item) {
-                            $set('category_id', $item->category_id);
-                        }
-                    })
-                    ->dehydrated(false),
-                Select::make('brand_id')
-                    ->label('Merek Barang')
-                    ->placeholder('Pilih Merek Barang')
-                    ->options(fn(Get $get): Collection => Brand::query()
-                        ->where('category_id', $get('category_id'))
-                        ->pluck('name', 'id'))
-                    ->required()
-                    ->searchable()
-                    ->live()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('item_id', null);
-                    })
-                    ->afterStateHydrated(function (Set $set, Get $get) {
-                        $item = Item::find($get('item_id'));
-                        if ($item) {
-                            $set('brand_id', $item->brand_id);
-                        }
-                    })
-                    ->dehydrated(false),
+                // Select::make('category_id')
+                //     ->label('Kategori Barang')
+                //     ->placeholder('Pilih Kategori Barang')
+                //     ->options(Category::all()->pluck('name', 'id'))
+                //     ->required()
+                //     ->live()
+                //     ->searchable()
+                //     ->afterStateUpdated(function (Set $set) {
+                //         $set('brand_id', null);
+                //         $set('item_id', null);
+                //     })
+                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                //         $item = Item::find($get('item_id'));
+                //         if ($item) {
+                //             $set('category_id', $item->category_id);
+                //         }
+                //     })
+                //     ->dehydrated(false),
+                // Select::make('brand_id')
+                //     ->label('Merek Barang')
+                //     ->placeholder('Pilih Merek Barang')
+                //     ->options(fn(Get $get): Collection => Brand::query()
+                //         ->where('category_id', $get('category_id'))
+                //         ->pluck('name', 'id'))
+                //     ->required()
+                //     ->searchable()
+                //     ->live()
+                //     ->afterStateUpdated(function (Set $set) {
+                //         $set('item_id', null);
+                //     })
+                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                //         $item = Item::find($get('item_id'));
+                //         if ($item) {
+                //             $set('brand_id', $item->brand_id);
+                //         }
+                //     })
+                //     ->dehydrated(false),
+                // Select::make('item_id')
+                //     ->label('Nama Barang')
+                //     ->placeholder('Pilih Barang')
+                //     ->options(fn(Get $get): Collection => Item::query()
+                //         ->where('brand_id', $get('brand_id'))
+                //         ->pluck('name', 'id'))
+                //     ->afterStateHydrated(function (Set $set, Get $get) {
+                //         $item = Item::find($get('item_id'));
+                //         if ($item) {
+                //             $set('item_id', $item->id);
+                //         }
+                //     })
+                //     ->required()
+                //     ->live()
+                //     ->searchable(),
                 Select::make('item_id')
                     ->label('Nama Barang')
-                    ->placeholder('Pilih Barang')
-                    ->options(fn(Get $get): Collection => Item::query()
-                        ->where('brand_id', $get('brand_id'))
-                        ->pluck('name', 'id'))
-                    ->afterStateHydrated(function (Set $set, Get $get) {
-                        $item = Item::find($get('item_id'));
-                        if ($item) {
-                            $set('item_id', $item->id);
-                        }
-                    })
-                    ->required()
+                    ->placeholder('Pilih Nama Barang...')
+                    ->searchable()
                     ->live()
-                    ->searchable(),
+                    ->getSearchResultsUsing(function (string $search): array {
+                        return Item::query()
+                            ->where('name', 'like', "%{$search}%")
+                            ->limit(20)
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->getOptionLabelUsing(function ($value): ?string {
+                        return Item::find($value)?->name;
+                    })
+                    ->columnSpanFull()
+                    ->required(),
                 TextInput::make('qty')
                     ->label('Qty')
                     ->required()
