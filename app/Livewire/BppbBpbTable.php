@@ -3,19 +3,20 @@
 namespace App\Livewire;
 
 use App\Models\Bpb;
-use Livewire\Component;
-use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Illuminate\Contracts\View\View;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Contracts\HasTable;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Actions\Contracts\HasActions;
-use Filament\Schemas\Contracts\HasSchemas;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Actions\DeleteAction;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
+use Livewire\Component;
 
 class BppbBpbTable extends Component implements HasActions, HasSchemas, HasTable
 {
@@ -63,6 +64,11 @@ class BppbBpbTable extends Component implements HasActions, HasSchemas, HasTable
                         fn($record) =>
                         route('bpb.print', ['id' => $record->id])
                     ),
+                DeleteAction::make()
+                    ->label('Delete')
+                    ->icon('heroicon-m-trash')
+                    ->color('danger')
+                    ->visible(fn() => auth()->user()->hasRole('admin')),
             ])
             ->toolbarActions([
                 // ...

@@ -33,6 +33,21 @@ class Bpb extends Model
         return $this->belongsTo(Purchase_order::class, 'po_id');
     }
 
+    public function asset_items()
+    {
+        return $this->hasMany(Assets_item::class, 'bpb_id');
+    }
+
+    public function asset_inks()
+    {
+        return $this->hasMany(Assets_ink::class, 'bpb_id');
+    }
+
+    public function asset_softwares()
+    {
+        return $this->hasMany(Assets_software::class, 'bpb_id');
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -161,6 +176,27 @@ class Bpb extends Model
                     }
                 }
                 //end untuk insert assets setelah bpb dibuat-------------------------
+            });
+
+            static::deleting(function ($bpb) {
+
+                if ($bpb->isForceDeleting()) {
+                    // Hapus permanen
+                    $bpb->asset_items()->forceDelete();
+                    $bpb->asset_inks()->forceDelete();
+                    $bpb->asset_softwares()->forceDelete();
+                } else {
+                    // Soft delete
+                    $bpb->asset_items()->delete();
+                    $bpb->asset_inks()->delete();
+                    $bpb->asset_softwares()->delete();
+                }
+            });
+
+            static::restoring(function ($bpb) {
+                $bpb->asset_items()->withTrashed()->restore();
+                $bpb->asset_inks()->withTrashed()->restore();
+                $bpb->asset_softwares()->withTrashed()->restore();
             });
         }
     }
