@@ -21,33 +21,23 @@ class EmailForm
         return $schema
             ->components([
                 Select::make('idUser')
-                    ->options(
-                        fn(): Collection => User::query()
-                            ->get()
-                            ->mapWithKeys(fn($user) => [$user->id => "{$user->NIK} - {$user->name}"])
+                    ->relationship(
+                        name: 'user',
+                        titleAttribute: 'name'
                     )
-                    ->label('Nama Karyawan')
-                    ->placeholder('Pilih Karyawan')
-                    ->preload()
+                    ->getOptionLabelFromRecordUsing(
+                        fn(User $record) => "{$record->NIK} - {$record->name}"
+                    )
                     ->searchable()
-                    ->columnSpanFull()
+                    ->searchDebounce(500)
+                    ->label('Nama Karyawan')
+                    ->placeholder('Cari Karyawan...')
                     ->default(auth()->id())
                     ->required()
                     ->reactive()
-                    ->unique(
-                        ignoreRecord: true,
-                        modifyRuleUsing: fn($rule) =>
-                        $rule->whereNull('deleted_at')
-                    )
-                    ->afterStateUpdated(function (Set $set, $state) {
-                        $user = User::find($state);
-                        if ($user) {
-                            $set('idUser', $user->id);
-                            $set('idCompany', $user->idCompany);
-                            $set('emailName', $user->username);
-                        }
-                    })
-                    ->disabled(fn() => !auth()->user()->hasRole('admin')),
+                    ->unique(ignoreRecord: true)
+                    ->disabled(fn() => !auth()->user()->hasRole('admin'))
+                    ->columnSpanFull(),
 
                 Select::make('idCompany')
                     ->options(
@@ -63,17 +53,18 @@ class EmailForm
                     ->afterStateUpdated(function (Set $set) {
                         $set('idDomainEmail', null);
                     })
-                    ->disabled()
+                    ->dehydrated(true)
+                    ->disabled(fn() => !auth()->user()->hasRole('admin'))
                     ->required(),
 
-                Hidden::make('idCompany')
-                    ->default(fn() => auth()->user()->idCompany)
-                    ->required(),
+                // Hidden::make('idCompany')
+                //     ->default(fn() => auth()->user()->idCompany)
+                //     ->required(),
 
-                Hidden::make('idUser')
-                    ->default(fn() => auth()->id())
-                    ->unique(ignoreRecord: true)
-                    ->required(),
+                // Hidden::make('idUser')
+                //     ->default(fn() => auth()->id())
+                //     ->unique(ignoreRecord: true)
+                //     ->required(),
 
                 Select::make('idDomainEmail')
                     ->label('Nama Domain')

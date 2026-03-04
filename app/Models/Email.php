@@ -43,4 +43,18 @@ class Email extends Model
     {
         return $this->belongsTo(Company::class, 'idCompany', 'id');
     }
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+
+            if (empty($model->idUser)) {
+                $model->idUser = auth()->id();
+            }
+
+            if (empty($model->idCompany)) {
+                $model->idCompany = auth()->user()?->idCompany;
+            }
+        });
+    }
 }

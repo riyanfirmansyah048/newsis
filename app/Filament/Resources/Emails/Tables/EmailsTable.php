@@ -65,8 +65,10 @@ class EmailsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
-                    DeleteAction::make(),
+                    EditAction::make()
+                        ->visible(fn() => auth()->user()->hasRole('admin')),
+                    DeleteAction::make()
+                        ->visible(fn() => auth()->user()->hasRole('admin')),
                 ]),
                 Action::make('Print')
                     ->url(fn(Email $record) => route('permohonanemail.print', $record->id))
