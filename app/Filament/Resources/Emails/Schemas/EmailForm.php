@@ -66,14 +66,14 @@ class EmailForm
                     ->disabled()
                     ->required(),
 
-                // Hidden::make('idCompany')
-                //     ->default(fn() => auth()->user()->idCompany)
-                //     ->required(),
+                Hidden::make('idCompany')
+                    ->default(fn() => auth()->user()->idCompany)
+                    ->required(),
 
-                // Hidden::make('idUser')
-                //     ->default(fn() => auth()->id())
-                //     ->unique(ignoreRecord: true)
-                //     ->required(),
+                Hidden::make('idUser')
+                    ->default(fn() => auth()->id())
+                    ->unique(ignoreRecord: true)
+                    ->required(),
 
                 Select::make('idDomainEmail')
                     ->label('Nama Domain')
