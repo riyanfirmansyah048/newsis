@@ -67,7 +67,7 @@ class InternetsTable
                 ]),
                 Action::make('Print')
                     ->url(fn(Internet $record) => route('internet.print', $record->id))
-                    // ->openUrlInNewTab()
+                    ->openUrlInNewTab()
                     ->icon('heroicon-o-printer')
                     ->color('success')
                     ->tooltip('Cetak permohonan internet')

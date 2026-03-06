@@ -115,9 +115,9 @@ class PDFController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.internet', compact('internet', 'title'));
 
-        return $pdf->stream('Internet -' . now() . '.pdf');
+        // return $pdf->stream('Internet -' . now() . '.pdf');
 
-        // return view('pdf.Internet', compact('internet', 'title'));
+        return view('pdf.Internet', compact('internet', 'title'));
     }
 
     public function servicePrint($id)
