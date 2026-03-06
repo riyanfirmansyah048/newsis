@@ -113,7 +113,7 @@ class PDFController extends Controller
         }
         $title = 'Print Internet - ' . ($internet->user->name ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
-        $pdf->loadView('pdf.internet', compact('internet', 'title'));
+        $pdf->loadView('pdf.permohonanInternet', compact('internet', 'title'));
 
         // return $pdf->stream('Internet -' . now() . '.pdf');
 
