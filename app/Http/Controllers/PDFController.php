@@ -117,7 +117,7 @@ class PDFController extends Controller
 
         // return $pdf->stream('Internet -' . now() . '.pdf');
 
-        return view('pdf.Internet', compact('internet', 'title'));
+        return view('pdf.internet', compact('internet', 'title'));
     }
 
     public function servicePrint($id)
