@@ -25,11 +25,23 @@ class BppbsTable
     {
         return $table
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
-            ->query(
-                auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
-                    ? Bppb::query()->whereIn('bppb_type_id', [1, 2, 3, 4]) // Jika admin, tampilkan hanya data dengan bppb_type_id = 1
-                    : Bppb::query()->where('user_id', auth()->id())->whereIn('bppb_type_id', [1, 3]) // Jika bukan admin, hanya tampilkan miliknya sendiri dengan bppb_type_id = 1
-            )
+            // ->query(
+            //     auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
+            //         ? Bppb::query()->whereIn('bppb_type_id', [1, 2, 3, 4]) // Jika admin, tampilkan hanya data dengan bppb_type_id = 1
+            //         : Bppb::query()->where('user_id', auth()->id())->whereIn('bppb_type_id', [1, 3]) // Jika bukan admin, hanya tampilkan miliknya sendiri dengan bppb_type_id = 1
+            // )
+            ->query(function () {
+
+                $query = auth()->user()->hasRole('admin')
+                    ? Bppb::query()->whereIn('bppb_type_id', [1, 2, 3, 4])
+                    : Bppb::query()->where('user_id', auth()->id())->whereIn('bppb_type_id', [1, 3]);
+
+                if (request()->filled('status_id')) {
+                    $query->where('status_id', request('status_id'));
+                }
+
+                return $query;
+            })
             ->columns([
                 TextColumn::make('noBppb')
                     ->label('No. BPPB')

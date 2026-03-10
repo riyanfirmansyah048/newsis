@@ -47,40 +47,65 @@ class BppbStatusStats extends StatsOverviewWidget
                 ->columnSpanFull(),
             Section::make('Status BPPB')
                 ->schema([
-                    Stat::make('Konfirmasi IT', Bppb::where('user_id', $user->id)
-                        ->whereIn('status_id', [3])
-                        ->count())
+                    // Stat::make('Konfirmasi IT', Bppb::where('user_id', $user->id)
+                    //     ->whereIn('status_id', [3])
+                    //     ->count())
+                    //     ->color('warning')
+                    //     ->description('Konfirmasi IT')
+                    //     ->icon('heroicon-o-clock'),
+
+                    Stat::make(
+                        'Konfirmasi IT',
+                        Bppb::where('user_id', $user->id)
+                            ->whereIn('status_id', [3])
+                            ->count()
+                    )
                         ->color('warning')
                         ->description('Konfirmasi IT')
-                        ->icon('heroicon-o-clock'),
+                        ->icon('heroicon-o-clock')
+                        ->url(BppbResource::getUrl('index', [
+                            'status_id' => 3
+                        ])),
 
                     Stat::make('Approved', Bppb::where('user_id', $user->id)
                         ->where('status_id', 4)
                         ->count())
                         ->color('info')
                         ->description('Approved')
-                        ->icon('heroicon-o-check-circle'),
+                        ->icon('heroicon-o-check-circle')
+                        ->url(BppbResource::getUrl('index', [
+                            'status_id' => 4
+                        ])),
 
                     Stat::make('Rejected', Bppb::where('user_id', $user->id)
                         ->where('status_id', 2)
                         ->count())
                         ->color('danger')
                         ->description('Rejected')
-                        ->icon('heroicon-o-x-circle'),
+                        ->icon('heroicon-o-x-circle')
+                        ->url(BppbResource::getUrl('index', [
+                            'status_id' => 2
+                        ])),
 
                     Stat::make('Barang di IT', Bppb::where('user_id', $user->id)
                         ->whereIn('status_id', [5])
                         ->count())
                         ->color('primary')
                         ->description('Barang di IT')
-                        ->icon('heroicon-o-check-badge'),
+                        ->icon('heroicon-o-check-badge')
+                        ->url(BppbResource::getUrl('index', [
+                            'status_id' => 5
+                        ])),
 
                     Stat::make('Completed', Bppb::where('user_id', $user->id)
                         ->whereIn('status_id', [6, 7])
                         ->count())
                         ->color('success')
                         ->description('Completed')
-                        ->icon('heroicon-o-check-badge'),
+                        ->icon('heroicon-o-check-badge')
+                        ->url(BppbResource::getUrl('index', [
+                            'status_id' => '6,7'
+                        ])),
                 ])
                 ->columns(5)
                 ->columnSpanFull(),
