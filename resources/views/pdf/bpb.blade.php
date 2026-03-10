@@ -53,9 +53,9 @@
                 <td>{{ $bpb->purchase_order->vendor->vendorName }}</td>
             </tr>
             <tr>
-                <td>Sub. Departement</td>
+                <td>Departement</td>
                 <td>:</td>
-                <td>{{ $bpb->purchase_order->bppb->user->subdepartment->subDepartmentName }}</td>
+                <td>{{ $bpb->purchase_order?->bppb?->user?->department?->departmentName ?? '-' }}</td>
             </tr>
         </table>
         <br>
