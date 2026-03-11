@@ -32,6 +32,16 @@ class Bppb_item extends Model
         return $this->belongsTo(Item::class, 'item_id');
     }
 
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
     public function Purchase_order()
     {
         return $this->belongsTo(Purchase_order::class, 'purchase_order_id');

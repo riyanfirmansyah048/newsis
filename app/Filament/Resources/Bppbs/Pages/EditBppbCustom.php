@@ -56,6 +56,17 @@ class EditBppbCustom extends Page implements HasForms
 
         $this->record = $record;
 
+        $this->record->load([
+            'user.company',
+            'user.regional',
+            'user.businessunit',
+            'user.department',
+            'user.subdepartment',
+            'user.section',
+            'user.position',
+            'status',
+        ]);
+
         //isi data awal dari record
         $this->data = [
             'description' => $this->record->description,
@@ -93,19 +104,9 @@ class EditBppbCustom extends Page implements HasForms
             'status' => $record->status?->name ?? '',
             'status_id' => $record->status_id ?? '',
 
-            // 'bppb_items' => $record?->bppb_item?->map(fn($item) => [
-            //     'id' => $item->id,
-            //     'item_id' => $item->item_id,
-            //     'category' => $item->category?->name ?? '',
-            //     'brand' => $item->brand?->name ?? '',
-            //     'name' => $item->item?->name ?? '',
-            //     'qty' => $item->qty,
-            //     'purchase_order_id' => $item->purchase_order_id,
-            //     'description' => $item->description,
-            // ])->toArray() ?? [],
-
             'bppb_items' => $record?->bppb_item()
-                ->whereNull('deleted_at') // filter soft delete
+                ->with(['category', 'brand', 'item'])
+                ->withoutTrashed()
                 ->get()
                 ->map(fn($item) => [
                     'id' => $item->id,
@@ -116,21 +117,11 @@ class EditBppbCustom extends Page implements HasForms
                     'qty' => $item->qty,
                     'purchase_order_id' => $item->purchase_order_id,
                     'description' => $item->description,
-                ])->toArray() ?? [],
-
-            // 'bppb_inks' => $record?->bppb_ink?->map(fn($ink) => [
-            //     'id' => $ink->id,
-            //     'ink_id' => $ink->ink_id,
-            //     'category' => $ink->category?->name ?? '',
-            //     'brand' => $ink->brand?->name ?? '',
-            //     'name' => $ink->ink?->name ?? '',
-            //     'qty' => $ink->qty,
-            //     'purchase_order_id' => $ink->purchase_order_id,
-            //     'description' => $ink->description,
-            // ])->toArray() ?? [],
+                ])->toArray(),
 
             'bppb_inks' => $record?->bppb_ink()
-                ->whereNull('deleted_at') // kalau tinta juga soft delete
+                ->with(['category', 'brand', 'ink'])
+                ->withoutTrashed()
                 ->get()
                 ->map(fn($ink) => [
                     'id' => $ink->id,
@@ -141,27 +132,11 @@ class EditBppbCustom extends Page implements HasForms
                     'qty' => $ink->qty,
                     'purchase_order_id' => $ink->purchase_order_id,
                     'description' => $ink->description,
-                ])->toArray() ?? [],
-
-            // 'bppb_softwares' => $record?->bppb_software?->map(fn($software) => [
-            //     'id' => $software->id,
-            //     'software_id' => $software->software_id,
-            //     'category' => $software->category?->name ?? '',
-            //     'brand' => $software->brand?->name ?? '',
-            //     'name' => $software->software?->name ?? '',
-            //     'qty' => $software->qty,
-            //     'purchase_order_id' => $software->purchase_order_id,
-            //     'description' => $software->description,
-            //     'noBppbPemohon' => $software->noBppbPemohon,
-            //     'pemohonIT' => $software->user?->name ?? '',
-            //     'userPemohon' => $software->userPemohon,
-            //     'departementPemohon' => $software->departementPemohon,
-            //     'lokasiPemohon' => $software->lokasiPemohon,
-            //     'serialNumber' => $software->serialNumber,
-            // ])->toArray() ?? [],
+                ])->toArray(),
 
             'bppb_softwares' => $record?->bppb_software()
-                ->whereNull('deleted_at') // kalau software soft delete
+                ->with(['category', 'brand', 'software', 'user'])
+                ->withoutTrashed()
                 ->get()
                 ->map(fn($software) => [
                     'id' => $software->id,
@@ -178,7 +153,7 @@ class EditBppbCustom extends Page implements HasForms
                     'departementPemohon' => $software->departementPemohon,
                     'lokasiPemohon' => $software->lokasiPemohon,
                     'serialNumber' => $software->serialNumber,
-                ])->toArray() ?? [],
+                ])->toArray(),
         ];
     }
 
@@ -229,6 +204,14 @@ class EditBppbCustom extends Page implements HasForms
             ->where('item_id', $itemId)
             ->get();
 
+        if ($items->isEmpty()) {
+            Notification::make()
+                ->title('Item tidak ditemukan')
+                ->danger()
+                ->send();
+            return;
+        }
+
         // Hapus satu per satu agar activity log tetap jalan
         $items->each(fn($item) => $item->delete());
 
@@ -246,6 +229,13 @@ class EditBppbCustom extends Page implements HasForms
         $inks = Bppb_ink::where('bppb_id', $bppbId)
             ->where('ink_id', $inkId)
             ->get();
+        if ($inks->isEmpty()) {
+            Notification::make()
+                ->title('Tinta tidak ditemukan')
+                ->danger()
+                ->send();
+            return;
+        }
 
         // Hapus satu per satu agar activity log tetap jalan
         $inks->each(fn($ink) => $ink->delete());
@@ -264,6 +254,14 @@ class EditBppbCustom extends Page implements HasForms
         $softwares = Bppb_software::where('bppb_id', $bppbId)
             ->where('software_id', $softwareId)
             ->get();
+        if ($softwares->isEmpty()) {
+            Notification::make()
+                ->title('Software tidak ditemukan')
+                ->danger()
+                ->send();
+            return;
+        }
+
 
         // Hapus satu per satu agar activity log tetap tercatat
         $softwares->each(fn($software) => $software->delete());
@@ -335,7 +333,7 @@ class EditBppbCustom extends Page implements HasForms
             ->title('Record approved successfully!')
             ->success()
             ->send();
-        return redirect(request()->header('Referer'));
+        return redirect()->back();
     }
     public function rejectRecord()
     {
@@ -348,7 +346,7 @@ class EditBppbCustom extends Page implements HasForms
             ->title('Record rejected successfully!')
             ->success()
             ->send();
-        return redirect(request()->header('Referer'));
+        return redirect()->back();
     }
 
     public function receivedRecord()
@@ -361,8 +359,7 @@ class EditBppbCustom extends Page implements HasForms
             ->title('Barang diterima di IT') //mengupdate status menjadi diterima
             ->success()
             ->send();
-
-        return redirect(request()->header('Referer'));
+        return redirect()->back();
     }
 
     public function finishRecord()
@@ -401,46 +398,6 @@ class EditBppbCustom extends Page implements HasForms
         }
     }
 
-    // public function deletePO($bppbId, $poId)
-    // {
-    //     $po = Purchase_order::find($poId);
-    //     $bpb = Bpb::where('po_id', $poId);
-
-    //     if ($bpb) {
-    //         $bpb->delete(); // Hapus BPB terkait
-    //     }
-
-    //     if ($po) {
-    //         // Kosongkan purchase_order_id di semua bppb_items yang terkait
-    //         Bppb_item::where('purchase_order_id', $poId)
-    //             ->update(['purchase_order_id' => null]);
-    //         // Kosongkan purchase_order_id di semua Bppb_inks yang terkait
-    //         Bppb_ink::where('purchase_order_id', $poId)
-    //             ->update(['purchase_order_id' => null]);
-    //         // Kosongkan purchase_order_id di semua Bppb_softwares yang terkait
-    //         Bppb_software::where('purchase_order_id', $poId)
-    //             ->update(['purchase_order_id' => null]);
-
-    //         // Hapus PO
-    //         $po->delete();
-
-    //         Notification::make()
-    //             ->title('Purchase Order berhasil dihapus')
-    //             ->success()
-    //             ->send();
-    //     } else {
-    //         Notification::make()
-    //             ->title('Purchase Order tidak ditemukan')
-    //             ->danger()
-    //             ->send();
-    //     }
-
-    //     return redirect()->route('filament.sis.resources.bppbs.edit', ['record' => $bppbId]);
-    // }
-    // public function confirmCreateBPB($bppbId, $poId)
-    // {
-    //     return redirect()->route('filament.sis.resources.bpbs.create', ['bppb_id' => $bppbId, 'po_id' => $poId]);
-    // }
     public function confirmEditBppbSoftware($bppbId, $bppbSoftwareId)
     {
         return redirect()->route('filament.sis.resources.bppb-software.edit', ['bppb_id' => $bppbId, 'record' => $bppbSoftwareId]);
@@ -448,27 +405,5 @@ class EditBppbCustom extends Page implements HasForms
 
 
     // ___________________________________________________________________________________________Widget
-    // protected function getHeaderWidgets(): array
-    // {
-    //     $record = $this->record;
-    //     return [
-    //         BppbDetailWidget::make([
-    //             'bppb_id' => $record->id ?? '',
-    //             'noBppb' => $record->noBppb ?? '',
-    //             'name' => $record->user?->name ?? '',
-    //             'NIK' => $record->user?->NIK ?? '',
-    //             'created_at' => $record->created_at ?? '',
-    //             'company' => $record->user?->company?->companyName ?? '',
-    //             'regional' => $record->user?->regional?->regionalName ?? '',
-    //             'businessunit' => $record->user?->businessunit?->businessUnitName ?? '',
-    //             'department' => $record->user?->department?->departmentName ?? '',
-    //             'subdepartment' => $record->user?->subdepartment?->subDepartmentName ?? '',
-    //             'section' => $record->user?->section?->sectionName ?? '',
-    //             'position' => $record->user?->position?->positionName ?? '',
-    //             'received_date' => $record->received_date ?? '',
-    //             'status' => $record->status?->name ?? '',
-    //             'status_id' => $record->status_id ?? '',
-    //         ]),
-    //     ];
-    // }
+
 }
