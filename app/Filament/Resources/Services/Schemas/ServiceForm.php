@@ -73,15 +73,35 @@ class ServiceForm
                                     ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
                             )
                             ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
-                            ->default(auth()->id())
-                            ->disabled()
+                            ->default(fn() => auth()->id()) // admin awalnya pakai dirinya sendiri
+                            ->afterStateHydrated(function ($state, $set) {
+                                if (!auth()->user()->hasRole('admin')) {
+                                    $set('user_id', auth()->id());
+                                }
+                            })
+                            ->disabled(fn() => !auth()->user()->hasRole('admin'))
+                            ->dehydrated()
                             ->required(),
+                        // Select::make('user_id')
+                        //     ->label('Nama Karyawan')
+                        //     ->searchable()
+                        //     ->getSearchResultsUsing(
+                        //         fn(string $search) =>
+                        //         User::where('name', 'like', "%{$search}%")
+                        //             ->limit(20)
+                        //             ->get()
+                        //             ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
+                        //     )
+                        //     ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
+                        //     ->default(auth()->id())
+                        //     ->disabled()
+                        //     ->required(),
+                        // Hidden::make('user_id')
+                        //     ->default(fn() => auth()->id())
+                        //     ->required(),
                         TextInput::make('serialNumberItem')
                             ->label('No. Seri Barang')
                             ->columnSpanFull(),
-                        Hidden::make('user_id')
-                            ->default(fn() => auth()->id())
-                            ->required(),
                         Select::make('ic_id')
                             ->label('IC yang mengerjakan')
                             ->getSearchResultsUsing(
@@ -95,61 +115,78 @@ class ServiceForm
                             ->columnSpanFull()
                             ->visible(fn(Get $get) => auth()->user()->can('update-service') && $get('status_id') !== 2)
                             ->searchable(),
-                        Grid::make(3)
-                            ->schema([
-                                Select::make('category_id')
-                                    ->label('Kategori Barang')
-                                    ->placeholder('Pilih Kategori Barang')
-                                    ->options(Category::all()->pluck('name', 'id'))
-                                    ->required()
-                                    ->live()
-                                    ->searchable()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('brand_id', null);
-                                        $set('item_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $item = Item::find($get('item_id'));
-                                        if ($item) {
-                                            $set('category_id', $item->category_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
-                                Select::make('brand_id')
-                                    ->label('Merek Barang')
-                                    ->placeholder('Pilih Merek Barang')
-                                    ->options(fn(Get $get): Collection => Brand::query()
-                                        ->where('category_id', $get('category_id'))
-                                        ->pluck('name', 'id'))
-                                    ->required()
-                                    ->searchable()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set) {
-                                        $set('item_id', null);
-                                    })
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $item = Item::find($get('item_id'));
-                                        if ($item) {
-                                            $set('brand_id', $item->brand_id);
-                                        }
-                                    })
-                                    ->dehydrated(false),
-                                Select::make('item_id')
-                                    ->label('Nama Barang')
-                                    ->placeholder('Pilih Barang')
-                                    ->options(fn(Get $get): Collection => Item::query()
-                                        ->where('brand_id', $get('brand_id'))
-                                        ->pluck('name', 'id'))
-                                    ->afterStateHydrated(function (Set $set, Get $get) {
-                                        $item = Item::find($get('item_id'));
-                                        if ($item) {
-                                            $set('item_id', $item->id);
-                                        }
-                                    })
-                                    ->required()
-                                    ->live()
-                                    ->searchable(),
-                            ]),
+                        // Grid::make(3)
+                        //     ->schema([
+                        //         Select::make('category_id')
+                        //             ->label('Kategori Barang')
+                        //             ->placeholder('Pilih Kategori Barang')
+                        //             ->options(Category::all()->pluck('name', 'id'))
+                        //             ->required()
+                        //             ->live()
+                        //             ->searchable()
+                        //             ->afterStateUpdated(function (Set $set) {
+                        //                 $set('brand_id', null);
+                        //                 $set('item_id', null);
+                        //             })
+                        //             ->afterStateHydrated(function (Set $set, Get $get) {
+                        //                 $item = Item::find($get('item_id'));
+                        //                 if ($item) {
+                        //                     $set('category_id', $item->category_id);
+                        //                 }
+                        //             })
+                        //             ->dehydrated(false),
+                        //         Select::make('brand_id')
+                        //             ->label('Merek Barang')
+                        //             ->placeholder('Pilih Merek Barang')
+                        //             ->options(fn(Get $get): Collection => Brand::query()
+                        //                 ->where('category_id', $get('category_id'))
+                        //                 ->pluck('name', 'id'))
+                        //             ->required()
+                        //             ->searchable()
+                        //             ->live()
+                        //             ->afterStateUpdated(function (Set $set) {
+                        //                 $set('item_id', null);
+                        //             })
+                        //             ->afterStateHydrated(function (Set $set, Get $get) {
+                        //                 $item = Item::find($get('item_id'));
+                        //                 if ($item) {
+                        //                     $set('brand_id', $item->brand_id);
+                        //                 }
+                        //             })
+                        //             ->dehydrated(false),
+                        //         Select::make('item_id')
+                        //             ->label('Nama Barang')
+                        //             ->placeholder('Pilih Barang')
+                        //             ->options(fn(Get $get): Collection => Item::query()
+                        //                 ->where('brand_id', $get('brand_id'))
+                        //                 ->pluck('name', 'id'))
+                        //             ->afterStateHydrated(function (Set $set, Get $get) {
+                        //                 $item = Item::find($get('item_id'));
+                        //                 if ($item) {
+                        //                     $set('item_id', $item->id);
+                        //                 }
+                        //             })
+                        //             ->required()
+                        //             ->live()
+                        //             ->searchable(),
+                        //     ]),
+                        Select::make('item_id')
+                            ->label('Nama Barang')
+                            ->placeholder('Pilih Nama Barang...')
+                            ->searchable()
+                            ->live()
+                            ->getSearchResultsUsing(function (string $search): array {
+                                return Item::query()
+                                    ->where('name', 'like', "%{$search}%")
+                                    ->limit(20)
+                                    ->pluck('name', 'id')
+                                    ->toArray();
+                            })
+                            ->getOptionLabelUsing(function ($value): ?string {
+                                return Item::find($value)?->name;
+                            })
+                            ->columnSpanFull()
+                            ->required(),
                         Select::make('type_service_id')
                             ->label('Request Type')
                             ->required()

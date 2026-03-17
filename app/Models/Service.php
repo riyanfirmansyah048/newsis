@@ -95,7 +95,7 @@ class Service extends Model
                 $model->noService = "{$nomorUrut}/{$kodeSubDepartemen}{$kodeRegional}/SER/{$bulan}/{$tahun}";
 
                 // Simpan user_id dari user yang sedang login
-                $model->user_id = Auth::id();
+                // $model->user_id = Auth::id();
 
                 // default status 3 menunggu konfirmasi IT
                 $model->status_id = 3;
