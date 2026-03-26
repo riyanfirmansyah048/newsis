@@ -1,0 +1,210 @@
+<?php
+
+namespace App\Livewire;
+
+use App\Models\Bppb_item;
+use App\Models\Bppb_ink;
+use App\Models\Bppb_software;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Table;
+use Illuminate\Contracts\View\View;
+use Livewire\Component;
+
+class BppbList extends Component implements HasActions, HasSchemas, HasTable
+{
+    use InteractsWithActions;
+    use InteractsWithSchemas;
+    use InteractsWithTable;
+
+    public ?int $bppbId = null;
+    public ?int $statusId = null;
+
+    public function mount($bppbId, $statusId = null)
+    {
+        $this->bppbId = $bppbId;
+        $this->statusId = $statusId;
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->records(fn() => $this->getRecords())
+            ->columns([
+                TextColumn::make('name')
+                    ->label('Nama'),
+
+                TextColumn::make('qty')
+                    ->label('Qty Dipesan')
+                    ->alignCenter(),
+
+                TextColumn::make('processed')
+                    ->label('Qty Diproses')
+                    ->alignCenter()
+                    ->color(
+                        fn($record) =>
+                        $record['qty'] == $record['processed']
+                            ? 'success'
+                            : 'danger'
+                    ),
+
+                TextColumn::make('type')
+                    ->badge(),
+            ])
+            ->actions([
+                Action::make('delete')
+                    ->label('Delete')
+                    ->icon('heroicon-m-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(function () {
+                        return in_array($this->statusId, [1, 2, 3])
+                            || auth()->user()->hasRole('admin');
+                    })
+                    ->action(function ($record) {
+                        if ($record['type'] === 'Item') {
+                            Bppb_item::where('bppb_id', $this->bppbId)
+                                ->where('item_id', $record['id'])
+                                ->delete();
+                        }
+                        if ($record['type'] === 'Ink') {
+                            Bppb_ink::where('bppb_id', $this->bppbId)
+                                ->where('ink_id', $record['id'])
+                                ->delete();
+                        }
+                        if ($record['type'] === 'Software') {
+                            Bppb_software::where('bppb_id', $this->bppbId)
+                                ->where('software_id', $record['id'])
+                                ->delete();
+                        }
+                        $this->resetTable();
+                    }),
+            ]);
+    }
+
+    public function getRecords()
+    {
+        $data = [];
+
+        /*
+        |--------------------------------------------------------------------------
+        | ITEM
+        |--------------------------------------------------------------------------
+        */
+        $items = Bppb_item::with('item')
+            ->where('bppb_id', $this->bppbId)
+            ->get();
+
+        $merged = [];
+        $nullCounts = [];
+
+        foreach ($items as $item) {
+            if (!isset($merged[$item->item_id])) {
+                $merged[$item->item_id] = [
+                    'name' => $item->item?->name,
+                    'qty' => 0,
+                    'processed' => 0,
+                    'type' => 'Item',
+                    'id' => $item->item_id,
+                ];
+                $nullCounts[$item->item_id] = 0;
+            }
+
+            $merged[$item->item_id]['qty'] += $item->qty;
+
+            if ($item->purchase_order_id === null) {
+                $nullCounts[$item->item_id]++;
+            }
+        }
+
+        foreach ($merged as $id => $item) {
+            $item['processed'] = $item['qty'] - $nullCounts[$id];
+            $data[] = $item;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | INK
+        |--------------------------------------------------------------------------
+        */
+        $inks = \App\Models\Bppb_ink::with('ink')
+            ->where('bppb_id', $this->bppbId)
+            ->get();
+
+        $merged = [];
+        $nullCounts = [];
+
+        foreach ($inks as $ink) {
+            if (!isset($merged[$ink->ink_id])) {
+                $merged[$ink->ink_id] = [
+                    'name' => $ink->ink?->name,
+                    'qty' => 0,
+                    'processed' => 0,
+                    'type' => 'Ink',
+                    'id' => $ink->ink_id,
+                ];
+                $nullCounts[$ink->ink_id] = 0;
+            }
+
+            $merged[$ink->ink_id]['qty'] += $ink->qty;
+
+            if ($ink->purchase_order_id === null) {
+                $nullCounts[$ink->ink_id]++;
+            }
+        }
+
+        foreach ($merged as $id => $ink) {
+            $ink['processed'] = $ink['qty'] - $nullCounts[$id];
+            $data[] = $ink;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SOFTWARE
+        |--------------------------------------------------------------------------
+        */
+        $softwares = \App\Models\Bppb_software::with('software')
+            ->where('bppb_id', $this->bppbId)
+            ->get();
+
+        $merged = [];
+        $nullCounts = [];
+
+        foreach ($softwares as $software) {
+            if (!isset($merged[$software->software_id])) {
+                $merged[$software->software_id] = [
+                    'name' => $software->software?->name,
+                    'qty' => 0,
+                    'processed' => 0,
+                    'type' => 'Software',
+                    'id' => $software->software_id,
+                ];
+                $nullCounts[$software->software_id] = 0;
+            }
+
+            $merged[$software->software_id]['qty'] += $software->qty;
+
+            if ($software->purchase_order_id === null) {
+                $nullCounts[$software->software_id]++;
+            }
+        }
+
+        foreach ($merged as $id => $software) {
+            $software['processed'] = $software['qty'] - $nullCounts[$id];
+            $data[] = $software;
+        }
+
+        return collect($data);
+    }
+
+    public function render(): View
+    {
+        return view('livewire.bppb-purchase-order-table');
+    }
+}

@@ -90,6 +90,7 @@ class PurchaseOrderForm
                                         )
                                         ->toArray();
                                 })
+                                ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                 ->searchable()
                                 ->required(),
 
@@ -164,6 +165,7 @@ class PurchaseOrderForm
                                         )
                                         ->toArray();
                                 })
+                                ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                 ->searchable()
                                 ->required(),
 
@@ -243,6 +245,7 @@ class PurchaseOrderForm
                                         )
                                         ->toArray();
                                 })
+                                ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                                 ->searchable()
                                 ->required(),
 

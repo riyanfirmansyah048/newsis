@@ -12,11 +12,11 @@ class CategoryForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Nama Kategori Software')
+                    ->label('Nama Kategori Barang')
                     ->required()
                     ->columnSpanFull(),
                 TextInput::make('codeAsset')
-                    ->label('Kode Asset Software')
+                    ->label('Kode Asset Barang')
                     ->columnSpanFull(),
             ]);
     }

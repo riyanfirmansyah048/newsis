@@ -103,7 +103,7 @@
             <br>
         @endif
 
-        <table>
+        {{-- <table>
             <thead>
                 <tr>
                     <th>Nama Item</th>
@@ -285,10 +285,12 @@
                 <?php }
                 ?>
             </tbody>
-        </table>
+        </table> --}}
+        <livewire:bppb-list :bppb-id="$bppb_id" :status-id="$status_id" />
 
         @if (!empty($bppb_softwares))
             <br>
+            <hr>
             <hr>
             <br>
             <h1>List Software</h1>
