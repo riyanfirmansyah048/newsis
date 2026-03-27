@@ -90,18 +90,16 @@ class BppbInkForm
                     ->getOptionLabelUsing(function ($value): ?string {
                         return Ink::find($value)?->name;
                     })
-                    ->columnSpanFull()
                     ->required(),
                 TextInput::make('qty')
                     ->label('Qty')
                     ->required()
-                    ->numeric()
-                    ->columnSpanFull(),
+                    ->numeric(),
                 Textarea::make('description')
                     ->label('Keterangan')
                     ->helperText('Opsional, bisa diisi dengan spesifikasi Tinta atau catatan lainnya')
                     ->columnSpanFull(),
             ])
-            ->columns(3);
+            ->columns(2);
     }
 }

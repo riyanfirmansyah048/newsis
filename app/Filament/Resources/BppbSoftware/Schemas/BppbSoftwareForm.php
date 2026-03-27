@@ -90,18 +90,16 @@ class BppbSoftwareForm
                     ->getOptionLabelUsing(function ($value): ?string {
                         return Software::find($value)?->name;
                     })
-                    ->columnSpanFull()
                     ->required(),
                 TextInput::make('qty')
                     ->label('Qty')
                     ->required()
-                    ->numeric()
-                    ->columnSpanFull(),
+                    ->numeric(),
                 Textarea::make('description')
                     ->label('Keterangan')
                     ->helperText('Opsional, bisa diisi dengan spesifikasi software atau catatan lainnya')
                     ->columnSpanFull(),
             ])
-            ->columns(3);
+            ->columns(2);
     }
 }
