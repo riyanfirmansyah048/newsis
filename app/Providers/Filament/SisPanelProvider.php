@@ -43,6 +43,7 @@ class SisPanelProvider extends PanelProvider
             ->profile(EditProfileCustom::class, isSimple: false)
             ->brandName('Sistem Informasi Sanbe')
             ->favicon(asset('img/logo.png'))
+            ->darkMode(true, isForced: true)
             ->colors([
                 'primary' => '#36b9cc',
             ])
