@@ -67,6 +67,8 @@ class EditPurchaseOrder extends EditRecord
             ->values()
             ->toArray();
 
+
+        $data['purchase_order_id'] = $record->id;
         return $data;
     }
 

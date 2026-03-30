@@ -94,6 +94,8 @@ class PurchaseOrderForm
                                 ->searchable()
                                 ->required(),
 
+                            Hidden::make('purchase_order_id'),
+
                             TextInput::make('qty')
                                 ->label('Qty')
                                 ->numeric()
@@ -106,6 +108,7 @@ class PurchaseOrderForm
 
                                             $bppbId = $get('../../bppb_id');
                                             $itemId = $get('item_id');
+                                            $recordId = $get('../../purchase_order_id');
 
                                             if (!$itemId || !$bppbId) {
                                                 return;
@@ -114,7 +117,14 @@ class PurchaseOrderForm
                                             $sisaQty = Bppb_item::query()
                                                 ->where('bppb_id', $bppbId)
                                                 ->where('item_id', $itemId)
-                                                ->whereNull('purchase_order_id')
+                                                ->where(function ($q) use ($recordId) {
+                                                    $q->whereNull('purchase_order_id');
+
+                                                    if ($recordId) {
+                                                        $q->orWhere('purchase_order_id', $recordId);
+                                                    }
+                                                })
+
                                                 ->count(); // atau sum('qty') kalau memang pakai qty kolom
 
                                             if ($value > $sisaQty) {
@@ -169,11 +179,8 @@ class PurchaseOrderForm
                                 ->searchable()
                                 ->required(),
 
-                            // TextInput::make('qty')
-                            //     ->label('Qty')
-                            //     ->numeric()
-                            //     ->minValue(1)
-                            //     ->required(),
+                            Hidden::make('purchase_order_id'),
+
                             TextInput::make('qty')
                                 ->label('Qty')
                                 ->numeric()
@@ -183,18 +190,24 @@ class PurchaseOrderForm
                                 ->rules([
                                     function (callable $get) {
                                         return function (string $attribute, $value, \Closure $fail) use ($get) {
-
                                             $inkId = $get('ink_id');
                                             $bppbId = $get('../../bppb_id');
+                                            $recordId = $get('../../purchase_order_id');
 
-                                            if (!$inkId || !$bppbId) {
+                                            if (! $inkId || ! $bppbId) {
                                                 return;
                                             }
 
                                             $sisaQty = Bppb_ink::query()
                                                 ->where('bppb_id', $bppbId)
                                                 ->where('ink_id', $inkId)
-                                                ->whereNull('purchase_order_id')
+                                                ->where(function ($q) use ($recordId) {
+                                                    $q->whereNull('purchase_order_id');
+
+                                                    if ($recordId) {
+                                                        $q->orWhere('purchase_order_id', $recordId);
+                                                    }
+                                                })
                                                 ->count();
 
                                             if ($value > $sisaQty) {
@@ -249,11 +262,7 @@ class PurchaseOrderForm
                                 ->searchable()
                                 ->required(),
 
-                            // TextInput::make('qty')
-                            //     ->label('Qty')
-                            //     ->numeric()
-                            //     ->minValue(1)
-                            //     ->required(),
+                            Hidden::make('purchase_order_id'),
 
                             TextInput::make('qty')
                                 ->label('Qty')
@@ -264,18 +273,24 @@ class PurchaseOrderForm
                                 ->rules([
                                     function (callable $get) {
                                         return function (string $attribute, $value, \Closure $fail) use ($get) {
-
                                             $softwareId = $get('software_id');
                                             $bppbId = $get('../../bppb_id');
+                                            $recordId = $get('../../purchase_order_id');
 
-                                            if (!$softwareId || !$bppbId) {
+                                            if (! $softwareId || ! $bppbId) {
                                                 return;
                                             }
 
                                             $sisaQty = Bppb_software::query()
                                                 ->where('bppb_id', $bppbId)
                                                 ->where('software_id', $softwareId)
-                                                ->whereNull('purchase_order_id')
+                                                ->where(function ($q) use ($recordId) {
+                                                    $q->whereNull('purchase_order_id');
+
+                                                    if ($recordId) {
+                                                        $q->orWhere('purchase_order_id', $recordId);
+                                                    }
+                                                })
                                                 ->count();
 
                                             if ($value > $sisaQty) {

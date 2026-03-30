@@ -2,12 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\Bppb_item;
 use App\Models\Bppb_ink;
+use App\Models\Bppb_item;
 use App\Models\Bppb_software;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables\Columns\TextColumn;
@@ -58,6 +60,138 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                     ->badge(),
             ])
             ->actions([
+                Action::make('edit')
+                    ->label('Edit')
+                    ->icon('heroicon-m-pencil-square')
+                    ->color('warning')
+                    ->visible(function () {
+                        return in_array($this->statusId, [1, 2, 3])
+                            || auth()->user()->hasRole('admin');
+                    })
+                    ->fillForm(fn($record) => [
+                        'qty' => $record['qty'],
+                    ])
+                    ->schema([
+                        TextInput::make('qty')
+                            ->label('Qty')
+                            ->numeric()
+                            ->required()
+                            ->minValue(1),
+                    ])
+                    ->action(function (array $data, $record) {
+                        if ($record['processed'] > 0) {
+                            Notification::make()
+                                ->title('Tidak bisa diedit')
+                                ->body('Data ini sudah diproses ke Purchase Order.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        $newQty = (int) $data['qty'];
+
+                        if ($record['type'] === 'Item') {
+                            $firstRow = Bppb_item::where('bppb_id', $this->bppbId)
+                                ->where('item_id', $record['id'])
+                                ->first();
+
+                            if (! $firstRow) {
+                                Notification::make()
+                                    ->title('Data item tidak ditemukan')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            Bppb_item::where('bppb_id', $this->bppbId)
+                                ->where('item_id', $record['id'])
+                                ->delete();
+
+                            for ($i = 0; $i < $newQty; $i++) {
+                                Bppb_item::create([
+                                    'bppb_id' => $this->bppbId,
+                                    'item_id' => $record['id'],
+                                    'purchase_order_id' => null,
+                                    'qty' => 1,
+                                    'description' => $firstRow->description,
+                                ]);
+                            }
+                        }
+
+                        if ($record['type'] === 'Ink') {
+                            $firstRow = Bppb_ink::where('bppb_id', $this->bppbId)
+                                ->where('ink_id', $record['id'])
+                                ->first();
+
+                            if (! $firstRow) {
+                                Notification::make()
+                                    ->title('Data tinta tidak ditemukan')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            Bppb_ink::where('bppb_id', $this->bppbId)
+                                ->where('ink_id', $record['id'])
+                                ->delete();
+
+                            for ($i = 0; $i < $newQty; $i++) {
+                                Bppb_ink::create([
+                                    'bppb_id' => $this->bppbId,
+                                    'ink_id' => $record['id'],
+                                    'purchase_order_id' => null,
+                                    'qty' => 1,
+                                    'description' => $firstRow->description,
+                                ]);
+                            }
+                        }
+
+                        if ($record['type'] === 'Software') {
+                            $firstRow = Bppb_software::where('bppb_id', $this->bppbId)
+                                ->where('software_id', $record['id'])
+                                ->first();
+
+                            if (! $firstRow) {
+                                Notification::make()
+                                    ->title('Data software tidak ditemukan')
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+
+                            Bppb_software::where('bppb_id', $this->bppbId)
+                                ->where('software_id', $record['id'])
+                                ->delete();
+
+                            for ($i = 0; $i < $newQty; $i++) {
+                                Bppb_software::create([
+                                    'bppb_id' => $this->bppbId,
+                                    'software_id' => $record['id'],
+                                    'purchase_order_id' => null,
+                                    'qty' => 1,
+                                    'description' => $firstRow->description,
+                                    'noBppbPemohon' => $firstRow->noBppbPemohon,
+                                    'pemohonIT' => $firstRow->pemohonIT,
+                                    'userPemohon' => $firstRow->userPemohon,
+                                    'departementPemohon' => $firstRow->departementPemohon,
+                                    'lokasiPemohon' => $firstRow->lokasiPemohon,
+                                    'serialNumber' => $firstRow->serialNumber,
+                                ]);
+                            }
+                        }
+
+                        $this->resetTable();
+
+                        Notification::make()
+                            ->title('Data berhasil diperbarui')
+                            ->success()
+                            ->send();
+                    }),
+
                 Action::make('delete')
                     ->label('Delete')
                     ->icon('heroicon-m-trash')
@@ -73,16 +207,19 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                                 ->where('item_id', $record['id'])
                                 ->delete();
                         }
+
                         if ($record['type'] === 'Ink') {
                             Bppb_ink::where('bppb_id', $this->bppbId)
                                 ->where('ink_id', $record['id'])
                                 ->delete();
                         }
+
                         if ($record['type'] === 'Software') {
                             Bppb_software::where('bppb_id', $this->bppbId)
                                 ->where('software_id', $record['id'])
                                 ->delete();
                         }
+
                         $this->resetTable();
                     }),
             ]);

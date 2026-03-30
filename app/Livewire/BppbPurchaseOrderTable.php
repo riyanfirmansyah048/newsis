@@ -67,6 +67,14 @@ class BppbPurchaseOrderTable extends Component implements HasActions, HasSchemas
                         ->action(function (Purchase_order $record) {
                             return redirect()->route('filament.sis.resources.purchase-orders.view', $record);
                         }),
+                    Action::make('edit')
+                        ->label('Edit PO')
+                        ->color('warning')
+                        ->icon('heroicon-m-pencil-square')
+                        ->visible(fn(Purchase_order $record) => auth()->user()->hasRole('admin') && $record->bpb()->count() === 0)
+                        ->action(function (Purchase_order $record) {
+                            return redirect()->route('filament.sis.resources.purchase-orders.edit', $record);
+                        }),
                     Action::make('delete')
                         ->label('Delete PO')
                         ->color('danger')
