@@ -27,7 +27,7 @@ class BpbsTable
             ->query(
                 auth()->user()->hasRole('admin')
                     ? Bpb::query()->whereHas('purchase_order.bppb', function ($q) {
-                        $q->where('bppb_type_id', 1);
+                        $q->where('bppb_type_id', [1, 2]);
                     })
                     : Bpb::query()
                     ->where('user_id', auth()->id())
@@ -37,7 +37,15 @@ class BpbsTable
             )
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
+                // TextColumn::make('noBpb')
+                //     ->sortable()
+                //     ->searchable(),
                 TextColumn::make('noBpb')
+                    ->label('No. BPB')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('purchase_order.bppb.noBppb')
+                    ->label('No. BPPB')
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('user.name')
