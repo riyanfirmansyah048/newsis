@@ -66,6 +66,14 @@ class Expedition extends Model
                 $model->user_id = Auth::id();
             }
         });
+
+        static::created(function ($model) {
+            if (!app()->runningInConsole() && $model->bppb) {
+                $model->bppb->update([
+                    'status_id' => 7,
+                ]);
+            }
+        });
     }
 
     protected static function booted()
