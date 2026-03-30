@@ -49,7 +49,7 @@ class BrandsTable
                         fn(Brand $brand) =>
                         ItemResource::getUrl('index', [
                             'brand_id' => $brand->id,
-                            'category_id' => $brand->id,
+                            'category_id' => $brand->category_id,
                         ])
                     ),
             ])

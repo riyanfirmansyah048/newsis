@@ -29,13 +29,13 @@ class ItemForm
             Select::make('category_id')
                 ->label('Kategori Barang')
                 ->placeholder('Pilih Kategori Barang')
-                // ->default(fn() => request()->integer('category_id'))
                 ->options(
                     fn() =>
                     Category::query()
                         ->pluck('name', 'id')
                         ->toArray()
                 )
+                ->default(fn() => request()->integer('category_id'))
                 ->required()
                 ->searchable()
                 ->live()
@@ -51,7 +51,6 @@ class ItemForm
             Select::make('brand_id')
                 ->label('Merek Barang')
                 ->placeholder('Pilih Merek Barang')
-                // ->default(fn() => request()->integer('brand_id'))
                 ->options(
                     fn(Get $get): array =>
                     Brand::query()
@@ -62,6 +61,7 @@ class ItemForm
                         ->pluck('name', 'id')
                         ->toArray()
                 )
+                ->default(fn() => request()->integer('brand_id'))
                 ->required()
                 ->searchable()
                 ->disabled(fn(Get $get) => blank($get('category_id'))),

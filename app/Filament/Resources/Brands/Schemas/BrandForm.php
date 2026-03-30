@@ -15,7 +15,7 @@ class BrandForm
                 Select::make('category_id')
                     ->relationship(name: 'category', titleAttribute: 'name')
                     ->label('Kategori Barang')
-                    ->default(fn() => request()->input('category_id'))
+                    ->default(fn() => request()->integer('category_id'))
                     ->preload()
                     ->searchable()
                     ->required()
