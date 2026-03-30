@@ -28,9 +28,25 @@ class ExpeditionForm
                             return []; // 🔥 kosong dulu sampai user ketik min 2 huruf
                         }
 
+                        // return Bppb::query()
+                        //     ->with('user')
+                        //     ->whereHas('user')
+                        //     ->where(function ($query) use ($search) {
+                        //         $query->where('noBppb', 'like', "%{$search}%")
+                        //             ->orWhereHas('user', function ($q) use ($search) {
+                        //                 $q->where('name', 'like', "%{$search}%")
+                        //                     ->orWhere('NIK', 'like', "%{$search}%");
+                        //             });
+                        //     })
+                        //     ->limit(20)
+                        //     ->get()
+                        //     ->mapWithKeys(fn($bppb) => [
+                        //         $bppb->id => "{$bppb->noBppb} - {$bppb->user->name} ({$bppb->user->NIK})",
+                        //     ]);
                         return Bppb::query()
                             ->with('user')
                             ->whereHas('user')
+                            ->where('status_id', 5)
                             ->where(function ($query) use ($search) {
                                 $query->where('noBppb', 'like', "%{$search}%")
                                     ->orWhereHas('user', function ($q) use ($search) {
