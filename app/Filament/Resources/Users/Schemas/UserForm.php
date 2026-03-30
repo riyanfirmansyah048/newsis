@@ -32,7 +32,7 @@ class UserForm
         return $schema
             ->components([
                 FormSection::make('Data Akun')
-                    ->collapsed()
+                    ->collapsed(false)
                     ->columns(1)
                     ->columnSpanFull()
                     ->schema([
