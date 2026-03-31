@@ -28,16 +28,16 @@ class ExpeditionsTable
                     ->searchable()
                     ->sortable()
                     ->color(fn(Expedition $record) => $record->trashed() ? 'danger' : null)
-                    ->copyable()
-                    ->copyMessage('No. Expedisi berhasil disalin')
-                    ->copyMessageDuration(1500),
+                    ->copyable(),
                 TextColumn::make('bppb.noBppb')
                     ->label("No. Bppb")
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('bppb.purchase_orders.noPo')
                     ->label("No. PO")
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('expeditor')
                     ->label("pengirim")
