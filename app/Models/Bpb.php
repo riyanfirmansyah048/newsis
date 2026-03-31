@@ -54,7 +54,8 @@ class Bpb extends Model
         if (!app()->runningInConsole()) {
             static::creating(function ($model) {
 
-                $last = self::whereYear('dateBpb', now()->year)
+                $last = self::withTrashed()
+                    ->whereYear('dateBpb', now()->year)
                     ->whereMonth('dateBpb', now()->month)
                     ->max('number');
 

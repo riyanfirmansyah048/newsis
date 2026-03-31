@@ -18,6 +18,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
 
@@ -60,10 +61,11 @@ class BppbActivityLogTable extends Component implements HasActions, HasSchemas, 
                 TextColumn::make('description')
                     ->label('Aksi')
                     ->badge()
-                    ->color(fn($state) => match ($state) {
-                        'created' => 'success',
-                        'updated' => 'warning',
-                        'deleted' => 'danger',
+                    ->color(fn($state) => match (true) {
+                        $state === 'created' => 'success',
+                        $state === 'updated' => 'warning',
+                        $state === 'deleted' => 'danger',
+                        Str::startsWith((string) $state, 'cancelled') => 'danger',
                         default => 'gray',
                     }),
 

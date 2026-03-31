@@ -79,7 +79,7 @@ class BpbsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    // ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
             ]);
