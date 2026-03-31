@@ -44,6 +44,7 @@ class BpbsTable
                     ->label('No. BPB')
                     ->color(fn(Bpb $record) => $record->trashed() ? 'danger' : null)
                     ->sortable()
+                    ->copyable()
                     ->searchable(),
                 TextColumn::make('purchase_order.bppb.noBppb')
                     ->label('No. BPPB')
