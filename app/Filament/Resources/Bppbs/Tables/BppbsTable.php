@@ -46,6 +46,17 @@ class BppbsTable
                 TextColumn::make('noBppb')
                     ->label('No. BPPB')
                     ->searchable(),
+                TextColumn::make('bppb_type.name')
+                    ->label('Type BPPB')
+                    ->badge()
+                    ->color(fn($record) => match ($record->bppb_type_id) {
+                        1 => 'primary',
+                        2 => 'warning',
+                        3 => 'success',
+                        4 => 'danger',
+                        default => 'gray',
+                    })
+                    ->searchable(),
                 TextColumn::make('user.NIK')
                     ->label('NIK Karyawan')
                     ->searchable(),
@@ -74,6 +85,9 @@ class BppbsTable
             ->defaultSort('created_at', 'desc')
             ->filters([
                 TrashedFilter::make(),
+                SelectFilter::make('bppb_type_id')
+                    ->label('Type BPPB')
+                    ->relationship('bppb_type', 'name'),
                 SelectFilter::make('status')
                     ->relationship('status', 'name')
                     ->multiple(),

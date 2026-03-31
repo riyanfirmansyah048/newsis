@@ -180,6 +180,19 @@ class BppbActivityLogTable extends Component implements HasActions, HasSchemas, 
         $subject = $activity->subject;
 
         if (! $subject) {
+            $subject = match ($activity->subject_type) {
+                Bppb::class => Bppb::withTrashed()->find($activity->subject_id),
+                Bppb_item::class => Bppb_item::withTrashed()->find($activity->subject_id),
+                Bppb_ink::class => Bppb_ink::withTrashed()->find($activity->subject_id),
+                Bppb_software::class => Bppb_software::withTrashed()->find($activity->subject_id),
+                Purchase_order::class => Purchase_order::withTrashed()->find($activity->subject_id),
+                Expedition::class => Expedition::withTrashed()->find($activity->subject_id),
+                Bpb::class => Bpb::withTrashed()->find($activity->subject_id),
+                default => null,
+            };
+        }
+
+        if (! $subject) {
             return '-';
         }
 

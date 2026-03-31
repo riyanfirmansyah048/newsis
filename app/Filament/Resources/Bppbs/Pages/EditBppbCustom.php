@@ -64,6 +64,7 @@ class EditBppbCustom extends Page implements HasForms
             'user.section',
             'user.position',
             'status',
+            'bppb_type',
         ]);
 
         //isi data awal dari record
@@ -89,6 +90,8 @@ class EditBppbCustom extends Page implements HasForms
         return [
             'bppb_id' => $record->id ?? '',
             'noBppb' => $record->noBppb ?? '',
+            'type_bppb' => $record->bppb_type?->name ?? '-',
+            'type_bppb_id' => $record->bppb_type_id ?? null,
             'name' => $record->user?->name ?? '',
             'NIK' => $record->user?->NIK ?? '',
             'created_at' => $record->created_at ?? '',

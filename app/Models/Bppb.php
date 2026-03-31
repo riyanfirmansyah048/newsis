@@ -50,6 +50,11 @@ class Bppb extends Model
         return $this->belongsTo(Bppb_status::class, 'status_id');
     }
 
+    public function bppb_type()
+    {
+        return $this->belongsTo(Bppb_type::class, 'bppb_type_id');
+    }
+
     protected static function boot()
     {
         parent::boot();

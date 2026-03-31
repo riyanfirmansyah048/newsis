@@ -55,7 +55,9 @@ class Expedition extends Model
                 $tahun = now()->format('Y');
 
                 // Hitung jumlah ekspedisi tahun ini
-                $jumlah = self::whereYear('created_at', now()->year)->count();
+                $jumlah = self::withTrashed()
+                    ->whereYear('created_at', now()->year)
+                    ->count();
 
                 // $nomorUrut = str_pad($jumlah + 1, 3, '0', STR_PAD_LEFT);
                 $nomorUrut = $jumlah + 1;

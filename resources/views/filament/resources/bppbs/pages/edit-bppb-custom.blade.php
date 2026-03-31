@@ -12,6 +12,25 @@
                 <td>{{ $noBppb }}</td>
             </tr>
             <tr>
+                <td>Type BPPB</td>
+                <td>:</td>
+                <td>
+                    @php
+                        $typeColor = match ($type_bppb_id) {
+                            1 => 'primary',
+                            2 => 'warning',
+                            3 => 'success',
+                            4 => 'danger',
+                            default => 'gray',
+                        };
+                    @endphp
+
+                    <x-filament::badge :color="$typeColor">
+                        {{ $type_bppb }}
+                    </x-filament::badge>
+                </td>
+            </tr>
+            <tr>
                 <td>Dibuat oleh</td>
                 <td>:</td>
                 <td>{{ $NIK }} / {{ $name }}</td>
