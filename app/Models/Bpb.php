@@ -30,7 +30,7 @@ class Bpb extends Model
 
     public function purchase_order()
     {
-        return $this->belongsTo(Purchase_order::class, 'po_id');
+        return $this->belongsTo(Purchase_order::class, 'po_id')->withTrashed();
     }
 
     public function asset_items()

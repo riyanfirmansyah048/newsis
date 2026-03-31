@@ -44,7 +44,7 @@ class Purchase_order extends Model
 
     public function bppb()
     {
-        return $this->belongsTo(Bppb::class, 'bppb_id');
+        return $this->belongsTo(Bppb::class, 'bppb_id')->withTrashed();
     }
 
     public function bpb()
