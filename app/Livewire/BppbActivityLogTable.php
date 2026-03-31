@@ -37,7 +37,7 @@ class BppbActivityLogTable extends Component implements HasActions, HasSchemas, 
             ->columns([
                 TextColumn::make('created_at')
                     ->label('Waktu')
-                    ->dateTime('d M Y H:i:s')
+                    ->dateTime('d M Y')
                     ->sortable(),
 
                 TextColumn::make('causer.name')
