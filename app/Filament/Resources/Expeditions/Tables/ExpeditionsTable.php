@@ -59,8 +59,10 @@ class ExpeditionsTable
                     ->url(fn(Expedition $record) => route('expedition.print', $record->id))
                     ->openUrlInNewTab()
                     ->icon('heroicon-o-printer')
-                    ->color('success'),
-                DeleteAction::make(),
+                    ->color('success')
+                    ->visible(fn(Expedition $record) => ! $record->trashed()),
+                DeleteAction::make()
+                    ->visible(fn(Expedition $record) => ! $record->trashed()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
