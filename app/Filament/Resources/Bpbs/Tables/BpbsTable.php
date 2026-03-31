@@ -65,7 +65,7 @@ class BpbsTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->visible(fn() => auth()->user()->hasRole('admin')),
+                    ->visible(fn($record) => auth()->user()->hasRole('admin') && ! $record->trashed()),
                 Action::make('print')
                     ->label('Print BPB')
                     ->icon('heroicon-m-printer')
@@ -73,7 +73,8 @@ class BpbsTable
                     ->url(
                         fn($record) =>
                         route('bpb.print', ['id' => $record->id])
-                    ),
+                    )
+                    ->visible(fn($record) => ! $record->trashed()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
