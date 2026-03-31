@@ -329,4 +329,12 @@
         </x-filament::section>
     @endif
 
+    <x-filament::section>
+        <x-slot name="heading">
+            Log BPPB
+        </x-slot>
+
+        <livewire:bppb-activity-log-table :bppb-id="$bppb_id" />
+    </x-filament::section>
+
 </x-filament-panels::page>
