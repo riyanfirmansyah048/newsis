@@ -48,10 +48,12 @@ class BpbsTable
                 TextColumn::make('purchase_order.bppb.noBppb')
                     ->label('No. BPPB')
                     ->sortable()
+                    ->copyable()
                     ->searchable(),
                 TextColumn::make('purchase_order.noPo')
                     ->label("No. PO")
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->sortable(),
