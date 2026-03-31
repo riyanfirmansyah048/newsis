@@ -3,16 +3,17 @@
 namespace App\Filament\Resources\Bpbs\Tables;
 
 use App\Models\Bpb;
-use Filament\Tables\Table;
 use Filament\Actions\Action;
-use Filament\Actions\EditAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Table;
 
 class BpbsTable
 {
@@ -84,7 +85,8 @@ class BpbsTable
                         fn($record) =>
                         route('bpb.print', ['id' => $record->id])
                     )
-                    ->visible(fn($record) => ! $record->trashed()),
+                    ->visible(fn($record) => auth()->user()->hasRole('admin') && ! $record->trashed()),
+                // ->visible(fn($record) => ! $record->trashed()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
