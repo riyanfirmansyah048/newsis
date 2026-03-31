@@ -338,13 +338,24 @@
     @endif
 
     {{-- List BPB --}}
-    @if (!in_array($status_id, [1, 2, 3]))
+    @if (!in_array($status_id, [1, 2, 3]) && in_array($type_bppb_id, [1, 3]))
         <x-filament::section>
             <x-slot name="heading">
                 List BPB
             </x-slot>
 
             <livewire:bppb-bpb-table :bppb-id="$bppb_id" />
+        </x-filament::section>
+    @endif
+
+    {{-- List Expedisi --}}
+    @if (!in_array($status_id, [1, 2, 3]) && in_array($type_bppb_id, [2, 4]))
+        <x-filament::section>
+            <x-slot name="heading">
+                List Expedisi
+            </x-slot>
+
+            <livewire:bppb-expedition-table :bppb-id="$bppb_id" />
         </x-filament::section>
     @endif
 

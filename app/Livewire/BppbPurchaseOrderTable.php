@@ -6,6 +6,7 @@ use App\Models\Bpb;
 use Livewire\Component;
 use App\Models\Bppb_ink;
 use App\Models\Bppb_item;
+use App\Models\Expedition;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Models\Bppb_software;
@@ -18,6 +19,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Contracts\HasSchemas;
+use App\Filament\Resources\Expeditions\ExpeditionResource;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -119,6 +121,22 @@ class BppbPurchaseOrderTable extends Component implements HasActions, HasSchemas
                             'bppb_id' => $this->bppbId,
                             'po_id' => $record->id,
                         ]);
+                    }),
+                Action::make('createExpedition')
+                    ->label('Create Expedisi')
+                    ->color('warning')
+                    ->icon('heroicon-m-truck')
+                    ->visible(
+                        fn(Purchase_order $record) =>
+                        in_array($record->bppb?->bppb_type_id, [2, 4])
+                            && Expedition::where('bppb_id', $record->bppb_id)->count() === 0
+                    )
+                    ->action(function (Purchase_order $record) {
+                        return redirect()->to(
+                            ExpeditionResource::getUrl('create', [
+                                'bppb_id' => $record->bppb_id,
+                            ])
+                        );
                     }),
             ]);
     }

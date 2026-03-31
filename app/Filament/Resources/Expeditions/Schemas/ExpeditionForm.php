@@ -18,6 +18,7 @@ class ExpeditionForm
             ->components([
                 Select::make('bppb_id')
                     ->label('No. Bppb')
+                    ->default(fn() => request()->integer('bppb_id'))
                     ->searchable()
                     ->required()
                     ->reactive()
