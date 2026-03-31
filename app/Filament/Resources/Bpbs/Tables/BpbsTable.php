@@ -21,8 +21,8 @@ class BpbsTable
         return $table
             ->query(
                 auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
-                    ? Bpb::query() // Jika admin, tampilkan semua data
-                    : Bpb::query()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
+                    ? Bpb::query()->withTrashed() // Jika admin, tampilkan semua data termasuk yang di-cancel
+                    : Bpb::query()->withTrashed()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
             )
             // ->query(
             //     auth()->user()->hasRole('admin')
@@ -42,6 +42,7 @@ class BpbsTable
                 //     ->searchable(),
                 TextColumn::make('noBpb')
                     ->label('No. BPB')
+                    ->color(fn(Bpb $record) => $record->trashed() ? 'danger' : null)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('purchase_order.bppb.noBppb')
@@ -57,6 +58,12 @@ class BpbsTable
                 TextColumn::make('dateBpb')
                     ->dateTime()
                     ->date('d F Y H:i')
+                    ->sortable(),
+                TextColumn::make('deleted_at')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn($state) => $state ? 'Cancelled' : 'Active')
+                    ->color(fn($state) => $state ? 'danger' : 'success')
                     ->sortable(),
             ])
             ->defaultSort('dateBpb', 'desc')
