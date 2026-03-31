@@ -108,7 +108,11 @@ class BppbPurchaseOrderTable extends Component implements HasActions, HasSchemas
                     ->color('success')
                     ->icon('heroicon-m-plus-circle')
                     ->requiresConfirmation()
-                    ->visible(fn(Purchase_order $record) => $record->bpb()->count() === 0)
+                    ->visible(
+                        fn(Purchase_order $record) =>
+                        $record->bpb()->count() === 0
+                            && in_array($record->bppb?->bppb_type_id, [1, 3])
+                    )
                     ->action(function (Purchase_order $record) {
                         // Redirect ke create Bpb Page
                         return redirect()->route('filament.sis.resources.bpbs.create', [
