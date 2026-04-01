@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\BookingOrders\BookingOrderResource;
 use App\Models\Bppb;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\Auth;
@@ -42,8 +43,13 @@ class BppbStatusStats extends StatsOverviewWidget
                         ->url(EmailResource::getUrl('create'))
                         ->icon('heroicon-o-envelope')
                         ->label('Pengajuan Email'),
+
+                    Stat::make('Booking Order', '')
+                        ->url(BookingOrderResource::getUrl('create'))
+                        ->icon('heroicon-o-calendar-days')
+                        ->label('Booking Order'),
                 ])
-                ->columns(4)
+                ->columns(5)
                 ->columnSpanFull(),
             Section::make('Status BPPB')
                 ->schema([

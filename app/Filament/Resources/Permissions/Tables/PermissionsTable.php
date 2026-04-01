@@ -19,7 +19,10 @@ class PermissionsTable
         return $table
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->label('Name')
+                    ->searchable()
+                    ->copyable(),
                 TextColumn::make('created_at')->label('Created At'),
             ])
             ->filters([
