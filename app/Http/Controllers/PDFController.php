@@ -35,6 +35,16 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data Service tidak ditemukan.');
         }
 
+        activity()
+            ->performedOn($service)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'Surat Jalan',
+                'number' => $service->noService,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
+
         $title = 'Print Surat Jalan - ' . ($service->noService ?? 'Unknown');
 
         $pdf = app('dompdf.wrapper');
@@ -52,6 +62,16 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
 
+        activity()
+            ->performedOn($bppb)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'BPPB',
+                'number' => $bppb->noBppb,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
+
         $title = 'Print BPPB - ' . ($bppb->noBppb ?? 'Unknown');
 
         $pdf = app('dompdf.wrapper');
@@ -67,6 +87,17 @@ class PDFController extends Controller
         if (!$bpb) {
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
+
+        activity()
+            ->performedOn($bpb)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'BPB',
+                'number' => $bpb->noBpb,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
+
         $title = 'Print BPB - ' . ($bpb->noBpb ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.bpb', compact('bpb', 'title'));
@@ -81,6 +112,17 @@ class PDFController extends Controller
         if (!$email) {
             return redirect()->back()->with('error', 'Data Permohonan Email tidak ditemukan.');
         }
+
+        activity()
+            ->performedOn($email)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'Permohonan Email',
+                'number' => $email->id,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
+
         $title = 'Print Permohonan Email - ' . ($email->user->name ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.permohonanEmail', compact('email', 'title'));
@@ -96,6 +138,17 @@ class PDFController extends Controller
         if (!$email) {
             return redirect()->back()->with('error', 'Data Konfigurasi Email tidak ditemukan.');
         }
+
+        activity()
+            ->performedOn($email)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'Konfigurasi Email',
+                'number' => $email->id,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
+
         $title = 'Print Konfigurasi Email - ' . ($email->user->name ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.konfigurasiEmail', compact('email', 'title'));
@@ -111,6 +164,17 @@ class PDFController extends Controller
         if (!$internet) {
             return redirect()->back()->with('error', 'Data pengajuan Internet tidak ditemukan.');
         }
+
+        activity()
+            ->performedOn($internet)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'Internet',
+                'number' => $internet->id,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
+
         $title = 'Print Internet - ' . ($internet->user->name ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.permohonanInternet', compact('internet', 'title'));
@@ -127,6 +191,17 @@ class PDFController extends Controller
         if (!$service) {
             return redirect()->back()->with('error', 'Data Service tidak ditemukan.');
         }
+
+        activity()
+            ->performedOn($service)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'Service',
+                'number' => $service->no_service,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
+
         $title = 'Print Service - ' . ($service->no_service ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.service', compact('service', 'title'));
@@ -163,6 +238,16 @@ class PDFController extends Controller
             };
         }
 
+
+        activity()
+            ->performedOn($expedition)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'document' => 'Expedition',
+                'number' => $expedition->noExpedition,
+                'printed_at' => now()->toDateTimeString(),
+            ])
+            ->log('printed');
 
         $title = 'Print Expedition - ' . ($expedition->noExpedition ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
