@@ -49,7 +49,6 @@ class EditProfileCustom extends BaseEditProfile
                 ->schema([
                     TextInput::make('email')
                         ->label('Email')
-                        ->required()
                         ->unique(ignoreRecord: true),
 
                     TextInput::make('username')
@@ -84,8 +83,7 @@ class EditProfileCustom extends BaseEditProfile
                         ->required(),
 
                     Textarea::make('address')
-                        ->label('Alamat')
-                        ->required(),
+                        ->label('Alamat'),
 
                     // ======================
                     // STRUKTUR ORGANISASI
@@ -173,8 +171,7 @@ class EditProfileCustom extends BaseEditProfile
                         )
                         ->live()
                         ->afterStateUpdated(fn(Set $set) => $set('idSection', null))
-                        ->searchable()
-                        ->required(),
+                        ->searchable(),
 
                     Select::make('idSection')
                         ->label('Sub Section / Bagian')

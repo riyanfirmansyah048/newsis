@@ -29,6 +29,45 @@ class BookingOrderAvailability
         return static::bookingCount($bookingTypeId, $date, $ignoreId) < static::activeQuota($bookingTypeId);
     }
 
+    public static function availableUnitsOptions(?int $bookingTypeId, ?string $date, ?int $ignoreBookingId = null, ?int $selectedUnitId = null): array
+    {
+        if (! $bookingTypeId || ! $date) {
+            return [];
+        }
+
+        $reservedUnitIds = BookingOrder::query()
+            ->activeRequest()
+            ->where('booking_type_id', $bookingTypeId)
+            ->sameDate($date, $ignoreBookingId)
+            ->whereNotNull('assigned_unit_id')
+            ->pluck('assigned_unit_id')
+            ->all();
+
+        return BookingUnit::query()
+            ->active()
+            ->where('booking_type_id', $bookingTypeId)
+            ->when(! empty($reservedUnitIds), function ($query) use ($reservedUnitIds, $selectedUnitId) {
+                $query->where(function ($inner) use ($reservedUnitIds, $selectedUnitId) {
+                    $inner->whereNotIn('id', $reservedUnitIds);
+
+                    if ($selectedUnitId) {
+                        $inner->orWhere('id', $selectedUnitId);
+                    }
+                });
+            })
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    public static function unitAvailable(int $bookingTypeId, string $date, int $unitId, ?int $ignoreBookingId = null): bool
+    {
+        return array_key_exists(
+            $unitId,
+            static::availableUnitsOptions($bookingTypeId, $date, $ignoreBookingId, $unitId),
+        );
+    }
+
     public static function message(?int $bookingTypeId, ?string $date, ?int $ignoreId = null): string
     {
         if (! $bookingTypeId) {
@@ -41,38 +80,17 @@ class BookingOrderAvailability
 
         $quota = static::activeQuota($bookingTypeId);
         $used = static::bookingCount($bookingTypeId, $date, $ignoreId);
+        $availableUnits = count(static::availableUnitsOptions($bookingTypeId, $date, $ignoreId));
 
         if ($quota <= 0) {
             return 'Belum ada unit booking aktif untuk jenis ini.';
         }
 
-        if ($used >= $quota) {
+        if ($used >= $quota || $availableUnits <= 0) {
             return "Slot hari ini penuh. Kuota aktif {$quota}, booking hari ini {$used}.";
         }
 
-        return "Slot tersedia. Kuota aktif {$quota}, booking hari ini {$used}.";
-    }
-
-    public static function findAvailableUnitId(int $bookingTypeId, string $date, ?int $ignoreBookingId = null): ?int
-    {
-        $units = BookingUnit::query()
-            ->active()
-            ->where('booking_type_id', $bookingTypeId)
-            ->get();
-
-        foreach ($units as $unit) {
-            $hasConflict = BookingOrder::query()
-                ->where('assigned_unit_id', $unit->id)
-                ->where('status', 'approved')
-                ->sameDate($date, $ignoreBookingId)
-                ->exists();
-
-            if (! $hasConflict) {
-                return $unit->id;
-            }
-        }
-
-        return null;
+        return "Slot tersedia. Kuota aktif {$quota}, booking hari ini {$used}, unit tersedia {$availableUnits}.";
     }
 
     public static function timeOptions(): array

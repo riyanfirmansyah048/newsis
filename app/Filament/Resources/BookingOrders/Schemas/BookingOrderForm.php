@@ -45,7 +45,8 @@ class BookingOrderForm
             DatePicker::make('date')
                 ->label('Tanggal')
                 ->required()
-                ->live(),
+                ->live()
+                ->afterStateUpdated(fn(Set $set) => $set('assigned_unit_id', null)),
 
             Select::make('start_time')
                 ->label('Jam Mulai')
@@ -69,14 +70,29 @@ class BookingOrderForm
                 ])
                 ->default('pending')
                 ->required()
+                ->columnSpanFull()
                 ->visible(fn() => auth()->user()->hasRole('admin')),
 
             Select::make('assigned_unit_id')
-                ->label('Assigned Unit')
-                ->relationship('assignedUnit', 'name')
+                ->label('Pilih Unit')
+                ->options(fn(Get $get, ?BookingOrder $record): array => BookingOrderAvailability::availableUnitsOptions(
+                    $get('booking_type_id'),
+                    $get('date'),
+                    $record?->id,
+                    $get('assigned_unit_id'),
+                ))
                 ->searchable()
-                ->disabled()
-                ->dehydrated(),
+                ->preload()
+                ->live()
+                ->required()
+                ->columnSpanFull()
+                ->disabled(fn(Get $get, ?BookingOrder $record): bool => empty(BookingOrderAvailability::availableUnitsOptions(
+                    $get('booking_type_id'),
+                    $get('date'),
+                    $record?->id,
+                    $get('assigned_unit_id'),
+                )))
+                ->helperText('Pilih jenis booking dan tanggal terlebih dahulu, lalu pilih unit yang masih tersedia.'),
 
             Placeholder::make('availability_info')
                 ->label('Ketersediaan Slot')

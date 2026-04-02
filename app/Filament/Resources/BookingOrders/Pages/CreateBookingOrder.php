@@ -63,31 +63,38 @@ class CreateBookingOrder extends CreateRecord
             ]);
         }
 
+        if (blank($data['assigned_unit_id'] ?? null)) {
+            Notification::make()
+                ->title('Unit belum dipilih')
+                ->body('Pilih salah satu unit yang tersedia untuk tanggal tersebut.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'assigned_unit_id' => 'Pilih salah satu unit yang tersedia untuk tanggal tersebut.',
+            ]);
+        }
+
+        if (! BookingOrderAvailability::unitAvailable(
+            $data['booking_type_id'],
+            $data['date'],
+            (int) $data['assigned_unit_id'],
+        )) {
+            Notification::make()
+                ->title('Unit tidak tersedia')
+                ->body('Unit yang dipilih sudah tidak tersedia untuk tanggal tersebut. Silakan pilih unit lain.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'assigned_unit_id' => 'Unit yang dipilih sudah tidak tersedia untuk tanggal tersebut.',
+            ]);
+        }
+
         $data['user_id'] = auth()->id();
 
         if (! auth()->user()->hasRole('admin')) {
             $data['status'] = 'pending';
-        }
-
-        if (($data['status'] ?? 'pending') === 'approved') {
-            $assigned = BookingOrderAvailability::findAvailableUnitId(
-                $data['booking_type_id'],
-                $data['date'],
-            );
-
-            if (! $assigned) {
-                Notification::make()
-                    ->title('Unit tidak tersedia')
-                    ->body('Tidak ada unit yang tersedia untuk tanggal tersebut.')
-                    ->danger()
-                    ->send();
-
-                throw ValidationException::withMessages([
-                    'status' => 'Tidak ada unit tersedia untuk tanggal tersebut.',
-                ]);
-            }
-
-            $data['assigned_unit_id'] = $assigned;
         }
 
         return $data;

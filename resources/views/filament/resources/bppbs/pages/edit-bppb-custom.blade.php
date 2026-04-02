@@ -105,7 +105,6 @@
         <x-slot name="heading">
             List Pemesanan Barang
         </x-slot>
-        {{-- disini --}}
         @if (in_array($status_id, [1, 2, 3]) || auth()->user()->hasRole('admin'))
             <x-filament::button color="success" icon="heroicon-m-link"
                 wire:click="redirectToAddBppbItem({{ $bppb_id }})">

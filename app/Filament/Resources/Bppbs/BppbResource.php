@@ -93,7 +93,6 @@ class BppbResource extends Resource
             auth()->user()->idRegional !== null &&
             auth()->user()->idBusinessUnit !== null &&
             auth()->user()->idDepartment !== null &&
-            auth()->user()->idSubDepartment !== null &&
             auth()->user()->can('access-bppb');
     }
     public static function canCreate(): bool
