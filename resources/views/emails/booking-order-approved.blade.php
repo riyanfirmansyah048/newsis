@@ -6,7 +6,7 @@
     $timeLabel = \Illuminate\Support\Carbon::parse($booking->start_time)->format('H.i') . ' WIB';
 @endphp
 
-<p>Subject Booking Order</p>
+<p>Booking Order</p>
 
 <p>Kepada Yth.<br>Tim Terkait / Admin</p>
 
