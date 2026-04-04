@@ -3,13 +3,16 @@
 namespace App\Filament\Resources\Bpbs\Pages;
 
 use App\Models\Bppb;
+use App\Models\Purchase_order;
 use App\Models\Assets_item;
 use App\Models\Assets_ink;
 use App\Models\Assets_software;
 use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\Bpbs\BpbResource;
 use App\Filament\Resources\Bppbs\BppbResource;
+use Illuminate\Validation\ValidationException;
 
 class CreateBpb extends CreateRecord
 {
@@ -22,7 +25,6 @@ class CreateBpb extends CreateRecord
         parent::mount(); // pastikan memanggil parent
 
         $bppbId = request()->query('bppb_id');
-        $poId = request()->get('po_id');
 
         if ($bppbId) {
             session()->put('bppb_id', $bppbId); // Simpan ke session
@@ -36,6 +38,54 @@ class CreateBpb extends CreateRecord
         return $bppbId
             ? BppbResource::getUrl('edit', ['record' => $bppbId])
             : $this->getResource()::getUrl('index');
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $poId = $data['po_id'] ?? request()->integer('po_id');
+
+        if (! $poId) {
+            Notification::make()
+                ->title('Purchase Order belum dipilih')
+                ->body('Pilih Purchase Order terlebih dahulu sebelum membuat BPB.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'po_id' => 'Pilih Purchase Order terlebih dahulu sebelum membuat BPB.',
+            ]);
+        }
+
+        $purchaseOrder = Purchase_order::query()
+            ->with(['bppb.user', 'bpb'])
+            ->find($poId);
+
+        if (! $purchaseOrder) {
+            throw ValidationException::withMessages([
+                'po_id' => 'Purchase Order tidak ditemukan.',
+            ]);
+        }
+
+        if ($purchaseOrder->bpb()->exists()) {
+            Notification::make()
+                ->title('BPB sudah ada')
+                ->body('Purchase Order tersebut sudah memiliki BPB.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'po_id' => 'Purchase Order tersebut sudah memiliki BPB.',
+            ]);
+        }
+
+        $data['po_id'] = $purchaseOrder->id;
+        $data['user_id'] = $purchaseOrder->bppb?->user_id;
+
+        if ($purchaseOrder->bppb_id) {
+            session()->put('bppb_id', $purchaseOrder->bppb_id);
+        }
+
+        return $data;
     }
 
     // protected function afterCreate(): void
