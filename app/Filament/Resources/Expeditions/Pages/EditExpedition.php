@@ -35,7 +35,7 @@ class EditExpedition extends EditRecord
         $data['include_items'] = $details
             ->map(
                 fn($detail) =>
-                $detail->type_id . '|' . $detail->product_form_id
+                $detail->type_id . '|' . $detail->product_form_id . '|' . $detail->po_id
             )
             ->toArray();
 
@@ -54,16 +54,13 @@ class EditExpedition extends EditRecord
     {
         $record = $this->record;
 
-        $bppb = $record->bppb()->with('purchase_orders')->first();
-        $poId = $bppb?->purchase_orders->first()?->id;
-
         ExpeditionDetail::where(
             'expedition_id',
             $record->id
         )->delete();
 
         foreach ($this->selectedItems as $itemString) {
-            [$typeId, $productFormId] = explode('|', $itemString);
+            [$typeId, $productFormId, $poId] = array_pad(explode('|', $itemString), 3, null);
 
             ExpeditionDetail::create([
                 'expedition_id'   => $record->id,

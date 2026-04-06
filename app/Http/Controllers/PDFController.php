@@ -198,7 +198,7 @@ class PDFController extends Controller
 
     public function expeditionPrint($id)
     {
-        $expedition = Expedition::with('user', 'bppb', 'expeditionDetails')->find($id);
+        $expedition = Expedition::with(['user', 'bppb', 'expeditionDetails.purchaseOrder.bppb'])->find($id);
         if (!$expedition) {
             return redirect()->back()->with('error', 'Data Expedition tidak ditemukan.');
         }
@@ -206,6 +206,7 @@ class PDFController extends Controller
         foreach ($expedition->expeditionDetails as $detail) {
             $bppbId = $expedition->bppb_id;
             $typeId = $detail->type_id;
+            $poId = $detail->po_id;
 
             $detail->nama_barang = match ($detail->product_form_id) {
                 1, 5 => optional(Item::find($typeId))->name,
@@ -215,9 +216,18 @@ class PDFController extends Controller
             };
 
             $detail->qty = match ($detail->product_form_id) {
-                1, 5 => Bppb_item::where('bppb_id', $bppbId)->where('item_id', $typeId)->count(),
-                2 => Bppb_software::where('bppb_id', $bppbId)->where('software_id', $typeId)->count(),
-                3 => Bppb_ink::where('bppb_id', $bppbId)->where('ink_id', $typeId)->count(),
+                1, 5 => Bppb_item::where('bppb_id', $bppbId)
+                    ->where('purchase_order_id', $poId)
+                    ->where('item_id', $typeId)
+                    ->count(),
+                2 => Bppb_software::where('bppb_id', $bppbId)
+                    ->where('purchase_order_id', $poId)
+                    ->where('software_id', $typeId)
+                    ->count(),
+                3 => Bppb_ink::where('bppb_id', $bppbId)
+                    ->where('purchase_order_id', $poId)
+                    ->where('ink_id', $typeId)
+                    ->count(),
                 default => 0,
             };
         }

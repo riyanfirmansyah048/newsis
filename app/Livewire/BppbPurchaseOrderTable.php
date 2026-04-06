@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\Bppb_ink;
 use App\Models\Bppb_item;
 use App\Models\Expedition;
+use App\Models\ExpeditionDetail;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use App\Models\Bppb_software;
@@ -129,12 +130,13 @@ class BppbPurchaseOrderTable extends Component implements HasActions, HasSchemas
                     ->visible(
                         fn(Purchase_order $record) =>
                         in_array($record->bppb?->bppb_type_id, [2, 4])
-                            && Expedition::where('bppb_id', $record->bppb_id)->count() === 0
+                            && ! ExpeditionDetail::where('po_id', $record->id)->exists()
                     )
                     ->action(function (Purchase_order $record) {
                         return redirect()->to(
                             ExpeditionResource::getUrl('create', [
                                 'bppb_id' => $record->bppb_id,
+                                'po_id' => $record->id,
                             ])
                         );
                     }),

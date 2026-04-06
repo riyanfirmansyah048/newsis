@@ -24,11 +24,8 @@ class CreateExpedition extends CreateRecord
     {
         $record = $this->getRecord();
 
-        $bppb = $record->bppb()->with('purchase_orders')->first();
-        $poId = $bppb?->purchase_orders->first()?->id;
-
         foreach ($this->selectedItems as $itemString) {
-            [$id, $productFormId] = explode('|', $itemString);
+            [$id, $productFormId, $poId] = array_pad(explode('|', $itemString), 3, null);
 
             ExpeditionDetail::create([
                 'expedition_id'   => $record->id,
