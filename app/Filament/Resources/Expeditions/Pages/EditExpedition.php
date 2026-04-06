@@ -6,9 +6,6 @@ use App\Filament\Resources\Expeditions\ExpeditionResource;
 use App\Models\Expedition;
 use App\Models\ExpeditionDetail;
 use Filament\Actions\Action;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditExpedition extends EditRecord
@@ -20,9 +17,8 @@ class EditExpedition extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            // DeleteAction::make(),
             Action::make('Print')
-                ->url(fn(Expedition $record) => route('expedition.print', $record->id))
+                ->url(fn (Expedition $record) => route('expedition.print', $record->id))
                 ->openUrlInNewTab()
                 ->icon('heroicon-o-printer')
                 ->color('success'),
@@ -31,16 +27,10 @@ class EditExpedition extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $details = ExpeditionDetail::where(
-            'expedition_id',
-            $this->record->id
-        )->get();
+        $details = ExpeditionDetail::where('expedition_id', $this->record->id)->get();
 
         $data['include_items'] = $details
-            ->map(
-                fn($detail) =>
-                $detail->type_id . '|' . $detail->product_form_id
-            )
+            ->map(fn ($detail) => $detail->type_id . '|' . $detail->product_form_id . '|' . $detail->po_id)
             ->toArray();
 
         return $data;
@@ -49,7 +39,7 @@ class EditExpedition extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $this->selectedItems = $data['include_items'] ?? [];
-        unset($data['include_items']); // 🔥 WAJIB supaya tidak masuk ke expeditions
+        unset($data['include_items']);
 
         return $data;
     }
@@ -58,24 +48,15 @@ class EditExpedition extends EditRecord
     {
         $record = $this->record;
 
-        // ambil po_id dari bppb
-        $bppb = $record->bppb()->with('purchase_orders')->first();
-        $poId = $bppb?->purchase_orders->first()?->id;
+        ExpeditionDetail::where('expedition_id', $record->id)->delete();
 
-        // hapus detail lama
-        ExpeditionDetail::where(
-            'expedition_id',
-            $record->id
-        )->delete();
-
-        // insert ulang sesuai checkbox
         foreach ($this->selectedItems as $itemString) {
-            [$typeId, $productFormId] = explode('|', $itemString);
+            [$typeId, $productFormId, $poId] = array_pad(explode('|', $itemString), 3, null);
 
             ExpeditionDetail::create([
-                'expedition_id'   => $record->id,
-                'po_id'           => $poId,
-                'type_id'         => $typeId,
+                'expedition_id' => $record->id,
+                'po_id' => $poId,
+                'type_id' => $typeId,
                 'product_form_id' => $productFormId,
             ]);
         }

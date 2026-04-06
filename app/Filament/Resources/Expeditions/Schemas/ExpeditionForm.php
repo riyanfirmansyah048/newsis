@@ -3,6 +3,9 @@
 namespace App\Filament\Resources\Expeditions\Schemas;
 
 use App\Models\Bppb;
+use App\Models\Bppb_ink;
+use App\Models\Bppb_item;
+use App\Models\Bppb_software;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -83,58 +86,67 @@ class ExpeditionForm
                     ->label('Pilih Barang yang Akan Dikirim')
                     ->options(function (callable $get) {
                         $bppbId = $get('bppb_id');
-                        if (!$bppbId) return [];
+                        if (! $bppbId) {
+                            return [];
+                        }
 
-                        // Bppb_item
-                        $items = \App\Models\Bppb_item::query()
+                        $items = Bppb_item::query()
                             ->where('bppb_id', $bppbId)
+                            ->whereNotNull('purchase_order_id')
+                            ->with(['item', 'Purchase_order'])
                             ->get()
-                            ->groupBy('item_id')
-                            ->mapWithKeys(function ($grouped, $itemId) {
+                            ->groupBy(fn ($row) => $row->item_id . '|' . $row->purchase_order_id)
+                            ->mapWithKeys(function ($grouped) {
                                 $firstItem = $grouped->first();
-                                if (!$firstItem || !$firstItem->item) return [];
+                                if (! $firstItem || ! $firstItem->item || ! $firstItem->Purchase_order) {
+                                    return [];
+                                }
 
                                 $qty = $grouped->count();
-                                $item = $grouped->first()->item;
-                                // $key = $grouped->first()->item_id . '|' . $item->product_form_id;
-                                $key = $itemId . '|' . $item->product_form_id;
-                                $label = "[Item] {$item->name} - qty = {$qty}";
+                                $item = $firstItem->item;
+                                $key = $firstItem->item_id . '|' . $item->product_form_id . '|' . $firstItem->purchase_order_id;
+                                $label = "[Item] {$item->name} - qty = {$qty} - No. PO: {$firstItem->Purchase_order->noPo}";
                                 return [$key => $label];
                             });
 
-                        // Bppb_ink
-                        $inks = \App\Models\Bppb_ink::query()
+                        $inks = Bppb_ink::query()
                             ->where('bppb_id', $bppbId)
+                            ->whereNotNull('purchase_order_id')
+                            ->with(['ink', 'Purchase_order'])
                             ->get()
-                            ->groupBy('ink_id')
-                            ->mapWithKeys(function ($grouped, $inkId) {
+                            ->groupBy(fn ($row) => $row->ink_id . '|' . $row->purchase_order_id)
+                            ->mapWithKeys(function ($grouped) {
                                 $firstInk = $grouped->first();
-                                if (!$firstInk || !$firstInk->ink) return [];
+                                if (! $firstInk || ! $firstInk->ink || ! $firstInk->Purchase_order) {
+                                    return [];
+                                }
 
                                 $qty = $grouped->count();
-                                $ink = $grouped->first()->ink;
-                                // $key = $grouped->first()->id . '|' . $ink->product_form_id;
-                                $key = $inkId . '|' . $ink->product_form_id;
-                                $label = "[Ink] {$ink->name} - qty = {$qty}";
+                                $ink = $firstInk->ink;
+                                $key = $firstInk->ink_id . '|' . $ink->product_form_id . '|' . $firstInk->purchase_order_id;
+                                $label = "[Ink] {$ink->name} - qty = {$qty} - No. PO: {$firstInk->Purchase_order->noPo}";
                                 return [$key => $label];
                             });
 
-                        // Bppb_software
-                        $softwares = \App\Models\Bppb_software::query()
+                        $softwares = Bppb_software::query()
                             ->where('bppb_id', $bppbId)
+                            ->whereNotNull('purchase_order_id')
+                            ->with(['software', 'Purchase_order'])
                             ->get()
-                            ->groupBy('software_id')
-                            ->mapWithKeys(function ($grouped, $softwareId) {
+                            ->groupBy(fn ($row) => $row->software_id . '|' . $row->purchase_order_id)
+                            ->mapWithKeys(function ($grouped) {
                                 $firstSoftware = $grouped->first();
-                                if (!$firstSoftware || !$firstSoftware->software) return [];
+                                if (! $firstSoftware || ! $firstSoftware->software || ! $firstSoftware->Purchase_order) {
+                                    return [];
+                                }
 
                                 $qty = $grouped->count();
-                                $software = $grouped->first()->software;
-                                // $key = $grouped->first()->id . '|' . $software->product_form_id;
-                                $key = $softwareId . '|' . $software->product_form_id;
-                                $label = "[Software] {$software->name} - qty = {$qty}";
+                                $software = $firstSoftware->software;
+                                $key = $firstSoftware->software_id . '|' . $software->product_form_id . '|' . $firstSoftware->purchase_order_id;
+                                $label = "[Software] {$software->name} - qty = {$qty} - No. PO: {$firstSoftware->Purchase_order->noPo}";
                                 return [$key => $label];
                             });
+
                         $items = collect($items);
                         $inks = collect($inks);
                         $softwares = collect($softwares);
