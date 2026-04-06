@@ -50,8 +50,6 @@ class PDFController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.surat-jalan', compact('service', 'title'));
 
-        // return $pdf->stream('Surat-Jalan-' . now() . '.pdf');
-
         return view('pdf.surat-jalan', compact('service', 'title'));
     }
 
@@ -78,8 +76,6 @@ class PDFController extends Controller
         $pdf->loadView('pdf.bppb', compact('bppb', 'title'));
 
         return $pdf->stream('BPPB-' . now() . '.pdf');
-
-        // return view('pdf.bppb', compact('bppb', 'title'));
     }
     public function bpbPrint($id)
     {
@@ -101,8 +97,6 @@ class PDFController extends Controller
         $title = 'Print BPB - ' . ($bpb->noBpb ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.bpb', compact('bpb', 'title'));
-
-        // return $pdf->stream('BPB-' . now() . '.pdf');
 
         return view('pdf.bpb', compact('bpb', 'title'));
     }
@@ -126,8 +120,6 @@ class PDFController extends Controller
         $title = 'Print Permohonan Email - ' . ($email->user->name ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.permohonanEmail', compact('email', 'title'));
-
-        // return $pdf->stream('Email-' . now() . '.pdf');
 
         return view('pdf.permohonanEmail', compact('email', 'title'));
     }
@@ -153,8 +145,6 @@ class PDFController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.konfigurasiEmail', compact('email', 'title'));
 
-        // return $pdf->stream('Konfigurasi Email-' . now() . '.pdf');
-
         return view('pdf.konfigurasiEmail', compact('email', 'title'));
     }
 
@@ -179,9 +169,6 @@ class PDFController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.permohonanInternet', compact('internet', 'title'));
 
-        // return $pdf->stream('Internet -' . now() . '.pdf');
-
-        // return view('pdf.internet', compact('internet', 'title'));
         return view('pdf.permohonanInternet', compact('internet', 'title'));
     }
 
@@ -207,13 +194,11 @@ class PDFController extends Controller
         $pdf->loadView('pdf.service', compact('service', 'title'));
 
         return $pdf->stream('Service -' . now() . '.pdf');
-
-        // return view('pdf.Service', compact('service', 'title'));
     }
 
     public function expeditionPrint($id)
     {
-        $expedition = Expedition::with(['user', 'bppb', 'expeditionDetails.purchaseOrder.bppb'])->find($id);
+        $expedition = Expedition::with('user', 'bppb', 'expeditionDetails')->find($id);
         if (!$expedition) {
             return redirect()->back()->with('error', 'Data Expedition tidak ditemukan.');
         }
@@ -221,7 +206,6 @@ class PDFController extends Controller
         foreach ($expedition->expeditionDetails as $detail) {
             $bppbId = $expedition->bppb_id;
             $typeId = $detail->type_id;
-            $poId = $detail->po_id;
 
             $detail->nama_barang = match ($detail->product_form_id) {
                 1, 5 => optional(Item::find($typeId))->name,
@@ -231,21 +215,13 @@ class PDFController extends Controller
             };
 
             $detail->qty = match ($detail->product_form_id) {
-                1, 5 => Bppb_item::where('bppb_id', $bppbId)
-                    ->where('purchase_order_id', $poId)
-                    ->where('item_id', $typeId)
-                    ->count(),
-                2 => Bppb_software::where('bppb_id', $bppbId)
-                    ->where('purchase_order_id', $poId)
-                    ->where('software_id', $typeId)
-                    ->count(),
-                3 => Bppb_ink::where('bppb_id', $bppbId)
-                    ->where('purchase_order_id', $poId)
-                    ->where('ink_id', $typeId)
-                    ->count(),
+                1, 5 => Bppb_item::where('bppb_id', $bppbId)->where('item_id', $typeId)->count(),
+                2 => Bppb_software::where('bppb_id', $bppbId)->where('software_id', $typeId)->count(),
+                3 => Bppb_ink::where('bppb_id', $bppbId)->where('ink_id', $typeId)->count(),
                 default => 0,
             };
         }
+
 
         activity()
             ->performedOn($expedition)
@@ -261,11 +237,10 @@ class PDFController extends Controller
         $pdf = app('dompdf.wrapper');
         $pdf->loadView('pdf.expedition', compact('expedition', 'title'));
 
+
         $expedition->datePrint = now();
         $expedition->save();
 
-        // return $pdf->stream('Expedition -' . now() . '.pdf');
         return view('pdf.expedition', compact('expedition', 'title'));
     }
 }
-

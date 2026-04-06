@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Expeditions\Pages;
 
-use App\Filament\Resources\Expeditions\ExpeditionResource;
 use App\Models\ExpeditionDetail;
 use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Expeditions\ExpeditionResource;
 
 class CreateExpedition extends CreateRecord
 {
@@ -24,14 +24,17 @@ class CreateExpedition extends CreateRecord
     {
         $record = $this->getRecord();
 
+        $bppb = $record->bppb()->with('purchase_orders')->first();
+        $poId = $bppb?->purchase_orders->first()?->id;
+
         foreach ($this->selectedItems as $itemString) {
-            [$id, $productFormId, $poId] = array_pad(explode('|', $itemString), 3, null);
+            [$id, $productFormId] = explode('|', $itemString);
 
             ExpeditionDetail::create([
-                'expedition_id' => $record->id,
-                'type_id' => $id,
+                'expedition_id'   => $record->id,
+                'type_id'         => $id,
                 'product_form_id' => $productFormId,
-                'po_id' => $poId,
+                'po_id'           => $poId,
             ]);
         }
     }

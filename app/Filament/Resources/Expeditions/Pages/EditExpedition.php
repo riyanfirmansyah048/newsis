@@ -18,7 +18,7 @@ class EditExpedition extends EditRecord
     {
         return [
             Action::make('Print')
-                ->url(fn (Expedition $record) => route('expedition.print', $record->id))
+                ->url(fn(Expedition $record) => route('expedition.print', $record->id))
                 ->openUrlInNewTab()
                 ->icon('heroicon-o-printer')
                 ->color('success'),
@@ -27,10 +27,16 @@ class EditExpedition extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $details = ExpeditionDetail::where('expedition_id', $this->record->id)->get();
+        $details = ExpeditionDetail::where(
+            'expedition_id',
+            $this->record->id
+        )->get();
 
         $data['include_items'] = $details
-            ->map(fn ($detail) => $detail->type_id . '|' . $detail->product_form_id . '|' . $detail->po_id)
+            ->map(
+                fn($detail) =>
+                $detail->type_id . '|' . $detail->product_form_id
+            )
             ->toArray();
 
         return $data;
@@ -48,15 +54,21 @@ class EditExpedition extends EditRecord
     {
         $record = $this->record;
 
-        ExpeditionDetail::where('expedition_id', $record->id)->delete();
+        $bppb = $record->bppb()->with('purchase_orders')->first();
+        $poId = $bppb?->purchase_orders->first()?->id;
+
+        ExpeditionDetail::where(
+            'expedition_id',
+            $record->id
+        )->delete();
 
         foreach ($this->selectedItems as $itemString) {
-            [$typeId, $productFormId, $poId] = array_pad(explode('|', $itemString), 3, null);
+            [$typeId, $productFormId] = explode('|', $itemString);
 
             ExpeditionDetail::create([
-                'expedition_id' => $record->id,
-                'po_id' => $poId,
-                'type_id' => $typeId,
+                'expedition_id'   => $record->id,
+                'po_id'           => $poId,
+                'type_id'         => $typeId,
                 'product_form_id' => $productFormId,
             ]);
         }
