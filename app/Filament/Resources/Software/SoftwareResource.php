@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Software\Pages\EditSoftware;
+use App\Filament\Resources\Software\Pages\ViewSoftware;
 use App\Filament\Resources\Software\Pages\ListSoftware;
 use App\Filament\Resources\Software\Pages\CreateSoftware;
 use App\Filament\Resources\Software\Schemas\SoftwareForm;
@@ -55,6 +56,7 @@ class SoftwareResource extends Resource
     {
         return [
             'index' => ListSoftware::route('/'),
+            'view' => ViewSoftware::route('/{record}'),
             'create' => CreateSoftware::route('/create'),
             'edit' => EditSoftware::route('/{record}/edit'),
         ];

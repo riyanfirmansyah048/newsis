@@ -11,6 +11,7 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Items\Pages\EditItem;
+use App\Filament\Resources\Items\Pages\ViewItem;
 use App\Filament\Resources\Items\Pages\ListItems;
 use App\Filament\Resources\Items\Pages\CreateItem;
 use App\Filament\Resources\Items\Schemas\ItemForm;
@@ -55,6 +56,7 @@ class ItemResource extends Resource
     {
         return [
             'index' => ListItems::route('/'),
+            'view' => ViewItem::route('/{record}'),
             'create' => CreateItem::route('/create'),
             'edit' => EditItem::route('/{record}/edit'),
         ];

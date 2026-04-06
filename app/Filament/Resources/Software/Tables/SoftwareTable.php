@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Software\Tables;
 
+use App\Filament\Resources\Software\SoftwareResource;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -44,7 +45,8 @@ class SoftwareTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
+                    ViewAction::make()
+                        ->url(fn ($record) => SoftwareResource::getUrl('view', ['record' => $record])),
                     EditAction::make(),
                     DeleteAction::make(),
                 ]),

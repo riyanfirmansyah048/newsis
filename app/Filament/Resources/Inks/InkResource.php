@@ -11,6 +11,7 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Inks\Pages\EditInk;
+use App\Filament\Resources\Inks\Pages\ViewInk;
 use App\Filament\Resources\Inks\Pages\ListInks;
 use App\Filament\Resources\Inks\Pages\CreateInk;
 use App\Filament\Resources\Inks\Schemas\InkForm;
@@ -55,6 +56,7 @@ class InkResource extends Resource
     {
         return [
             'index' => ListInks::route('/'),
+            'view' => ViewInk::route('/{record}'),
             'create' => CreateInk::route('/create'),
             'edit' => EditInk::route('/{record}/edit'),
         ];

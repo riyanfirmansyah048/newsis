@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Items\Tables;
 
+use App\Filament\Resources\Items\ItemResource;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -44,7 +45,8 @@ class ItemsTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
+                    ViewAction::make()
+                        ->url(fn ($record) => ItemResource::getUrl('view', ['record' => $record])),
                     EditAction::make(),
                     DeleteAction::make(),
                 ]),

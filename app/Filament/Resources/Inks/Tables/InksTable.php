@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Inks\Tables;
 
+use App\Filament\Resources\Inks\InkResource;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -42,7 +43,8 @@ class InksTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
+                    ViewAction::make()
+                        ->url(fn ($record) => InkResource::getUrl('view', ['record' => $record])),
                     EditAction::make(),
                     DeleteAction::make(),
                 ]),
