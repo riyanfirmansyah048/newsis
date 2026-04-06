@@ -161,6 +161,7 @@ class BppbForm
                         TextInput::make('noBppb')
                             ->label('No. BPPB')
                             ->placeholder('Masukkan No. BPPB')
+                            ->unique(ignoreRecord: true)
                             ->visible(fn(Get $get) => $get('manual_no_bppb'))
                             ->required(fn(Get $get) => $get('manual_no_bppb')),
                         Hidden::make('bppb_type_id')
