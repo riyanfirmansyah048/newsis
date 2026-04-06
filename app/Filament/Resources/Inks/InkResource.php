@@ -56,8 +56,8 @@ class InkResource extends Resource
     {
         return [
             'index' => ListInks::route('/'),
-            'view' => ViewInk::route('/{record}'),
             'create' => CreateInk::route('/create'),
+            'view' => ViewInk::route('/{record}/view'),
             'edit' => EditInk::route('/{record}/edit'),
         ];
     }

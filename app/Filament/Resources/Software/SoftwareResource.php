@@ -56,8 +56,8 @@ class SoftwareResource extends Resource
     {
         return [
             'index' => ListSoftware::route('/'),
-            'view' => ViewSoftware::route('/{record}'),
             'create' => CreateSoftware::route('/create'),
+            'view' => ViewSoftware::route('/{record}/view'),
             'edit' => EditSoftware::route('/{record}/edit'),
         ];
     }
