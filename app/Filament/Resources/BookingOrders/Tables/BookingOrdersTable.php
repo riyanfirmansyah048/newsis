@@ -22,9 +22,9 @@ class BookingOrdersTable
     {
         return $table
             ->query(
-                auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
-                    ? BookingOrder::query()->withTrashed() // Jika admin, tampilkan semua data termasuk yang di-cancel
-                    : BookingOrder::query()->withTrashed()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
+                auth()->user()->can('update-booking-order')
+                    ? BookingOrder::query()->withTrashed()
+                    : BookingOrder::query()->withTrashed()->where('user_id', auth()->id())
             )
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
@@ -76,18 +76,9 @@ class BookingOrdersTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make()
-                    ->visible(
-                        fn($record) =>
-                        !in_array($record->status, ['approved', 'rejected'])
-                            || auth()->user()->hasRole('admin')
-                    ),
-
+                    ->visible(fn() => auth()->user()->can('update-booking-order')),
                 DeleteAction::make()
-                    ->visible(
-                        fn($record) =>
-                        !in_array($record->status, ['approved', 'rejected'])
-                            || auth()->user()->hasRole('admin')
-                    ),
+                    ->visible(fn() => auth()->user()->can('update-booking-order')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

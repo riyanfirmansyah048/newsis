@@ -69,7 +69,7 @@ class BookingOrderResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        if (! auth()->user()?->hasRole('admin')) {
+        if (! auth()->user()?->can('update-booking-order')) {
             return null;
         }
 
@@ -82,14 +82,13 @@ class BookingOrderResource extends Resource
 
     public static function getNavigationBadgeColor(): ?string
     {
-        if (! auth()->user()?->hasRole('admin')) {
+        if (! auth()->user()?->can('update-booking-order')) {
             return null;
         }
 
         return 'danger';
     }
 
-    // CRUD data--------------------------------------------------------------
     public static function canAccess(): bool
     {
         return auth()->user()->can('access-booking-order');

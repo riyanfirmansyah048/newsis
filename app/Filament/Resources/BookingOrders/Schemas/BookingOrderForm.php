@@ -71,7 +71,7 @@ class BookingOrderForm
                 ->default('pending')
                 ->required()
                 ->columnSpanFull()
-                ->visible(fn() => auth()->user()->hasRole('admin')),
+                ->visible(fn() => auth()->user()->can('update-booking-order')),
 
             Select::make('assigned_unit_id')
                 ->label('Pilih Unit')
