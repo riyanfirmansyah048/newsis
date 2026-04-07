@@ -16,6 +16,12 @@ class BookingTypeForm
                 ->required()
                 ->unique(ignoreRecord: true),
 
+            TextInput::make('notification_email')
+                ->label('Email Notifikasi')
+                ->email()
+                ->placeholder('contoh: it-admin@sanbe-farma.com')
+                ->helperText('Email PIC/departemen yang akan menerima notifikasi approval untuk jenis booking ini.'),
+
             Toggle::make('is_active')
                 ->label('Aktif')
                 ->default(true),

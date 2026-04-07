@@ -12,14 +12,21 @@ class CreateBookingOrder extends CreateRecord
 {
     protected static string $resource = BookingOrderResource::class;
 
+    protected function hasValidProfileEmail(): bool
+    {
+        $email = trim((string) auth()->user()?->email);
+
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
     public function mount(): void
     {
         parent::mount();
 
-        if (blank(auth()->user()?->email)) {
+        if (! $this->hasValidProfileEmail()) {
             Notification::make()
-                ->title('Email profile belum diisi')
-                ->body('Lengkapi email pada profile Anda terlebih dahulu sebelum membuat Booking Order.')
+                ->title('Email profile belum valid')
+                ->body('Lengkapi email yang valid pada profile Anda terlebih dahulu sebelum membuat Booking Order.')
                 ->danger()
                 ->persistent()
                 ->send();
@@ -32,16 +39,16 @@ class CreateBookingOrder extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        if (blank(auth()->user()?->email)) {
+        if (! $this->hasValidProfileEmail()) {
             Notification::make()
-                ->title('Email profile belum diisi')
-                ->body('Lengkapi email pada profile Anda terlebih dahulu sebelum membuat Booking Order.')
+                ->title('Email profile belum valid')
+                ->body('Lengkapi email yang valid pada profile Anda terlebih dahulu sebelum membuat Booking Order.')
                 ->danger()
                 ->persistent()
                 ->send();
 
             throw ValidationException::withMessages([
-                'user_id' => 'Lengkapi email pada profile Anda terlebih dahulu sebelum membuat Booking Order.',
+                'user_id' => 'Lengkapi email yang valid pada profile Anda terlebih dahulu sebelum membuat Booking Order.',
             ]);
         }
 

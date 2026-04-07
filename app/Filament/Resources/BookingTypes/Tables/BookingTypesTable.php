@@ -22,6 +22,11 @@ class BookingTypesTable
                     ->label('Nama Jenis Booking')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('notification_email')
+                    ->label('Email Notifikasi')
+                    ->searchable()
+                    ->copyable()
+                    ->placeholder('-'),
                 IconColumn::make('is_active')
                     ->label('Aktif')
                     ->boolean(),

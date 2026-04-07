@@ -77,10 +77,10 @@ class EditBookingOrder extends EditRecord
         }
 
         $this->record->loadMissing(['user.department', 'bookingType', 'assignedUnit']);
-        // disini
+
         $recipients = collect([
             $this->record->user?->email,
-            env('BOOKING_IT_EMAIL', 'it-admin@sanbe-farma.com'),
+            $this->record->bookingType?->notification_email,
         ])
             ->filter()
             ->unique()
