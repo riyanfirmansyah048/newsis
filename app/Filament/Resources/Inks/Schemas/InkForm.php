@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Inks\Schemas;
 
 use App\Models\Type;
 use App\Models\Unit;
-use App\Models\Category_ink;
 use App\Models\Brand_ink;
+use App\Models\Category_ink;
 use App\Models\Product_form;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -25,28 +25,35 @@ class InkForm
                     ->label('Nama Tinta')
                     ->required()
                     ->columnSpanFull(),
-                //------------------------------------------------------------
                 Select::make('category_ink_id')
                     ->label('Kategori Tinta')
                     ->placeholder('Pilih Kategori Tinta')
-                    ->options(Category_ink::all()->pluck('name', 'id'))
-                    ->default(fn() => request()->input('category_ink'))
+                    ->options(Category_ink::query()->pluck('name', 'id')->toArray())
+                    ->default(fn() => request()->integer('category_ink_id'))
                     ->required()
                     ->live()
                     ->searchable()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('brand_ink_id', null);
+                    ->preload()
+                    ->afterStateUpdated(function (Set $set, $state, $old) {
+                        if ($old !== null && $state !== $old) {
+                            $set('brand_ink_id', null);
+                        }
                     }),
                 Select::make('brand_ink_id')
                     ->label('Merek Tinta')
                     ->placeholder('Pilih Merek Tinta')
-                    ->options(fn(Get $get): Collection => Brand_ink::query()
-                        ->where('category_ink_id', $get('category_ink_id'))
-                        ->pluck('name', 'id'))
-                    ->default(fn() => request()->input('brand_ink'))
+                    ->options(fn(Get $get): array => Brand_ink::query()
+                        ->when(
+                            $get('category_ink_id'),
+                            fn($query) => $query->where('category_ink_id', $get('category_ink_id'))
+                        )
+                        ->pluck('name', 'id')
+                        ->toArray())
+                    ->default(fn() => request()->integer('brand_ink_id'))
                     ->required()
-                    ->searchable(),
-                //------------------------------------------------------------
+                    ->searchable()
+                    ->preload()
+                    ->disabled(fn(Get $get) => blank($get('category_ink_id'))),
                 Select::make('product_form_id')
                     ->label('Bentuk Tinta')
                     ->placeholder('Pilih Bentuk Tinta')

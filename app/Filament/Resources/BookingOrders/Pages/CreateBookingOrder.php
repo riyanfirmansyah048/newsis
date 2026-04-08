@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\BookingOrders\Pages;
 
+use App\Mail\BookingOrderSubmittedMail;
 use App\Support\BookingOrderAvailability;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\BookingOrders\BookingOrderResource;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class CreateBookingOrder extends CreateRecord
@@ -100,10 +102,41 @@ class CreateBookingOrder extends CreateRecord
 
         $data['user_id'] = auth()->id();
 
-        if (! auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->can('update-booking-order')) {
             $data['status'] = 'pending';
         }
 
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        $this->record->loadMissing(['user.department', 'bookingType', 'assignedUnit']);
+
+        $recipients = collect([
+            $this->record->bookingType?->notification_email,
+        ])
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $ccRecipients = collect(explode(',', (string) $this->record->bookingType?->notification_cc))
+            ->map(fn ($email) => trim($email))
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($recipients) && empty($ccRecipients)) {
+            return;
+        }
+
+        $mail = new BookingOrderSubmittedMail($this->record);
+        $mail->replyTo($this->record->user?->email, $this->record->user?->name ?? 'User');
+
+        Mail::to($recipients)
+            ->cc($ccRecipients)
+            ->send($mail);
     }
 }

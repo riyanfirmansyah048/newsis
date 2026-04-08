@@ -49,7 +49,7 @@ class BrandInksTable
                         fn(Brand_ink $brand_ink) =>
                         InkResource::getUrl('index', [
                             'brand_ink_id' => $brand_ink->id,
-                            'category_ink_id' => $brand_ink->id,
+                            'category_ink_id' => $brand_ink->category_ink_id,
                         ])
                     ),
             ])

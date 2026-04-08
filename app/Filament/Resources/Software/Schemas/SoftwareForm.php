@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Software\Schemas;
 
 use App\Models\Unit;
 use App\Models\Type;
-use App\Models\Category_software;
 use App\Models\Brand_software;
+use App\Models\Category_software;
 use App\Models\Product_form;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
@@ -13,8 +13,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Support\Collection;
-
 
 class SoftwareForm
 {
@@ -26,29 +24,35 @@ class SoftwareForm
                     ->label('Nama Software')
                     ->required()
                     ->columnSpanFull(),
-                //------------------------------------------------------------
                 Select::make('category_software_id')
                     ->label('Kategori Software')
                     ->placeholder('Pilih Kategori Software')
-                    ->options(Category_software::all()->pluck('name', 'id'))
-                    // ->default(fn() => request()->input('category_software_id'))
+                    ->options(Category_software::query()->pluck('name', 'id')->toArray())
+                    ->default(fn() => request()->integer('category_software_id'))
                     ->required()
                     ->live()
                     ->searchable()
-                    ->afterStateUpdated(function (Set $set) {
-                        $set('brand_software_id', null);
+                    ->preload()
+                    ->afterStateUpdated(function (Set $set, $state, $old) {
+                        if ($old !== null && $state !== $old) {
+                            $set('brand_software_id', null);
+                        }
                     }),
                 Select::make('brand_software_id')
                     ->label('Merek Software')
                     ->placeholder('Pilih Merek Software')
-                    ->options(fn(Get $get): Collection => Brand_software::query()
-                        ->where('category_software_id', $get('category_software_id'))
-                        ->pluck('name', 'id'))
-                    // ->default(fn() => request()->input('brand_software_id'))
+                    ->options(fn(Get $get): array => Brand_software::query()
+                        ->when(
+                            $get('category_software_id'),
+                            fn($query) => $query->where('category_software_id', $get('category_software_id'))
+                        )
+                        ->pluck('name', 'id')
+                        ->toArray())
+                    ->default(fn() => request()->integer('brand_software_id'))
                     ->required()
                     ->searchable()
+                    ->preload()
                     ->disabled(fn(Get $get) => blank($get('category_software_id'))),
-                //------------------------------------------------------------
                 Select::make('product_form_id')
                     ->label('Bentuk Software')
                     ->placeholder('Pilih Bentuk Software')

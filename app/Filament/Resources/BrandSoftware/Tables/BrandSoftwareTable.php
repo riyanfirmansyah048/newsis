@@ -49,7 +49,7 @@ class BrandSoftwareTable
                         fn(Brand_software $brand_software) =>
                         SoftwareResource::getUrl('index', [
                             'brand_software_id' => $brand_software->id,
-                            'category_software_id' => $brand_software->id,
+                            'category_software_id' => $brand_software->category_software_id,
                         ])
                     ),
             ])

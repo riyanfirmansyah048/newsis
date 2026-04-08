@@ -88,25 +88,39 @@ class BookingOrderResource extends Resource
 
         return 'danger';
     }
+    //---------------------------------------------------------------------------------------------------------
+    protected static function hasValidProfileEmail(): bool
+    {
+        $email = trim((string) auth()->user()?->email);
 
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
     public static function canAccess(): bool
     {
         return auth()->user()->can('access-booking-order');
     }
     public static function canCreate(): bool
     {
-        return auth()->user()->can('create-booking-order');
+        // return auth()->user()->can('create-booking-order');
+        return auth()->user()->can('create-booking-order')
+            && static::hasValidProfileEmail();
     }
     public static function canView(Model $record): bool
     {
-        return auth()->user()->can('read-booking-order', $record);
+        // return auth()->user()->can('read-booking-order', $record);
+        return auth()->user()->can('read-booking-order', $record)
+            && static::hasValidProfileEmail();
     }
     public static function canEdit(Model $record): bool
     {
-        return auth()->user()->can('update-booking-order', $record);
+        // return auth()->user()->can('update-booking-order', $record);
+        return auth()->user()->can('update-booking-order', $record)
+            && static::hasValidProfileEmail();
     }
     public static function canDelete(Model $record): bool
     {
-        return auth()->user()->can('delete-booking-order', $record);
+        // return auth()->user()->can('delete-booking-order', $record);
+        return auth()->user()->can('delete-booking-order', $record)
+            && static::hasValidProfileEmail();
     }
 }

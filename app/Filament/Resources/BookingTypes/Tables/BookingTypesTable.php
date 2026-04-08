@@ -27,6 +27,10 @@ class BookingTypesTable
                     ->searchable()
                     ->copyable()
                     ->placeholder('-'),
+                TextColumn::make('notification_cc')
+                    ->label('CC Email')
+                    ->limit(40)
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('Aktif')
                     ->boolean(),

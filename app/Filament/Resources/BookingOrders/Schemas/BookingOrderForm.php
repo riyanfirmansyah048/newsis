@@ -11,6 +11,7 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 
@@ -70,8 +71,21 @@ class BookingOrderForm
                 ])
                 ->default('pending')
                 ->required()
+                ->live()
                 ->columnSpanFull()
                 ->visible(fn() => auth()->user()->can('update-booking-order')),
+
+            TextInput::make('link')
+                ->label('Link')
+                ->url()
+                ->columnSpanFull()
+                ->visible(fn(Get $get) => auth()->user()->can('update-booking-order') && $get('status') === 'approved'),
+
+            Textarea::make('rejection_reason')
+                ->label('Alasan Reject')
+                ->rows(3)
+                ->columnSpanFull()
+                ->visible(fn(Get $get) => auth()->user()->can('update-booking-order') && $get('status') === 'rejected'),
 
             Select::make('assigned_unit_id')
                 ->label('Pilih Unit')

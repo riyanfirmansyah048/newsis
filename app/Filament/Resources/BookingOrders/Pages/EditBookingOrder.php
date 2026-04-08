@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\BookingOrders\Pages;
 
-use App\Mail\BookingOrderApprovedMail;
+use App\Mail\BookingOrderValidatedMail;
 use App\Support\BookingOrderAvailability;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -63,8 +63,44 @@ class EditBookingOrder extends EditRecord
             ]);
         }
 
-        if (($data['status'] ?? $this->record->status) === 'rejected') {
+        $status = $data['status'] ?? $this->record->status;
+
+        if ($status === 'approved' && blank($data['link'] ?? null)) {
+            Notification::make()
+                ->title('Link wajib diisi')
+                ->body('Isi link terlebih dahulu saat Booking Order di-approve.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'link' => 'Isi link terlebih dahulu saat Booking Order di-approve.',
+            ]);
+        }
+
+        if ($status === 'rejected' && blank($data['rejection_reason'] ?? null)) {
+            Notification::make()
+                ->title('Alasan reject wajib diisi')
+                ->body('Isi alasan reject terlebih dahulu saat Booking Order ditolak.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'rejection_reason' => 'Isi alasan reject terlebih dahulu saat Booking Order ditolak.',
+            ]);
+        }
+
+        if ($status === 'rejected') {
             $data['assigned_unit_id'] = null;
+            $data['link'] = null;
+        }
+
+        if ($status === 'approved') {
+            $data['rejection_reason'] = null;
+        }
+
+        if (in_array($status, ['approved', 'rejected'])) {
+            $data['validated_by'] = auth()->id();
+            $data['validated_at'] = now();
         }
 
         return $data;
@@ -72,7 +108,7 @@ class EditBookingOrder extends EditRecord
 
     protected function afterSave(): void
     {
-        if (! $this->record->wasChanged('status') || $this->record->status !== 'approved') {
+        if (! $this->record->wasChanged('status') || ! in_array($this->record->status, ['approved', 'rejected'])) {
             return;
         }
 
@@ -87,10 +123,27 @@ class EditBookingOrder extends EditRecord
             ->values()
             ->all();
 
-        if (empty($recipients)) {
+        $ccRecipients = collect(explode(',', (string) $this->record->bookingType?->notification_cc))
+            ->map(fn ($email) => trim($email))
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($recipients) && empty($ccRecipients)) {
             return;
         }
 
-        Mail::to($recipients)->send(new BookingOrderApprovedMail($this->record));
+        $validatorName = auth()->user()?->name ?? 'Admin';
+        $validatorEmail = trim((string) auth()->user()?->email);
+        $mail = new BookingOrderValidatedMail($this->record, $validatorName);
+
+        if (filter_var($validatorEmail, FILTER_VALIDATE_EMAIL)) {
+            $mail->from($validatorEmail, $validatorName);
+        }
+
+        Mail::to($recipients)
+            ->cc($ccRecipients)
+            ->send($mail);
     }
 }

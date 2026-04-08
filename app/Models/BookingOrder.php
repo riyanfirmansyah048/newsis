@@ -26,6 +26,7 @@ class BookingOrder extends Model
     {
         return [
             'date' => 'date',
+            'validated_at' => 'datetime',
         ];
     }
 
@@ -42,6 +43,11 @@ class BookingOrder extends Model
     public function assignedUnit()
     {
         return $this->belongsTo(BookingUnit::class, 'assigned_unit_id');
+    }
+
+    public function validatedBy()
+    {
+        return $this->belongsTo(User::class, 'validated_by');
     }
 
     public function scopeActiveRequest($query)
