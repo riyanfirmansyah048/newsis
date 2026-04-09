@@ -3,16 +3,43 @@
 namespace App\Filament\Resources\BookingOrders\Pages;
 
 use App\Mail\BookingOrderValidatedMail;
+use App\Models\BookingOrder;
+use App\Models\BookingUnit;
 use App\Support\BookingOrderAvailability;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\BookingOrders\BookingOrderResource;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class EditBookingOrder extends EditRecord
 {
     protected static string $resource = BookingOrderResource::class;
+
+    // transaction start
+    protected function isUniqueConstraintViolation(QueryException $exception): bool
+    {
+        $errorInfo = $exception->errorInfo;
+
+        return ($errorInfo[0] ?? null) === '23000' && ($errorInfo[1] ?? null) === 1062;
+    }
+
+    protected function throwUnitConflict(): never
+    {
+        Notification::make()
+            ->title('Slot sudah diambil')
+            ->body('Unit yang dipilih baru saja dibooking user lain. Silakan pilih unit atau tanggal lain.')
+            ->danger()
+            ->send();
+
+        throw ValidationException::withMessages([
+            'assigned_unit_id' => 'Unit yang dipilih baru saja dibooking user lain. Silakan pilih unit atau tanggal lain.',
+        ]);
+    }
+    // transaction end
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
@@ -106,6 +133,41 @@ class EditBookingOrder extends EditRecord
         return $data;
     }
 
+    // transaction start
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        try {
+            return DB::transaction(function () use ($record, $data) {
+                if (! empty($data['assigned_unit_id'])) {
+                    BookingUnit::query()
+                        ->whereKey($data['assigned_unit_id'])
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (! BookingOrderAvailability::unitAvailable(
+                        $data['booking_type_id'],
+                        $data['date'],
+                        (int) $data['assigned_unit_id'],
+                        $record->id,
+                    )) {
+                        $this->throwUnitConflict();
+                    }
+                }
+
+                $record->update($data);
+
+                return $record;
+            });
+        } catch (QueryException $exception) {
+            if ($this->isUniqueConstraintViolation($exception)) {
+                $this->throwUnitConflict();
+            }
+
+            throw $exception;
+        }
+    }
+    // transaction end
+
     protected function afterSave(): void
     {
         if (! $this->record->wasChanged('status') || ! in_array($this->record->status, ['approved', 'rejected'])) {
@@ -124,8 +186,8 @@ class EditBookingOrder extends EditRecord
             ->all();
 
         $ccRecipients = collect(explode(',', (string) $this->record->bookingType?->notification_cc))
-            ->map(fn ($email) => trim($email))
-            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->map(fn($email) => trim($email))
+            ->filter(fn($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
             ->unique()
             ->values()
             ->all();

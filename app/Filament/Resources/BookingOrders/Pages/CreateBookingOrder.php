@@ -3,10 +3,15 @@
 namespace App\Filament\Resources\BookingOrders\Pages;
 
 use App\Mail\BookingOrderSubmittedMail;
+use App\Models\BookingOrder;
+use App\Models\BookingUnit;
 use App\Support\BookingOrderAvailability;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\BookingOrders\BookingOrderResource;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
@@ -20,6 +25,28 @@ class CreateBookingOrder extends CreateRecord
 
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
+
+    // transaction start
+    protected function isUniqueConstraintViolation(QueryException $exception): bool
+    {
+        $errorInfo = $exception->errorInfo;
+
+        return ($errorInfo[0] ?? null) === '23000' && ($errorInfo[1] ?? null) === 1062;
+    }
+
+    protected function throwUnitConflict(): never
+    {
+        Notification::make()
+            ->title('Slot sudah diambil')
+            ->body('Unit yang dipilih baru saja dibooking user lain. Silakan pilih unit atau tanggal lain.')
+            ->danger()
+            ->send();
+
+        throw ValidationException::withMessages([
+            'assigned_unit_id' => 'Unit yang dipilih baru saja dibooking user lain. Silakan pilih unit atau tanggal lain.',
+        ]);
+    }
+    // transaction end
 
     public function mount(): void
     {
@@ -109,6 +136,36 @@ class CreateBookingOrder extends CreateRecord
         return $data;
     }
 
+    // transaction start
+    protected function handleRecordCreation(array $data): Model
+    {
+        try {
+            return DB::transaction(function () use ($data) {
+                BookingUnit::query()
+                    ->whereKey($data['assigned_unit_id'])
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! BookingOrderAvailability::unitAvailable(
+                    $data['booking_type_id'],
+                    $data['date'],
+                    (int) $data['assigned_unit_id'],
+                )) {
+                    $this->throwUnitConflict();
+                }
+
+                return BookingOrder::query()->create($data);
+            });
+        } catch (QueryException $exception) {
+            if ($this->isUniqueConstraintViolation($exception)) {
+                $this->throwUnitConflict();
+            }
+
+            throw $exception;
+        }
+    }
+    // transaction end
+
     protected function afterCreate(): void
     {
         $this->record->loadMissing(['user.department', 'bookingType', 'assignedUnit']);
@@ -122,8 +179,8 @@ class CreateBookingOrder extends CreateRecord
             ->all();
 
         $ccRecipients = collect(explode(',', (string) $this->record->bookingType?->notification_cc))
-            ->map(fn ($email) => trim($email))
-            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->map(fn($email) => trim($email))
+            ->filter(fn($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
             ->unique()
             ->values()
             ->all();
