@@ -19,7 +19,6 @@ class EditBookingOrder extends EditRecord
 {
     protected static string $resource = BookingOrderResource::class;
 
-    // transaction start
     protected function isUniqueConstraintViolation(QueryException $exception): bool
     {
         $errorInfo = $exception->errorInfo;
@@ -39,7 +38,13 @@ class EditBookingOrder extends EditRecord
             'assigned_unit_id' => 'Unit yang dipilih baru saja dibooking user lain. Silakan pilih unit atau tanggal lain.',
         ]);
     }
-    // transaction end
+
+    protected function isRichEditorBlank(?string $value): bool
+    {
+        $plainText = trim(strip_tags(html_entity_decode((string) $value)));
+
+        return $plainText === '';
+    }
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
@@ -92,19 +97,19 @@ class EditBookingOrder extends EditRecord
 
         $status = $data['status'] ?? $this->record->status;
 
-        if ($status === 'approved' && blank($data['link'] ?? null)) {
+        if ($status === 'approved' && $this->isRichEditorBlank($data['link'] ?? null)) {
             Notification::make()
-                ->title('Link wajib diisi')
-                ->body('Isi link terlebih dahulu saat Booking Order di-approve.')
+                ->title('Keterangan validasi wajib diisi')
+                ->body('Isi link atau keterangan validasi terlebih dahulu saat Booking Order di-approve.')
                 ->danger()
                 ->send();
 
             throw ValidationException::withMessages([
-                'link' => 'Isi link terlebih dahulu saat Booking Order di-approve.',
+                'link' => 'Isi link atau keterangan validasi terlebih dahulu saat Booking Order di-approve.',
             ]);
         }
 
-        if ($status === 'rejected' && blank($data['rejection_reason'] ?? null)) {
+        if ($status === 'rejected' && $this->isRichEditorBlank($data['rejection_reason'] ?? null)) {
             Notification::make()
                 ->title('Alasan reject wajib diisi')
                 ->body('Isi alasan reject terlebih dahulu saat Booking Order ditolak.')
@@ -133,7 +138,6 @@ class EditBookingOrder extends EditRecord
         return $data;
     }
 
-    // transaction start
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         try {
@@ -166,7 +170,6 @@ class EditBookingOrder extends EditRecord
             throw $exception;
         }
     }
-    // transaction end
 
     protected function afterSave(): void
     {
@@ -186,8 +189,8 @@ class EditBookingOrder extends EditRecord
             ->all();
 
         $ccRecipients = collect(explode(',', (string) $this->record->bookingType?->notification_cc))
-            ->map(fn($email) => trim($email))
-            ->filter(fn($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->map(fn ($email) => trim($email))
+            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
             ->unique()
             ->values()
             ->all();

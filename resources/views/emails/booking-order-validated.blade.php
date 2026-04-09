@@ -31,8 +31,12 @@
         Pukul : {{ $timeLabel }}<br>
         Topik / Keterangan : {{ $booking->topic }}<br>
         Host : {{ $booking->host }}<br>
-        Fasilitas : {{ $booking->bookingType?->name ?? '-' }}<br>
-        Link : {{ $booking->link ?: '-' }}
+        Fasilitas : {{ $booking->bookingType?->name ?? '-' }}
+    </p>
+
+    <p>
+        Link / Keterangan Validasi :<br>
+        {!! $booking->link ?: '-' !!}
     </p>
 
     <p>
@@ -81,7 +85,8 @@
     </p>
 
     <p>
-        Alasan Penolakan : {{ $booking->rejection_reason ?: '-' }}
+        Alasan Penolakan :<br>
+        {!! $booking->rejection_reason ?: '-' !!}
     </p>
 
     <p>
