@@ -32,7 +32,7 @@ class LoginCustom extends Login
         return TextInput::make('password')
             ->label(__('filament-panels::auth/pages/login.form.password.label'))
             ->hint(filament()->hasPasswordReset() ? new HtmlString(Blade::render('<x-filament::link :href="filament()->getRequestPasswordResetUrl()" tabindex="3"> {{ __(\'filament-panels::auth/pages/login.actions.request_password_reset.label\') }}</x-filament::link>')) : null)
-            ->helperText(new HtmlString('<span class="text-xs text-gray-500 dark:text-gray-400">Butuh bantuan? Hubungi Tim IT Tamansari ext : 1313/1314/1294</span>'))
+            ->helperText(new HtmlString('<span class="text-xs text-gray-500 dark:text-gray-400">Butuh bantuan? Hubungi Tim IT Tamansari ext : 1314/1313</span>'))
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->autocomplete('current-password')
