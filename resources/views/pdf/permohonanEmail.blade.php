@@ -28,59 +28,48 @@
 <body>
     @if (Auth::check())
         {{-- <font face='Arial, Helvetica, sans-serif'> --}}
-        <table style="width: 100%" border="0" cellpadding="0" cellspacing="0">
+        <table style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
             <tr>
-                <td>
-                    <center>
-                        {{-- <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE"> --}}
-                        {{-- <img src="{{ public_path('img/sanbe-logo.gif') }}"> --}}
-                        {{-- <img src="{{ asset('img/sanbe-logo.gif') }}"> --}}
-                        @if ($email->idCompany == 1)
-                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
-                        @elseif ($email->idCompany == 2)
-                            <img src="{{ asset('img/capri-logo.jpg') }}" alt="CAPRI">
-                        @elseif ($email->idCompany == 3)
-                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
-                        @elseif ($email->idCompany == 4)
-                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
-                        @elseif ($email->idCompany == 5)
-                            <img src="{{ asset('img/graha-logo.png') }}" alt="GRAHA">
-                        @else
-                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
-                        @endif
-                    </center>
-                </td>
-                <td>
-                    <div align="center">
-                        @if ($email->idCompany == 1)
-                            <h2>{{ $email->company->companyName }}
-                                <br>
-                                EMAIL REQUEST FORM
-                            </h2>
-                        @elseif ($email->idCompany == 2)
-                            <h2>{{ $email->company->companyName }}
-                                <br>
-                                EMAIL REQUEST FORM
-                            </h2>
-                        @elseif ($email->idCompany == 3)
-                            <h2>{{ $email->company->companyName }}
-                                <br>
-                                EMAIL REQUEST FORM
-                            </h2>
-                        @elseif ($email->idCompany == 4)
-                            <h2>{{ $email->company->companyName }}
-                                <br>
-                                EMAIL REQUEST FORM
-                            </h2>
-                        @elseif ($email->idCompany == 5)
-                            <h2>{{ $email->company->companyName }}
-                                <br>
-                                EMAIL REQUEST FORM
-                            </h2>
-                        @else
-                            <h2>SANBE EMAIL REQUEST FORM</h2>
-                        @endif
-                    </div>
+                <td style="text-align: center;">
+                    <table style="width: 70%; margin: 0 auto;" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="width: 32%; text-align: center; vertical-align: middle;">
+                                @if ($email->idCompany == 1)
+                                    <img style="width: 65%;" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                                @elseif ($email->idCompany == 2)
+                                    <img style="width: 85%;" src="{{ asset('img/capri-logo.jpg') }}" alt="CAPRI">
+                                @elseif ($email->idCompany == 3)
+                                    <img style="width: 65%;" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                                @elseif ($email->idCompany == 4)
+                                    <img style="width: 65%;" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                                @elseif ($email->idCompany == 5)
+                                    <img style="width: 85%;" src="{{ asset('img/graha-logo.png') }}" alt="GRAHA">
+                                @else
+                                    <img style="width: 65%;" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                                @endif
+                            </td>
+                            <td style="width: 68%; text-align: center; vertical-align: middle;">
+                                @if ($email->idCompany == 1)
+                                    <h2 style="margin: 0; text-align: center;">
+                                        {{ $email->company->companyName }}<br>EMAIL REQUEST FORM</h2>
+                                @elseif ($email->idCompany == 2)
+                                    <h2 style="margin: 0; text-align: center;">
+                                        {{ $email->company->companyName }}<br>EMAIL REQUEST FORM</h2>
+                                @elseif ($email->idCompany == 3)
+                                    <h2 style="margin: 0; text-align: center;">
+                                        {{ $email->company->companyName }}<br>EMAIL REQUEST FORM</h2>
+                                @elseif ($email->idCompany == 4)
+                                    <h2 style="margin: 0; text-align: center;">
+                                        {{ $email->company->companyName }}<br>EMAIL REQUEST FORM</h2>
+                                @elseif ($email->idCompany == 5)
+                                    <h2 style="margin: 0; text-align: center;">
+                                        {{ $email->company->companyName }}<br>EMAIL REQUEST FORM</h2>
+                                @else
+                                    <h2 style="margin: 0; text-align: center;">SANBE EMAIL REQUEST FORM</h2>
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
