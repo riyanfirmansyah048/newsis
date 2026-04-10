@@ -32,16 +32,54 @@
             <tr>
                 <td>
                     <center>
-                        <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                        {{-- <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE"> --}}
                         {{-- <img src="{{ public_path('img/sanbe-logo.gif') }}"> --}}
                         {{-- <img src="{{ asset('img/sanbe-logo.gif') }}"> --}}
-
-
+                        @if ($email->idCompany == 1)
+                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                        @elseif ($email->idCompany == 2)
+                            <img src="{{ asset('img/capri-logo.jpg') }}" alt="CAPRI">
+                        @elseif ($email->idCompany == 3)
+                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                        @elseif ($email->idCompany == 4)
+                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                        @elseif ($email->idCompany == 5)
+                            <img src="{{ asset('img/graha-logo.png') }}" alt="GRAHA">
+                        @else
+                            <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
+                        @endif
                     </center>
                 </td>
                 <td>
                     <div align="center">
-                        <h2>SANBE EMAIL REQUEST FORM</h2>
+                        @if ($email->idCompany == 1)
+                            <h2>{{ $email->company->companyName }}
+                                <br>
+                                EMAIL REQUEST FORM
+                            </h2>
+                        @elseif ($email->idCompany == 2)
+                            <h2>{{ $email->company->companyName }}
+                                <br>
+                                EMAIL REQUEST FORM
+                            </h2>
+                        @elseif ($email->idCompany == 3)
+                            <h2>{{ $email->company->companyName }}
+                                <br>
+                                EMAIL REQUEST FORM
+                            </h2>
+                        @elseif ($email->idCompany == 4)
+                            <h2>{{ $email->company->companyName }}
+                                <br>
+                                EMAIL REQUEST FORM
+                            </h2>
+                        @elseif ($email->idCompany == 5)
+                            <h2>{{ $email->company->companyName }}
+                                <br>
+                                EMAIL REQUEST FORM
+                            </h2>
+                        @else
+                            <h2>SANBE EMAIL REQUEST FORM</h2>
+                        @endif
                     </div>
                 </td>
             </tr>

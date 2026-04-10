@@ -39,12 +39,18 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
         return $table
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
-                TextColumn::make('software.name')->label('Type Software'),
-                TextColumn::make('user.name')->label('Pemohon IT'),
-                TextColumn::make('userPemohon')->label('User Pemohon'),
-                TextColumn::make('departementPemohon')->label('Departemen'),
-                TextColumn::make('lokasiPemohon')->label('Lokasi'),
-                TextColumn::make('serialNumber')->label('Serial Number'),
+                TextColumn::make('software.name')
+                    ->label('Type Software'),
+                TextColumn::make('user.name')
+                    ->label('Pemohon IT'),
+                TextColumn::make('userPemohon')
+                    ->label('User Pemohon'),
+                TextColumn::make('departementPemohon')
+                    ->label('Departemen'),
+                TextColumn::make('lokasiPemohon')
+                    ->label('Lokasi'),
+                TextColumn::make('serialNumber')
+                    ->label('Serial Number'),
             ])
             ->filters([
                 // ...
