@@ -4,8 +4,9 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\LoginCustom;
 use App\Filament\Pages\Auth\RegisterCustom;
+use App\Filament\Pages\Auth\RequestPasswordResetCustom;
 use App\Filament\Pages\EditProfileCustom;
-use App\Filament\Widgets\AssetsItemsWidget;
+// use App\Filament\Widgets\AssetsItemsWidget;
 use App\Filament\Widgets\BppbStatusStats;
 use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
 use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
@@ -82,6 +83,13 @@ class SisPanelProvider extends PanelProvider
                             ->mediaPosition(MediaPosition::Right)
                             ->blur(1)
                             ->usingPage(RegisterCustom::class)
+                    )
+                    ->passwordReset(
+                        fn($config) => $config
+                            ->media(asset('img/login_background.jpg'))
+                            ->mediaPosition(MediaPosition::Cover)
+                            ->blur(1)
+                            ->usingPage(RequestPasswordResetCustom::class)
                     )
             );
     }
