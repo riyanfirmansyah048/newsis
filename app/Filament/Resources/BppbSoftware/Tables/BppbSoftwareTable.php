@@ -47,6 +47,10 @@ class BppbSoftwareTable
                     ->label('No PO')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('serialNumber')
+                    ->label('Serial Number')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->defaultSort('id', 'desc')
             ->filters([
