@@ -43,21 +43,21 @@ class BppbSoftwareTable
                     ->searchable()
                     ->copyable()
                     ->sortable(),
-                TextColumn::make('bppb.noBppb')
-                    ->label('No BPPB IT')
-                    ->searchable()
-                    ->copyable()
-                    ->sortable(),
+                // TextColumn::make('bppb.noBppb')
+                //     ->label('No BPPB IT')
+                //     ->searchable()
+                //     ->copyable()
+                //     ->sortable(),
                 TextColumn::make('noBppbPemohon')
                     ->label('No BPPB Pemohon')
                     ->searchable()
                     ->copyable()
                     ->sortable(),
-                TextColumn::make('Purchase_order.noPo')
-                    ->label('No PO')
-                    ->searchable()
-                    ->copyable()
-                    ->sortable(),
+                // TextColumn::make('Purchase_order.noPo')
+                //     ->label('No PO')
+                //     ->searchable()
+                //     ->copyable()
+                //     ->sortable(),
                 TextColumn::make('user.name')
                     ->label('Pemohon IT')
                     ->searchable(),
