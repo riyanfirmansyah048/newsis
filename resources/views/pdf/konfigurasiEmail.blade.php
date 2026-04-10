@@ -39,7 +39,7 @@
                             @if ($email->idCompany == 1)
                                 <img style="width: 45%" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
                             @elseif ($email->idCompany == 2)
-                                <img style="width: 45%" src="{{ asset('img/capri-logo.gif') }}" alt="CAPRI">
+                                <img style="width: 45%" src="{{ asset('img/capri-logo.jpg') }}" alt="CAPRI">
                             @elseif ($email->idCompany == 3)
                                 <img style="width: 45%" src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE">
                             @elseif ($email->idCompany == 4)
