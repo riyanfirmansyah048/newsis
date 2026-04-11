@@ -3,13 +3,13 @@
 namespace App\Filament\Resources\BppbSoftware\Tables;
 
 use App\Models\Bppb_software;
-use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -26,7 +26,7 @@ class BppbSoftwareTable
                         $q->where('bppb_type_id', 1);
                     });
 
-                if (!auth()->user()?->hasRole('admin')) {
+                if (! auth()->user()?->hasRole('admin')) {
                     $query->where('pemohonIT', auth()->id());
                 }
 
@@ -37,27 +37,20 @@ class BppbSoftwareTable
                     ->label('Nama Software')
                     ->searchable()
                     ->sortable(),
-                // TextColumn::make('qty'),
-                TextColumn::make('serialNumber')
+                TextInputColumn::make('serialNumber')
                     ->label('Serial Number')
                     ->searchable()
-                    ->copyable()
-                    ->sortable(),
-                // TextColumn::make('bppb.noBppb')
-                //     ->label('No BPPB IT')
-                //     ->searchable()
-                //     ->copyable()
-                //     ->sortable(),
+                    ->sortable()
+                    ->rules(['max:255'])
+                    ->disabled(fn() => ! auth()->user()?->can('update-bppb-software'))
+                    ->updateStateUsing(fn(Bppb_software $record, ?string $state) => $record->update([
+                        'serialNumber' => filled(trim((string) $state)) ? trim((string) $state) : '-',
+                    ])),
                 TextColumn::make('noBppbPemohon')
                     ->label('No BPPB Pemohon')
                     ->searchable()
                     ->copyable()
                     ->sortable(),
-                // TextColumn::make('Purchase_order.noPo')
-                //     ->label('No PO')
-                //     ->searchable()
-                //     ->copyable()
-                //     ->sortable(),
                 TextColumn::make('user.name')
                     ->label('Pemohon IT')
                     ->searchable(),

@@ -9,6 +9,7 @@ use App\Models\Bppb_software;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions\Contracts\HasActions;
@@ -27,11 +28,53 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
     public int $bppbId;
     public int $statusId;
 
-    // Query langsung ke software terkait BPPB
     protected function getTableQuery(): Builder
     {
         return Bppb_software::query()
+            ->with(['bppb', 'software', 'user'])
             ->where('bppb_id', $this->bppbId);
+    }
+
+    protected function canInlineEdit(): bool
+    {
+        return Auth::user()?->hasRole('admin') && ! in_array($this->statusId, [1, 2, 3]);
+    }
+
+    protected function normalizeInlineValue(?string $value): string
+    {
+        $value = trim((string) $value);
+
+        return $value !== '' ? $value : '-';
+    }
+
+    protected function getLinkedBppbNumbers(Bppb_software $record): string
+    {
+        $currentNoBppb = $record->bppb?->noBppb;
+
+        if (! $currentNoBppb) {
+            return '-';
+        }
+
+        $numbers = Bppb_software::query()
+            ->with('bppb')
+            ->where('software_id', $record->software_id)
+            ->where('noBppbPemohon', $currentNoBppb)
+            ->where('bppb_id', '!=', $record->bppb_id)
+            ->get()
+            ->pluck('bppb.noBppb')
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($numbers->isNotEmpty()) {
+            return $numbers->implode(', ');
+        }
+
+        if (! empty($record->noBppbPemohon)) {
+            return $record->noBppbPemohon;
+        }
+
+        return '-';
     }
 
     public function table(Table $table): Table
@@ -42,29 +85,47 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
                 TextColumn::make('software.name')
                     ->label('Type Software'),
                 TextColumn::make('user.name')
-                    ->label('Pemohon IT'),
-                TextColumn::make('userPemohon')
-                    ->label('User Pemohon'),
-                TextColumn::make('departementPemohon')
-                    ->label('Departemen'),
-                TextColumn::make('lokasiPemohon')
-                    ->label('Lokasi'),
-                TextColumn::make('serialNumber')
-                    ->label('Serial Number'),
-            ])
-            ->filters([
-                // ...
+                    ->label('Pemohon IT')
+                    ->default('-'),
+                TextInputColumn::make('userPemohon')
+                    ->label('User Pemohon')
+                    ->default('-')
+                    ->rules(['max:255'])
+                    ->disabled(fn () => ! $this->canInlineEdit())
+                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['userPemohon' => $this->normalizeInlineValue($state)])),
+                TextInputColumn::make('departementPemohon')
+                    ->label('Departemen')
+                    ->default('-')
+                    ->rules(['max:255'])
+                    ->disabled(fn () => ! $this->canInlineEdit())
+                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['departementPemohon' => $this->normalizeInlineValue($state)])),
+                TextInputColumn::make('lokasiPemohon')
+                    ->label('Lokasi')
+                    ->default('-')
+                    ->rules(['max:255'])
+                    ->disabled(fn () => ! $this->canInlineEdit())
+                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['lokasiPemohon' => $this->normalizeInlineValue($state)])),
+                TextColumn::make('noBppbPemohon')
+                    ->label('No. BPPB Pemohon')
+                    ->default('-')
+                    ->copyable(),
+                TextColumn::make('linked_bppb')
+                    ->label('Terhubung ke BPPB')
+                    ->getStateUsing(fn(Bppb_software $record) => $this->getLinkedBppbNumbers($record))
+                    ->wrap(),
+                TextInputColumn::make('serialNumber')
+                    ->label('Serial Number')
+                    ->default('-')
+                    ->rules(['max:255'])
+                    ->disabled(fn () => ! $this->canInlineEdit())
+                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['serialNumber' => $this->normalizeInlineValue($state)])),
             ])
             ->recordActions([
                 Action::make('edit')
                     ->label('Edit')
                     ->color('success')
                     ->icon('heroicon-m-pencil-square')
-                    ->visible(
-                        fn($record) =>
-                        Auth::user()?->hasRole('admin')
-                            && !in_array($this->statusId, [1, 2, 3])
-                    )
+                    ->visible(fn() => $this->canInlineEdit())
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         return redirect()->route('filament.sis.resources.bppb-software.edit', [
@@ -74,9 +135,7 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
                     }),
             ])
             ->defaultSort('id')
-            ->toolbarActions([
-                // ...
-            ]);
+            ->toolbarActions([]);
     }
 
     public function render(): View
