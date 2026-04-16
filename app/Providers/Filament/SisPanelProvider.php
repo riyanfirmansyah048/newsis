@@ -17,6 +17,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -62,7 +63,24 @@ class SisPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->plugin(
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => <<<'HTML'
+<style>
+    .fi-ta-actions,
+    .fi-ta-actions > div,
+    .fi-ta-cell,
+    .fi-ta-content {
+        overflow: visible !important;
+    }
+
+    .fi-ta-actions .fi-dropdown-panel,
+    .fi-ta-actions [data-placement] {
+        z-index: 9999 !important;
+    }
+</style>
+HTML,
+            )            ->plugin(
                 AuthDesignerPlugin::make()
                     ->defaults(
                         fn($config) => $config
