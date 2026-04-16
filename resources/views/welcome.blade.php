@@ -75,7 +75,7 @@
             <div class="hidden items-center gap-8 text-sm text-white/70 md:flex">
                 <a href="#layanan" class="hover:text-white transition">Layanan</a>
                 <a href="#alur" class="hover:text-white transition">Alur</a>
-                <a href="#info" class="hover:text-white transition">Informasi</a>
+                {{-- <a href="#info" class="hover:text-white transition">Informasi</a> --}}
                 <a href="#kontak" class="hover:text-white transition">Kontak</a>
             </div>
         </nav>
@@ -143,7 +143,7 @@
     </header>
 
     <main class="relative z-10 -mt-16 pb-20">
-        <section class="mx-auto max-w-7xl px-6 lg:px-10">
+        <section id="alur" class="mx-auto max-w-7xl px-6 lg:px-10">
             <div class="section-card rounded-[2rem] p-6 md:p-8">
                 <div class="mb-8">
                     <div class="text-sm font-bold tracking-[0.18em] text-sky-700 uppercase">Alur Singkat</div>
