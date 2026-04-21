@@ -94,6 +94,27 @@ class BppbsTable
             ->defaultSort('created_at', 'desc')
             ->filters([
                 TrashedFilter::make(),
+                SelectFilter::make('flow_type')
+                    ->label('Alur BPPB')
+                    ->options([
+                        'regular' => 'BPPB Biasa',
+                        'software_consolidation' => 'BPPB Konsolidasi Software',
+                    ])
+                    ->query(function ($query, array $data) {
+                        return match ($data['value'] ?? null) {
+                            'software_consolidation' => $query->whereHas('bppb_software', function ($softwareQuery) {
+                                $softwareQuery
+                                    ->whereNotNull('noBppbPemohon')
+                                    ->where('noBppbPemohon', '!=', '');
+                            }),
+                            'regular' => $query->whereDoesntHave('bppb_software', function ($softwareQuery) {
+                                $softwareQuery
+                                    ->whereNotNull('noBppbPemohon')
+                                    ->where('noBppbPemohon', '!=', '');
+                            }),
+                            default => $query,
+                        };
+                    }),
                 SelectFilter::make('bppb_type_id')
                     ->label('Type BPPB')
                     ->relationship('bppb_type', 'name'),
