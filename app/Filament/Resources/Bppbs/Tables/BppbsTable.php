@@ -57,6 +57,10 @@ class BppbsTable
                         default => 'gray',
                     })
                     ->searchable(),
+                TextColumn::make('flow_label')
+                    ->label('Alur BPPB')
+                    ->badge()
+                    ->color(fn(Bppb $record) => $record->isSoftwareConsolidation() ? 'warning' : 'gray'),
                 TextColumn::make('user.NIK')
                     ->label('NIK Karyawan')
                     ->searchable(),

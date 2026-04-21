@@ -8,6 +8,7 @@ use App\Filament\Pages\Auth\RequestPasswordResetCustom;
 use App\Filament\Pages\EditProfileCustom;
 // use App\Filament\Widgets\AssetsItemsWidget;
 use App\Filament\Widgets\BppbStatusStats;
+use App\Filament\Widgets\DashboardOverviewStats;
 use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
 use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
 use Filament\Http\Middleware\Authenticate;
@@ -47,6 +48,7 @@ class SisPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->widgets([
+                DashboardOverviewStats::class,
                 BppbStatusStats::class,
             ])
             ->middleware([

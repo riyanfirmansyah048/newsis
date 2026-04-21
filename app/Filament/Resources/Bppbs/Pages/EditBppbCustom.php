@@ -98,6 +98,8 @@ class EditBppbCustom extends Page implements HasForms
             'noBppb' => $record->noBppb ?? '',
             'type_bppb' => $record->bppb_type?->name ?? '-',
             'type_bppb_id' => $record->bppb_type_id ?? null,
+            'flow_label' => $record->flow_label,
+            'is_software_consolidation' => $record->isSoftwareConsolidation(),
             'name' => $record->user?->name ?? '',
             'NIK' => $record->user?->NIK ?? '',
             'created_at' => $record->created_at ?? '',

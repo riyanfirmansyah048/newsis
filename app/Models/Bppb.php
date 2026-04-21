@@ -148,6 +148,21 @@ class Bppb extends Model
         return $this->hasMany(Purchase_order::class, 'bppb_id');
     }
 
+    public function isSoftwareConsolidation(): bool
+    {
+        return $this->bppb_software()
+            ->whereNotNull('noBppbPemohon')
+            ->where('noBppbPemohon', '!=', '')
+            ->exists();
+    }
+
+    public function getFlowLabelAttribute(): string
+    {
+        return $this->isSoftwareConsolidation()
+            ? 'BPPB Konsolidasi Software'
+            : 'BPPB Biasa';
+    }
+
     protected static function booted()
     {
         static::deleting(function ($bppb) {

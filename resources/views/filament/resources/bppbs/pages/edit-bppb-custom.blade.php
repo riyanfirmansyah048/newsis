@@ -31,6 +31,15 @@
                 </td>
             </tr>
             <tr>
+                <td>Alur BPPB</td>
+                <td>:</td>
+                <td>
+                    <x-filament::badge :color="$is_software_consolidation ? 'warning' : 'gray'">
+                        {{ $flow_label }}
+                    </x-filament::badge>
+                </td>
+            </tr>
+            <tr>
                 <td>Dibuat oleh</td>
                 <td>:</td>
                 <td>{{ $NIK }} / {{ $name }}</td>
