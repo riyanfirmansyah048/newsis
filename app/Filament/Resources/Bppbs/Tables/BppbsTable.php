@@ -67,6 +67,11 @@ class BppbsTable
                     ->label('Tanggal BPPB')
                     ->date('d F Y')
                     ->sortable(),
+                TextColumn::make('print_count')
+                    ->label('Print Count')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
                 TextColumn::make('status.name')
                     ->label('Status')
                     ->tooltip(fn($record) => $record->status->description)

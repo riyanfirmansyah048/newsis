@@ -18,6 +18,22 @@ use Illuminate\Http\Request;
 
 class PDFController extends Controller
 {
+    protected function shouldRegisterPrint(string $documentType, int $documentId): bool
+    {
+        $userKey = auth()->id() ?? request()->ip();
+        $sessionKey = "print_lock.{$documentType}.{$documentId}.{$userKey}";
+        $now = now()->timestamp;
+        $lastPrintedAt = session($sessionKey);
+
+        if ($lastPrintedAt && ($now - (int) $lastPrintedAt) < 3) {
+            return false;
+        }
+
+        session([$sessionKey => $now]);
+
+        return true;
+    }
+
     public function suratJalanPrint($id)
     {
         $service = Service::with([
@@ -60,15 +76,21 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
 
-        activity()
-            ->performedOn($bppb)
-            ->causedBy(auth()->user())
-            ->withProperties([
-                'document' => 'BPPB',
-                'number' => $bppb->noBppb,
-                'printed_at' => now()->toDateTimeString(),
-            ])
-            ->log('printed');
+        if ($this->shouldRegisterPrint('bppb', (int) $bppb->id)) {
+            $bppb->increment('print_count');
+            $bppb->refresh();
+
+            activity()
+                ->performedOn($bppb)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'document' => 'BPPB',
+                    'number' => $bppb->noBppb,
+                    'print_count' => $bppb->print_count,
+                    'printed_at' => now()->toDateTimeString(),
+                ])
+                ->log('printed');
+        }
 
         $title = 'Print BPPB - ' . ($bppb->noBppb ?? 'Unknown');
 
@@ -84,15 +106,21 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
 
-        activity()
-            ->performedOn($bpb)
-            ->causedBy(auth()->user())
-            ->withProperties([
-                'document' => 'BPB',
-                'number' => $bpb->noBpb,
-                'printed_at' => now()->toDateTimeString(),
-            ])
-            ->log('printed');
+        if ($this->shouldRegisterPrint('bpb', (int) $bpb->id)) {
+            $bpb->increment('print_count');
+            $bpb->refresh();
+
+            activity()
+                ->performedOn($bpb)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'document' => 'BPB',
+                    'number' => $bpb->noBpb,
+                    'print_count' => $bpb->print_count,
+                    'printed_at' => now()->toDateTimeString(),
+                ])
+                ->log('printed');
+        }
 
         $title = 'Print BPB - ' . ($bpb->noBpb ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
