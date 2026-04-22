@@ -47,6 +47,7 @@ class Expedition extends Model
 
         static::creating(function ($model) {
             if (!app()->runningInConsole()) {
+                $model->print_count ??= 0;
                 $user = $model->bppb?->user;
 
                 $kodeRegional = $user?->regional?->code ?? 'XXX';

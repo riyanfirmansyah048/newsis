@@ -53,6 +53,11 @@ class ExpeditionsTable
                     ->label("Tgl Print")
                     ->date('d F Y')
                     ->sortable(),
+                TextColumn::make('print_count')
+                    ->label('Print Count')
+                    ->badge()
+                    ->color('info')
+                    ->sortable(),
                 TextColumn::make('deleted_at')
                     ->label('Status')
                     ->badge()

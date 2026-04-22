@@ -261,15 +261,21 @@ class PDFController extends Controller
         }
 
 
-        activity()
-            ->performedOn($expedition)
-            ->causedBy(auth()->user())
-            ->withProperties([
-                'document' => 'Expedition',
-                'number' => $expedition->noExpedition,
-                'printed_at' => now()->toDateTimeString(),
-            ])
-            ->log('printed');
+        if ($this->shouldRegisterPrint('expedition', (int) $expedition->id)) {
+            $expedition->increment('print_count');
+            $expedition->refresh();
+
+            activity()
+                ->performedOn($expedition)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'document' => 'Expedition',
+                    'number' => $expedition->noExpedition,
+                    'print_count' => $expedition->print_count,
+                    'printed_at' => now()->toDateTimeString(),
+                ])
+                ->log('printed');
+        }
 
         $title = 'Print Expedition - ' . ($expedition->noExpedition ?? 'Unknown');
         $pdf = app('dompdf.wrapper');
