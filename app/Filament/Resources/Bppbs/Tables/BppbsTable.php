@@ -47,6 +47,20 @@ class BppbsTable
                 TextColumn::make('noBppb')
                     ->label('No. BPPB')
                     ->searchable(),
+                TextColumn::make('status.name')
+                    ->label('Status')
+                    ->tooltip(fn($record) => $record->status->description)
+                    ->badge()
+                    ->color(fn($record) => match ($record->status_id) {
+                        1 => 'warning',
+                        2 => 'danger',
+                        3 => 'primary',
+                        4 => 'success',
+                        5 => 'gray',
+                        6 => 'info',
+                        7 => 'gray',
+                        default => 'default',
+                    }),
                 TextColumn::make('bppb_type.name')
                     ->label('Type BPPB')
                     ->badge()
