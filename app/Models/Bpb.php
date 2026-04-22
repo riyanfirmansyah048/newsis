@@ -53,6 +53,7 @@ class Bpb extends Model
         parent::boot();
         if (!app()->runningInConsole()) {
             static::creating(function ($model) {
+                $model->print_count ??= 0;
 
                 $last = self::withTrashed()
                     ->whereYear('dateBpb', now()->year)
