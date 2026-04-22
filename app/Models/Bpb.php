@@ -81,6 +81,17 @@ class Bpb extends Model
                         $purchaseOrder->update(['bpb_id' => $bpb->id]);
                     }
                 }
+
+                $bppb = $bpb->purchase_order?->bppb;
+
+
+                // merubah status
+                if ($bppb) {
+                    $bppb->update([
+                        'status_id' => 5,
+                    ]);
+                }
+
                 //start untuk insert assets setelah bpb dibuat-------------------------
                 $bppbId = optional($bpb->purchase_order)->bppb_id;
                 $poId = $bpb->po_id;

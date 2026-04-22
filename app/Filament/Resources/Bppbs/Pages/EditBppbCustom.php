@@ -523,7 +523,7 @@ class EditBppbCustom extends Page implements HasForms
                 ->tooltip('Klik ini semua transaksi BPPB sudah selesai')
                 ->action('finishRecord')
                 ->color('success')
-                ->visible(fn() => ($this->record->status_id === 5 || $this->record->status_id === 7)),
+                ->visible(fn() => in_array($this->record->status_id, [5, 7]) && (auth()->user()->hasRole('admin') || $this->record->user_id === auth()->id())),
             Action::make('Print')
                 ->label('Print')
                 ->icon('heroicon-o-printer')

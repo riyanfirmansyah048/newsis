@@ -13,6 +13,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -140,7 +141,27 @@ class BppbsTable
                         fn(Bppb $record) =>
                         auth()->user()?->hasRole('admin')
                             || in_array($record->status_id, [1, 2, 3])
+                    ),
+                Action::make('finish')
+                    ->label('Selesai')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('primary')
+                    ->requiresConfirmation()
+                    ->visible(
+                        fn(Bppb $record) =>
+                        in_array($record->status_id, [5, 7]) &&
+                            (auth()->user()?->hasRole('admin') || $record->user_id === auth()->id())
                     )
+                    ->action(function (Bppb $record) {
+                        $record->update([
+                            'status_id' => 6,
+                        ]);
+
+                        Notification::make()
+                            ->title('BPPB berhasil diselesaikan')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

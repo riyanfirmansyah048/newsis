@@ -90,6 +90,7 @@ class Bppb extends Model
 
         static::creating(function ($model) {
             if (!app()->runningInConsole()) {
+                $model->print_count ??= 0;
 
                 if (!empty($model->noBppb)) {
                     $model->status_id = 3;
