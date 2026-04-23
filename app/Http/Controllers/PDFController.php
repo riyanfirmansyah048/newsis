@@ -231,6 +231,22 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data Expedition tidak ditemukan.');
         }
 
+        if ($this->shouldRegisterPrint('expedition', (int) $expedition->id)) {
+            Expedition::whereKey($expedition->id)->increment('print_count');
+            $expedition->print_count = ((int) $expedition->print_count) + 1;
+
+            activity()
+                ->performedOn($expedition)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'document' => 'Expedition',
+                    'number' => $expedition->noExpedition,
+                    'print_count' => $expedition->print_count,
+                    'printed_at' => now()->toDateTimeString(),
+                ])
+                ->log('printed');
+        }
+
         foreach ($expedition->expeditionDetails as $detail) {
             $bppbId = $expedition->bppb_id;
             $typeId = $detail->type_id;
@@ -258,23 +274,6 @@ class PDFController extends Controller
                     ->count(),
                 default => 0,
             };
-        }
-
-
-        if ($this->shouldRegisterPrint('expedition', (int) $expedition->id)) {
-            $expedition->increment('print_count');
-            $expedition->refresh();
-
-            activity()
-                ->performedOn($expedition)
-                ->causedBy(auth()->user())
-                ->withProperties([
-                    'document' => 'Expedition',
-                    'number' => $expedition->noExpedition,
-                    'print_count' => $expedition->print_count,
-                    'printed_at' => now()->toDateTimeString(),
-                ])
-                ->log('printed');
         }
 
         $title = 'Print Expedition - ' . ($expedition->noExpedition ?? 'Unknown');
