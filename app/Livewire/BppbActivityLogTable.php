@@ -63,8 +63,10 @@ class BppbActivityLogTable extends Component implements HasActions, HasSchemas, 
                     ->badge()
                     ->color(fn($state) => match (true) {
                         $state === 'created' => 'success',
+                        $state === 'printed' => 'info',
                         $state === 'updated' => 'warning',
                         $state === 'deleted' => 'danger',
+                        Str::startsWith((string) $state, 'rejected') => 'danger',
                         Str::startsWith((string) $state, 'cancelled') => 'danger',
                         default => 'gray',
                     }),
@@ -212,6 +214,7 @@ class BppbActivityLogTable extends Component implements HasActions, HasSchemas, 
     {
         $attributes = data_get($activity->properties, 'attributes', []);
         $old = data_get($activity->properties, 'old', []);
+        $reason = trim((string) data_get($activity->properties, 'reason', ''));
 
         if ($activity->description === 'created') {
             return 'Data dibuat';
@@ -234,6 +237,30 @@ class BppbActivityLogTable extends Component implements HasActions, HasSchemas, 
             return empty($changedFields)
                 ? 'Data diperbarui'
                 : 'Field berubah: ' . implode(', ', $changedFields);
+        }
+
+        if ($activity->description === 'printed') {
+            $printCount = data_get($activity->properties, 'print_count');
+
+            if ($reason !== '') {
+                return 'Print ulang alasan: ' . $reason;
+            }
+
+            return $printCount
+                ? "Dokumen diprint ({$printCount}x)"
+                : 'Dokumen diprint';
+        }
+
+        if (Str::startsWith((string) $activity->description, 'rejected')) {
+            return $reason !== ''
+                ? 'Alasan reject: ' . $reason
+                : 'Data di-reject';
+        }
+
+        if (Str::startsWith((string) $activity->description, 'cancelled')) {
+            return $reason !== ''
+                ? 'Alasan cancel: ' . $reason
+                : 'Data di-cancel';
         }
 
         return 'Aktivitas: ' . $activity->description;

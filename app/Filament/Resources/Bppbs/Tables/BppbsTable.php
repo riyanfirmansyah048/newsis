@@ -14,6 +14,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Notifications\Notification;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -26,11 +27,6 @@ class BppbsTable
     {
         return $table
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
-            // ->query(
-            //     auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
-            //         ? Bppb::query()->whereIn('bppb_type_id', [1, 2, 3, 4]) // Jika admin, tampilkan hanya data dengan bppb_type_id = 1
-            //         : Bppb::query()->where('user_id', auth()->id())->whereIn('bppb_type_id', [1, 3]) // Jika bukan admin, hanya tampilkan miliknya sendiri dengan bppb_type_id = 1
-            // )
             ->query(function () {
 
                 $query = auth()->user()->hasRole('admin')
@@ -149,8 +145,22 @@ class BppbsTable
                     ->label('Print')
                     ->icon('heroicon-o-printer')
                     ->color('success')
-                    ->url(fn(Bppb $record) => route('bppb.print', $record->id))
-                    // ->openUrlInNewTab()
+                    ->schema(fn(Bppb $record) => $record->print_count > 0 ? [
+                        Textarea::make('reason')
+                            ->label('Alasan Print Ulang')
+                            ->required()
+                            ->rows(4)
+                            ->placeholder('Masukkan alasan kenapa dokumen ini diprint ulang'),
+                    ] : [])
+                    ->action(function (array $data, Bppb $record) {
+                        $params = [];
+
+                        if ($record->print_count > 0) {
+                            $params['reason'] = trim((string) ($data['reason'] ?? ''));
+                        }
+
+                        return redirect()->to(route('bppb.print', ['id' => $record->id] + $params));
+                    })
                     ->visible(
                         fn(Bppb $record) =>
                         auth()->user()?->hasRole('admin')

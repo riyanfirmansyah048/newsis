@@ -61,6 +61,11 @@ class BppbExpeditionTable extends Component implements HasActions, HasSchemas, H
                     ->date('d F Y')
                     ->sortable(),
 
+                TextColumn::make('print_count')
+                    ->label('Print Count')
+                    ->badge()
+                    ->color('info'),
+
                 TextColumn::make('deleted_at')
                     ->label('Status')
                     ->badge()
@@ -74,7 +79,22 @@ class BppbExpeditionTable extends Component implements HasActions, HasSchemas, H
                     ->label('Print')
                     ->icon('heroicon-m-printer')
                     ->color('info')
-                    ->url(fn(Expedition $record) => route('expedition.print', ['id' => $record->id]))
+                    ->schema(fn(Expedition $record) => $record->print_count > 0 ? [
+                        Textarea::make('reason')
+                            ->label('Alasan Print Ulang')
+                            ->required()
+                            ->rows(4)
+                            ->placeholder('Masukkan alasan kenapa dokumen ini diprint ulang'),
+                    ] : [])
+                    ->action(function (array $data, Expedition $record) {
+                        $params = [];
+
+                        if ($record->print_count > 0) {
+                            $params['reason'] = trim((string) ($data['reason'] ?? ''));
+                        }
+
+                        return redirect()->to(route('expedition.print', ['id' => $record->id] + $params));
+                    })
                     ->visible(fn(Expedition $record) => ! $record->trashed()),
 
                 Action::make('cancel')

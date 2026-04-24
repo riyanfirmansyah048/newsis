@@ -13,6 +13,7 @@ use Filament\Actions\Action;
 use App\Models\Bppb_software;
 use App\Models\Purchase_order;
 use Filament\Actions\ActionGroup;
+use Filament\Forms\Components\Textarea;
 use Illuminate\Contracts\View\View;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Contracts\HasTable;
@@ -82,22 +83,35 @@ class BppbPurchaseOrderTable extends Component implements HasActions, HasSchemas
                         ->label('Delete PO')
                         ->color('danger')
                         ->icon('heroicon-m-trash')
-                        ->requiresConfirmation()
                         ->visible(fn(Purchase_order $record) => $record->bpb()->count() === 0)
-                        ->action(function (Purchase_order $record) {
+                        ->schema([
+                            Textarea::make('reason')
+                                ->label('Alasan Delete')
+                                ->required()
+                                ->rows(4)
+                                ->placeholder('Masukkan alasan kenapa Purchase Order dihapus'),
+                        ])
+                        ->action(function (array $data, Purchase_order $record) {
+                            $reason = trim((string) ($data['reason'] ?? ''));
 
-                            // Soft delete semua BPB terkait PO
+                            activity()
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties([
+                                    'reason' => $reason,
+                                    'noPo' => $record->noPo,
+                                ])
+                                ->log("deleted: {$reason}");
+
                             $bpb = Bpb::where('po_id', $record->id)->get();
                             foreach ($bpb as $b) {
-                                $b->delete(); // soft delete
+                                $b->delete();
                             }
 
-                            // Kosongkan purchase_order_id di semua Bppb_item / Bppb_ink / Bppb_software
                             Bppb_item::where('purchase_order_id', $record->id)->update(['purchase_order_id' => null]);
                             Bppb_ink::where('purchase_order_id', $record->id)->update(['purchase_order_id' => null]);
                             Bppb_software::where('purchase_order_id', $record->id)->update(['purchase_order_id' => null]);
 
-                            // Soft delete PO
                             $record->delete();
 
                             Notification::make()
@@ -117,7 +131,6 @@ class BppbPurchaseOrderTable extends Component implements HasActions, HasSchemas
                             && in_array($record->bppb?->bppb_type_id, [1, 3])
                     )
                     ->action(function (Purchase_order $record) {
-                        // Redirect ke create Bpb Page
                         return redirect()->route('filament.sis.resources.bpbs.create', [
                             'bppb_id' => $this->bppbId,
                             'po_id' => $record->id,

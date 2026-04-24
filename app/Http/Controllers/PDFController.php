@@ -18,6 +18,24 @@ use Illuminate\Http\Request;
 
 class PDFController extends Controller
 {
+    protected function getRepeatPrintReason(): ?string
+    {
+        $reason = trim((string) request('reason'));
+
+        return $reason !== '' ? $reason : null;
+    }
+
+    protected function ensureRepeatPrintReason(int $printCount, string $documentLabel)
+    {
+        if ($printCount < 1 || $this->getRepeatPrintReason()) {
+            return null;
+        }
+
+        return redirect()
+            ->back()
+            ->with('error', "Alasan print ulang {$documentLabel} wajib diisi.");
+    }
+
     protected function shouldRegisterPrint(string $documentType, int $documentId): bool
     {
         $userKey = auth()->id() ?? request()->ip();
@@ -76,9 +94,14 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
 
+        if ($response = $this->ensureRepeatPrintReason((int) $bppb->print_count, 'BPPB')) {
+            return $response;
+        }
+
         if ($this->shouldRegisterPrint('bppb', (int) $bppb->id)) {
             $bppb->increment('print_count');
             $bppb->refresh();
+            $reason = $this->getRepeatPrintReason();
 
             activity()
                 ->performedOn($bppb)
@@ -87,6 +110,7 @@ class PDFController extends Controller
                     'document' => 'BPPB',
                     'number' => $bppb->noBppb,
                     'print_count' => $bppb->print_count,
+                    'reason' => $reason,
                     'printed_at' => now()->toDateTimeString(),
                 ])
                 ->log('printed');
@@ -106,9 +130,14 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
 
+        if ($response = $this->ensureRepeatPrintReason((int) $bpb->print_count, 'BPB')) {
+            return $response;
+        }
+
         if ($this->shouldRegisterPrint('bpb', (int) $bpb->id)) {
             $bpb->increment('print_count');
             $bpb->refresh();
+            $reason = $this->getRepeatPrintReason();
 
             activity()
                 ->performedOn($bpb)
@@ -117,6 +146,7 @@ class PDFController extends Controller
                     'document' => 'BPB',
                     'number' => $bpb->noBpb,
                     'print_count' => $bpb->print_count,
+                    'reason' => $reason,
                     'printed_at' => now()->toDateTimeString(),
                 ])
                 ->log('printed');
@@ -231,9 +261,14 @@ class PDFController extends Controller
             return redirect()->back()->with('error', 'Data Expedition tidak ditemukan.');
         }
 
+        if ($response = $this->ensureRepeatPrintReason((int) $expedition->print_count, 'Expedition')) {
+            return $response;
+        }
+
         if ($this->shouldRegisterPrint('expedition', (int) $expedition->id)) {
             Expedition::whereKey($expedition->id)->increment('print_count');
             $expedition->print_count = ((int) $expedition->print_count) + 1;
+            $reason = $this->getRepeatPrintReason();
 
             activity()
                 ->performedOn($expedition)
@@ -242,6 +277,7 @@ class PDFController extends Controller
                     'document' => 'Expedition',
                     'number' => $expedition->noExpedition,
                     'print_count' => $expedition->print_count,
+                    'reason' => $reason,
                     'printed_at' => now()->toDateTimeString(),
                 ])
                 ->log('printed');

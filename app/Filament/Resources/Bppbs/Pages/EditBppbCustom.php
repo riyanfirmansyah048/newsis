@@ -519,8 +519,15 @@ class EditBppbCustom extends Page implements HasForms
                 ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 3),
             Action::make('reject')
                 ->label('Reject')
-                ->action('rejectRecord')
                 ->color('warning')
+                ->schema([
+                    Textarea::make('reason')
+                        ->label('Alasan Reject')
+                        ->required()
+                        ->rows(4)
+                        ->placeholder('Masukkan alasan kenapa BPPB di-reject'),
+                ])
+                ->action(fn(array $data) => $this->rejectRecord($data))
                 ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 3),
             Action::make('received')
                 ->label('Barang Diterima di IT')
@@ -538,8 +545,22 @@ class EditBppbCustom extends Page implements HasForms
                 ->label('Print')
                 ->icon('heroicon-o-printer')
                 ->color('success')
-                ->url(fn() => route('bppb.print', $this->record->id))
-                ->openUrlInNewTab()
+                ->schema(fn() => $this->record->print_count > 0 ? [
+                    Textarea::make('reason')
+                        ->label('Alasan Print Ulang')
+                        ->required()
+                        ->rows(4)
+                        ->placeholder('Masukkan alasan kenapa dokumen ini diprint ulang'),
+                ] : [])
+                ->action(function (array $data) {
+                    $params = [];
+
+                    if ($this->record->print_count > 0) {
+                        $params['reason'] = trim((string) ($data['reason'] ?? ''));
+                    }
+
+                    return redirect()->to(route('bppb.print', ['id' => $this->record->id] + $params));
+                })
                 ->visible(
                     fn() =>
                     auth()->user()?->hasRole('admin')
@@ -562,15 +583,27 @@ class EditBppbCustom extends Page implements HasForms
         return redirect()->back();
     }
 
-    public function rejectRecord()
+    public function rejectRecord(array $data)
     {
+        $reason = trim((string) ($data['reason'] ?? ''));
+
         $this->record->update([
             'status_id' => 2,
             'received_date' => Carbon::now(),
             'user_validation_id' => auth()->id(),
         ]);
+
+        activity()
+            ->performedOn($this->record)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'reason' => $reason,
+                'noBppb' => $this->record->noBppb,
+            ])
+            ->log("rejected: {$reason}");
+
         Notification::make()
-            ->title('Record rejected successfully!')
+            ->title('BPPB berhasil di-reject')
             ->success()
             ->send();
         return redirect()->back();

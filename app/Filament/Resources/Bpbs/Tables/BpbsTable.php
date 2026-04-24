@@ -10,6 +10,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\TrashedFilter;
@@ -21,26 +22,12 @@ class BpbsTable
     {
         return $table
             ->query(
-                auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
-                    ? Bpb::query()->withTrashed() // Jika admin, tampilkan semua data termasuk yang di-cancel
-                    : Bpb::query()->withTrashed()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
+                auth()->user()->hasRole('admin')
+                    ? Bpb::query()->withTrashed()
+                    : Bpb::query()->withTrashed()->where('user_id', auth()->id())
             )
-            // ->query(
-            //     auth()->user()->hasRole('admin')
-            //         ? Bpb::query()->whereHas('purchase_order.bppb', function ($q) {
-            //             $q->where('bppb_type_id', [1, 2]);
-            //         })
-            //         : Bpb::query()
-            //         ->where('user_id', auth()->id())
-            //         ->whereHas('purchase_order.bppb', function ($q) {
-            //             $q->where('bppb_type_id', 1);
-            //         })
-            // )
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
-                // TextColumn::make('noBpb')
-                //     ->sortable()
-                //     ->searchable(),
                 TextColumn::make('noBpb')
                     ->label('No. BPB')
                     ->color(fn(Bpb $record) => $record->trashed() ? 'danger' : null)
@@ -86,17 +73,27 @@ class BpbsTable
                     ->label('Print BPB')
                     ->icon('heroicon-m-printer')
                     ->color('info')
-                    ->url(
-                        fn($record) =>
-                        route('bpb.print', ['id' => $record->id])
-                    )
+                    ->schema(fn(Bpb $record) => $record->print_count > 0 ? [
+                        Textarea::make('reason')
+                            ->label('Alasan Print Ulang')
+                            ->required()
+                            ->rows(4)
+                            ->placeholder('Masukkan alasan kenapa dokumen ini diprint ulang'),
+                    ] : [])
+                    ->action(function (array $data, Bpb $record) {
+                        $params = [];
+
+                        if ($record->print_count > 0) {
+                            $params['reason'] = trim((string) ($data['reason'] ?? ''));
+                        }
+
+                        return redirect()->to(route('bpb.print', ['id' => $record->id] + $params));
+                    })
                     ->visible(fn($record) => auth()->user()->hasRole('admin') && ! $record->trashed()),
-                // ->visible(fn($record) => ! $record->trashed()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    // ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
             ]);

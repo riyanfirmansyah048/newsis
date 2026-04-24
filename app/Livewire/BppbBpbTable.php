@@ -53,6 +53,11 @@ class BppbBpbTable extends Component implements HasActions, HasSchemas, HasTable
                     ->label('Tanggal BPB')
                     ->date('d F Y'),
 
+                TextColumn::make('print_count')
+                    ->label('Print Count')
+                    ->badge()
+                    ->color('info'),
+
                 TextColumn::make('deleted_at')
                     ->label('Status')
                     ->badge()
@@ -68,10 +73,22 @@ class BppbBpbTable extends Component implements HasActions, HasSchemas, HasTable
                     ->label('Print BPB')
                     ->icon('heroicon-m-printer')
                     ->color('info')
-                    ->url(
-                        fn($record) =>
-                        route('bpb.print', ['id' => $record->id])
-                    )
+                    ->schema(fn(Bpb $record) => $record->print_count > 0 ? [
+                        Textarea::make('reason')
+                            ->label('Alasan Print Ulang')
+                            ->required()
+                            ->rows(4)
+                            ->placeholder('Masukkan alasan kenapa dokumen ini diprint ulang'),
+                    ] : [])
+                    ->action(function (array $data, Bpb $record) {
+                        $params = [];
+
+                        if ($record->print_count > 0) {
+                            $params['reason'] = trim((string) ($data['reason'] ?? ''));
+                        }
+
+                        return redirect()->to(route('bpb.print', ['id' => $record->id] + $params));
+                    })
                     ->visible(fn(Bpb $record) => ! $record->trashed()),
                 Action::make('cancel')
                     ->label('Cancel')
