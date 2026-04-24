@@ -346,7 +346,7 @@
     @endif
 
     {{-- List BPB --}}
-    @if (!in_array($status_id, [1, 2, 3]) && in_array($type_bppb_id, [1, 3]))
+    @if ((!in_array($status_id, [1, 2, 3]) && in_array($type_bppb_id, [1, 3])) || $has_bpb_records)
         <x-filament::section>
             <x-slot name="heading">
                 List BPB
@@ -357,7 +357,7 @@
     @endif
 
     {{-- List Expedisi --}}
-    @if (!in_array($status_id, [1, 2, 3]) && in_array($type_bppb_id, [2, 4]))
+    @if ((!in_array($status_id, [1, 2, 3]) && in_array($type_bppb_id, [2, 4])) || $has_expedition_records)
         <x-filament::section>
             <x-slot name="heading">
                 List Expedisi

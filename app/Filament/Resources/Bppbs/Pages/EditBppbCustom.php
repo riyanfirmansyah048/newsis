@@ -113,6 +113,16 @@ class EditBppbCustom extends Page implements HasForms
             'received_date' => $record->received_date ?? '',
             'status' => $record->status?->name ?? '',
             'status_id' => $record->status_id ?? '',
+            'has_bpb_records' => Bpb::query()
+                ->withTrashed()
+                ->whereHas('purchase_order', function ($query) use ($record) {
+                    $query->withTrashed()->where('bppb_id', $record->id);
+                })
+                ->exists(),
+            'has_expedition_records' => \App\Models\Expedition::query()
+                ->withTrashed()
+                ->where('bppb_id', $record->id)
+                ->exists(),
 
             'bppb_items' => $record?->bppb_item()
                 ->with(['category', 'brand', 'item'])
