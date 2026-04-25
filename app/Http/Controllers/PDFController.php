@@ -327,8 +327,7 @@ class PDFController extends Controller
                         $value = trim((string) $value);
 
                         return match ($value) {
-                            '', '-' => null,
-                            '0' => '-',
+                            '', '-', '0' => null,
                             default => $value,
                         };
                     })
@@ -343,8 +342,7 @@ class PDFController extends Controller
                         $value = trim((string) $value);
 
                         return match ($value) {
-                            '', '-' => null,
-                            '0' => '-',
+                            '', '-', '0' => null,
                             default => $value,
                         };
                     })
@@ -359,8 +357,7 @@ class PDFController extends Controller
                         $value = trim((string) $value);
 
                         return match ($value) {
-                            '', '-' => null,
-                            '0' => '-',
+                            '', '-', '0' => null,
                             default => $value,
                         };
                     })

@@ -75,8 +75,7 @@
                         $itemId = $item->item->id;
                         $description = trim((string) $item->description);
                         $normalizedDescription = match ($description) {
-                            '', '-' => null,
-                            '0' => '-',
+                            '', '-', '0' => null,
                             default => $description,
                         };
 
@@ -102,8 +101,7 @@
                         $inkId = $ink->ink->id;
                         $description = trim((string) $ink->description);
                         $normalizedDescription = match ($description) {
-                            '', '-' => null,
-                            '0' => '-',
+                            '', '-', '0' => null,
                             default => $description,
                         };
 
@@ -129,8 +127,7 @@
                         $softwareId = $software->software->id;
                         $description = trim((string) $software->description);
                         $normalizedDescription = match ($description) {
-                            '', '-' => null,
-                            '0' => '-',
+                            '', '-', '0' => null,
                             default => $description,
                         };
 
