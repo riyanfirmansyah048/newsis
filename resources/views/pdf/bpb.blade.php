@@ -156,7 +156,10 @@
                     <tr>
                         <td>
                             {{ $item['name'] }}
-                            @if (!empty($item['descriptions']))
+                            @if (
+                                !empty($item['descriptions']) ||
+                                    in_array('-', $item['descriptions'], true) ||
+                                    in_array('0', $item['descriptions'], true))
                                 {{ implode(', ', $item['descriptions']) }}
                             @endif
                         </td>
@@ -169,7 +172,10 @@
                     <tr>
                         <td>
                             {{ $ink['name'] }}
-                            @if (!empty($ink['descriptions']))
+                            @if (
+                                !empty($ink['descriptions']) ||
+                                    in_array('-', $ink['descriptions'], true) ||
+                                    in_array('0', $ink['descriptions'], true))
                                 {{ implode(', ', $ink['descriptions']) }}
                             @endif
                         </td>
@@ -182,7 +188,10 @@
                     <tr>
                         <td>
                             {{ $software['name'] }}
-                            @if (!empty($software['descriptions']))
+                            @if (
+                                !empty($software['descriptions']) ||
+                                    in_array('-', $software['descriptions'], true) ||
+                                    in_array('0', $software['descriptions'], true))
                                 {{ implode(', ', $software['descriptions']) }}
                             @endif
                         </td>
