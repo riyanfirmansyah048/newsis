@@ -83,7 +83,10 @@
                         if (isset($items[$itemId])) {
                             $items[$itemId]['qty'] += $item->qty;
 
-                            if ($normalizedDescription !== null && ! in_array($normalizedDescription, $items[$itemId]['descriptions'], true)) {
+                            if (
+                                $normalizedDescription !== null &&
+                                !in_array($normalizedDescription, $items[$itemId]['descriptions'], true)
+                            ) {
                                 $items[$itemId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
@@ -107,7 +110,10 @@
                         if (isset($inks[$inkId])) {
                             $inks[$inkId]['qty'] += $ink->qty;
 
-                            if ($normalizedDescription !== null && ! in_array($normalizedDescription, $inks[$inkId]['descriptions'], true)) {
+                            if (
+                                $normalizedDescription !== null &&
+                                !in_array($normalizedDescription, $inks[$inkId]['descriptions'], true)
+                            ) {
                                 $inks[$inkId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
@@ -131,7 +137,10 @@
                         if (isset($softwares[$softwareId])) {
                             $softwares[$softwareId]['qty'] += $software->qty;
 
-                            if ($normalizedDescription !== null && ! in_array($normalizedDescription, $softwares[$softwareId]['descriptions'], true)) {
+                            if (
+                                $normalizedDescription !== null &&
+                                !in_array($normalizedDescription, $softwares[$softwareId]['descriptions'], true)
+                            ) {
                                 $softwares[$softwareId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
@@ -148,8 +157,7 @@
                         <td>
                             {{ $item['name'] }}
                             @if (!empty($item['descriptions']))
-                                <br>
-                                <small>Keterangan: {{ implode(', ', $item['descriptions']) }}</small>
+                                {{ implode(', ', $item['descriptions']) }}
                             @endif
                         </td>
                         <td>
@@ -162,8 +170,7 @@
                         <td>
                             {{ $ink['name'] }}
                             @if (!empty($ink['descriptions']))
-                                <br>
-                                <small>Keterangan: {{ implode(', ', $ink['descriptions']) }}</small>
+                                {{ implode(', ', $ink['descriptions']) }}
                             @endif
                         </td>
                         <td>
@@ -176,8 +183,7 @@
                         <td>
                             {{ $software['name'] }}
                             @if (!empty($software['descriptions']))
-                                <br>
-                                <small>Keterangan: {{ implode(', ', $software['descriptions']) }}</small>
+                                {{ implode(', ', $software['descriptions']) }}
                             @endif
                         </td>
                         <td>
