@@ -74,18 +74,19 @@
                     foreach ($bpb->purchase_order->bppb_items as $item) {
                         $itemId = $item->item->id;
                         $description = trim((string) $item->description);
+                        $normalizedDescription = $description === '0' ? '-' : $description;
 
                         if (isset($items[$itemId])) {
                             $items[$itemId]['qty'] += $item->qty;
 
-                            if ($description !== '' && ! in_array($description, $items[$itemId]['descriptions'], true)) {
-                                $items[$itemId]['descriptions'][] = $description;
+                            if ($normalizedDescription !== '' && ! in_array($normalizedDescription, $items[$itemId]['descriptions'], true)) {
+                                $items[$itemId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
                             $items[$itemId] = [
                                 'name' => $item->item->name,
                                 'qty' => $item->qty,
-                                'descriptions' => $description !== '' ? [$description] : [],
+                                'descriptions' => $normalizedDescription !== '' ? [$normalizedDescription] : [],
                             ];
                         }
                     }
@@ -93,18 +94,19 @@
                     foreach ($bpb->purchase_order->bppb_inks as $ink) {
                         $inkId = $ink->ink->id;
                         $description = trim((string) $ink->description);
+                        $normalizedDescription = $description === '0' ? '-' : $description;
 
                         if (isset($inks[$inkId])) {
                             $inks[$inkId]['qty'] += $ink->qty;
 
-                            if ($description !== '' && ! in_array($description, $inks[$inkId]['descriptions'], true)) {
-                                $inks[$inkId]['descriptions'][] = $description;
+                            if ($normalizedDescription !== '' && ! in_array($normalizedDescription, $inks[$inkId]['descriptions'], true)) {
+                                $inks[$inkId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
                             $inks[$inkId] = [
                                 'name' => $ink->ink->name,
                                 'qty' => $ink->qty,
-                                'descriptions' => $description !== '' ? [$description] : [],
+                                'descriptions' => $normalizedDescription !== '' ? [$normalizedDescription] : [],
                             ];
                         }
                     }
@@ -112,18 +114,19 @@
                     foreach ($bpb->purchase_order->bppb_softwares as $software) {
                         $softwareId = $software->software->id;
                         $description = trim((string) $software->description);
+                        $normalizedDescription = $description === '0' ? '-' : $description;
 
                         if (isset($softwares[$softwareId])) {
                             $softwares[$softwareId]['qty'] += $software->qty;
 
-                            if ($description !== '' && ! in_array($description, $softwares[$softwareId]['descriptions'], true)) {
-                                $softwares[$softwareId]['descriptions'][] = $description;
+                            if ($normalizedDescription !== '' && ! in_array($normalizedDescription, $softwares[$softwareId]['descriptions'], true)) {
+                                $softwares[$softwareId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
                             $softwares[$softwareId] = [
                                 'name' => $software->software->name,
                                 'qty' => $software->qty,
-                                'descriptions' => $description !== '' ? [$description] : [],
+                                'descriptions' => $normalizedDescription !== '' ? [$normalizedDescription] : [],
                             ];
                         }
                     }

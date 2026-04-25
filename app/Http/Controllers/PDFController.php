@@ -323,7 +323,11 @@ class PDFController extends Controller
                     ->where('purchase_order_id', $poId)
                     ->where('item_id', $typeId)
                     ->pluck('description')
-                    ->map(fn($value) => trim((string) $value))
+                    ->map(function ($value) {
+                        $value = trim((string) $value);
+
+                        return $value === '0' ? '-' : $value;
+                    })
                     ->filter()
                     ->unique()
                     ->implode(', '),
@@ -331,7 +335,11 @@ class PDFController extends Controller
                     ->where('purchase_order_id', $poId)
                     ->where('software_id', $typeId)
                     ->pluck('description')
-                    ->map(fn($value) => trim((string) $value))
+                    ->map(function ($value) {
+                        $value = trim((string) $value);
+
+                        return $value === '0' ? '-' : $value;
+                    })
                     ->filter()
                     ->unique()
                     ->implode(', '),
@@ -339,7 +347,11 @@ class PDFController extends Controller
                     ->where('purchase_order_id', $poId)
                     ->where('ink_id', $typeId)
                     ->pluck('description')
-                    ->map(fn($value) => trim((string) $value))
+                    ->map(function ($value) {
+                        $value = trim((string) $value);
+
+                        return $value === '0' ? '-' : $value;
+                    })
                     ->filter()
                     ->unique()
                     ->implode(', '),
