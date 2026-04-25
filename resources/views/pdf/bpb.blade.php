@@ -72,101 +72,101 @@
                     $inks = [];
                     $softwares = [];
                     foreach ($bpb->purchase_order->bppb_items as $item) {
-                        if (isset($items[$item->item->id])) {
-                            $items[$item->item->id]->qty += $item->qty;
-                            $description = trim((string) $item->description);
+                        $itemId = $item->item->id;
+                        $description = trim((string) $item->description);
 
-                            if ($description !== '' && ! in_array($description, $items[$item->item->id]->descriptions, true)) {
-                                $items[$item->item->id]->descriptions[] = $description;
+                        if (isset($items[$itemId])) {
+                            $items[$itemId]['qty'] += $item->qty;
+
+                            if ($description !== '' && ! in_array($description, $items[$itemId]['descriptions'], true)) {
+                                $items[$itemId]['descriptions'][] = $description;
                             }
                         } else {
-                            $items[$item->item->id] = clone $item;
-                            $items[$item->item->id]->descriptions = collect([$item->description ?? null])
-                                ->map(fn($value) => trim((string) $value))
-                                ->filter()
-                                ->unique()
-                                ->values()
-                                ->all();
+                            $items[$itemId] = [
+                                'name' => $item->item->name,
+                                'qty' => $item->qty,
+                                'descriptions' => $description !== '' ? [$description] : [],
+                            ];
                         }
                     }
 
                     foreach ($bpb->purchase_order->bppb_inks as $ink) {
-                        if (isset($inks[$ink->ink->id])) {
-                            $inks[$ink->ink->id]->qty += $ink->qty;
-                            $description = trim((string) $ink->description);
+                        $inkId = $ink->ink->id;
+                        $description = trim((string) $ink->description);
 
-                            if ($description !== '' && ! in_array($description, $inks[$ink->ink->id]->descriptions, true)) {
-                                $inks[$ink->ink->id]->descriptions[] = $description;
+                        if (isset($inks[$inkId])) {
+                            $inks[$inkId]['qty'] += $ink->qty;
+
+                            if ($description !== '' && ! in_array($description, $inks[$inkId]['descriptions'], true)) {
+                                $inks[$inkId]['descriptions'][] = $description;
                             }
                         } else {
-                            $inks[$ink->ink->id] = clone $ink;
-                            $inks[$ink->ink->id]->descriptions = collect([$ink->description ?? null])
-                                ->map(fn($value) => trim((string) $value))
-                                ->filter()
-                                ->unique()
-                                ->values()
-                                ->all();
+                            $inks[$inkId] = [
+                                'name' => $ink->ink->name,
+                                'qty' => $ink->qty,
+                                'descriptions' => $description !== '' ? [$description] : [],
+                            ];
                         }
                     }
 
                     foreach ($bpb->purchase_order->bppb_softwares as $software) {
-                        if (isset($softwares[$software->software->id])) {
-                            $softwares[$software->software->id]->qty += $software->qty;
-                            $description = trim((string) $software->description);
+                        $softwareId = $software->software->id;
+                        $description = trim((string) $software->description);
 
-                            if ($description !== '' && ! in_array($description, $softwares[$software->software->id]->descriptions, true)) {
-                                $softwares[$software->software->id]->descriptions[] = $description;
+                        if (isset($softwares[$softwareId])) {
+                            $softwares[$softwareId]['qty'] += $software->qty;
+
+                            if ($description !== '' && ! in_array($description, $softwares[$softwareId]['descriptions'], true)) {
+                                $softwares[$softwareId]['descriptions'][] = $description;
                             }
                         } else {
-                            $softwares[$software->software->id] = clone $software;
-                            $softwares[$software->software->id]->descriptions = collect([$software->description ?? null])
-                                ->map(fn($value) => trim((string) $value))
-                                ->filter()
-                                ->unique()
-                                ->values()
-                                ->all();
+                            $softwares[$softwareId] = [
+                                'name' => $software->software->name,
+                                'qty' => $software->qty,
+                                'descriptions' => $description !== '' ? [$description] : [],
+                            ];
                         }
                     }
                 @endphp
                 @foreach ($items as $item)
                     <tr>
                         <td>
-                            {{ $item->item->name }}
-                            @if (!empty($item->descriptions))
+                            {{ $item['name'] }}
+                            @if (!empty($item['descriptions']))
                                 <br>
-                                <small>Keterangan: {{ implode(', ', $item->descriptions) }}</small>
+                                <small>Keterangan: {{ implode(', ', $item['descriptions']) }}</small>
                             @endif
                         </td>
                         <td>
-                            <center>{{ $item->qty }}</center>
+                            <center>{{ $item['qty'] }}</center>
                         </td>
                     </tr>
                 @endforeach
                 @foreach ($inks as $ink)
                     <tr>
                         <td>
-                            {{ $ink->ink->name }}
-                            @if (!empty($ink->descriptions))
+                            {{ $ink['name'] }}
+                            @if (!empty($ink['descriptions']))
                                 <br>
-                                <small>Keterangan: {{ implode(', ', $ink->descriptions) }}</small>
+                                <small>Keterangan: {{ implode(', ', $ink['descriptions']) }}</small>
                             @endif
                         </td>
                         <td>
-                            <center>{{ $ink->qty }}</center>
+                            <center>{{ $ink['qty'] }}</center>
                         </td>
                     </tr>
                 @endforeach
                 @foreach ($softwares as $software)
                     <tr>
                         <td>
-                            {{ $software->software->name }}
-                            @if (!empty($software->descriptions))
+                            {{ $software['name'] }}
+                            @if (!empty($software['descriptions']))
                                 <br>
-                                <small>Keterangan: {{ implode(', ', $software->descriptions) }}</small>
+                                <small>Keterangan: {{ implode(', ', $software['descriptions']) }}</small>
                             @endif
                         </td>
                         <td>
-                            <center>{{ $software->qty }}</center>
+                            <center>{{ $software['qty'] }}</center>
                         </td>
                     </tr>
                 @endforeach
