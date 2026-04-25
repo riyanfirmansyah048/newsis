@@ -93,6 +93,10 @@
                             </td>
                             <td>
                                 {{ $item->nama_barang }}
+                                @if (filled($item->description))
+                                    <br>
+                                    <small><b>Keterangan : </b>{{ $item->description }}</small>
+                                @endif
                                 <br>
                                 <b>No. BPPB : </b>{{ $item->purchaseOrder->bppb->noBppb }}
                                 <br>

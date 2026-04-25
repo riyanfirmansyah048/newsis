@@ -125,7 +125,14 @@ class PDFController extends Controller
     }
     public function bpbPrint($id)
     {
-        $bpb = Bpb::with('purchase_order', 'user')->find($id);
+        $bpb = Bpb::with([
+            'user',
+            'purchase_order.vendor',
+            'purchase_order.bppb.user.department',
+            'purchase_order.bppb_items.item',
+            'purchase_order.bppb_inks.ink',
+            'purchase_order.bppb_softwares.software',
+        ])->find($id);
         if (!$bpb) {
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
@@ -309,6 +316,34 @@ class PDFController extends Controller
                     ->where('ink_id', $typeId)
                     ->count(),
                 default => 0,
+            };
+
+            $detail->description = match ($detail->product_form_id) {
+                1, 5 => Bppb_item::where('bppb_id', $bppbId)
+                    ->where('purchase_order_id', $poId)
+                    ->where('item_id', $typeId)
+                    ->pluck('description')
+                    ->map(fn($value) => trim((string) $value))
+                    ->filter()
+                    ->unique()
+                    ->implode(', '),
+                2 => Bppb_software::where('bppb_id', $bppbId)
+                    ->where('purchase_order_id', $poId)
+                    ->where('software_id', $typeId)
+                    ->pluck('description')
+                    ->map(fn($value) => trim((string) $value))
+                    ->filter()
+                    ->unique()
+                    ->implode(', '),
+                3 => Bppb_ink::where('bppb_id', $bppbId)
+                    ->where('purchase_order_id', $poId)
+                    ->where('ink_id', $typeId)
+                    ->pluck('description')
+                    ->map(fn($value) => trim((string) $value))
+                    ->filter()
+                    ->unique()
+                    ->implode(', '),
+                default => '',
             };
         }
 
