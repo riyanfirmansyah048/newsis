@@ -326,7 +326,11 @@ class PDFController extends Controller
                     ->map(function ($value) {
                         $value = trim((string) $value);
 
-                        return $value === '0' ? '-' : $value;
+                        return match ($value) {
+                            '', '-' => null,
+                            '0' => '-',
+                            default => $value,
+                        };
                     })
                     ->filter()
                     ->unique()
@@ -338,7 +342,11 @@ class PDFController extends Controller
                     ->map(function ($value) {
                         $value = trim((string) $value);
 
-                        return $value === '0' ? '-' : $value;
+                        return match ($value) {
+                            '', '-' => null,
+                            '0' => '-',
+                            default => $value,
+                        };
                     })
                     ->filter()
                     ->unique()
@@ -350,7 +358,11 @@ class PDFController extends Controller
                     ->map(function ($value) {
                         $value = trim((string) $value);
 
-                        return $value === '0' ? '-' : $value;
+                        return match ($value) {
+                            '', '-' => null,
+                            '0' => '-',
+                            default => $value,
+                        };
                     })
                     ->filter()
                     ->unique()

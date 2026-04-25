@@ -74,19 +74,23 @@
                     foreach ($bpb->purchase_order->bppb_items as $item) {
                         $itemId = $item->item->id;
                         $description = trim((string) $item->description);
-                        $normalizedDescription = $description === '0' ? '-' : $description;
+                        $normalizedDescription = match ($description) {
+                            '', '-' => null,
+                            '0' => '-',
+                            default => $description,
+                        };
 
                         if (isset($items[$itemId])) {
                             $items[$itemId]['qty'] += $item->qty;
 
-                            if ($normalizedDescription !== '' && ! in_array($normalizedDescription, $items[$itemId]['descriptions'], true)) {
+                            if ($normalizedDescription !== null && ! in_array($normalizedDescription, $items[$itemId]['descriptions'], true)) {
                                 $items[$itemId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
                             $items[$itemId] = [
                                 'name' => $item->item->name,
                                 'qty' => $item->qty,
-                                'descriptions' => $normalizedDescription !== '' ? [$normalizedDescription] : [],
+                                'descriptions' => $normalizedDescription !== null ? [$normalizedDescription] : [],
                             ];
                         }
                     }
@@ -94,19 +98,23 @@
                     foreach ($bpb->purchase_order->bppb_inks as $ink) {
                         $inkId = $ink->ink->id;
                         $description = trim((string) $ink->description);
-                        $normalizedDescription = $description === '0' ? '-' : $description;
+                        $normalizedDescription = match ($description) {
+                            '', '-' => null,
+                            '0' => '-',
+                            default => $description,
+                        };
 
                         if (isset($inks[$inkId])) {
                             $inks[$inkId]['qty'] += $ink->qty;
 
-                            if ($normalizedDescription !== '' && ! in_array($normalizedDescription, $inks[$inkId]['descriptions'], true)) {
+                            if ($normalizedDescription !== null && ! in_array($normalizedDescription, $inks[$inkId]['descriptions'], true)) {
                                 $inks[$inkId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
                             $inks[$inkId] = [
                                 'name' => $ink->ink->name,
                                 'qty' => $ink->qty,
-                                'descriptions' => $normalizedDescription !== '' ? [$normalizedDescription] : [],
+                                'descriptions' => $normalizedDescription !== null ? [$normalizedDescription] : [],
                             ];
                         }
                     }
@@ -114,19 +122,23 @@
                     foreach ($bpb->purchase_order->bppb_softwares as $software) {
                         $softwareId = $software->software->id;
                         $description = trim((string) $software->description);
-                        $normalizedDescription = $description === '0' ? '-' : $description;
+                        $normalizedDescription = match ($description) {
+                            '', '-' => null,
+                            '0' => '-',
+                            default => $description,
+                        };
 
                         if (isset($softwares[$softwareId])) {
                             $softwares[$softwareId]['qty'] += $software->qty;
 
-                            if ($normalizedDescription !== '' && ! in_array($normalizedDescription, $softwares[$softwareId]['descriptions'], true)) {
+                            if ($normalizedDescription !== null && ! in_array($normalizedDescription, $softwares[$softwareId]['descriptions'], true)) {
                                 $softwares[$softwareId]['descriptions'][] = $normalizedDescription;
                             }
                         } else {
                             $softwares[$softwareId] = [
                                 'name' => $software->software->name,
                                 'qty' => $software->qty,
-                                'descriptions' => $normalizedDescription !== '' ? [$normalizedDescription] : [],
+                                'descriptions' => $normalizedDescription !== null ? [$normalizedDescription] : [],
                             ];
                         }
                     }
