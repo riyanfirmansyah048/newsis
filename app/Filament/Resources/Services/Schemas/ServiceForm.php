@@ -103,7 +103,7 @@ class ServiceForm
                             ->label('No. Seri Barang')
                             ->columnSpanFull(),
                         Select::make('ic_id')
-                            ->label('IC yang mengerjakan')
+                            ->label('PIC yang mengerjakan')
                             ->getSearchResultsUsing(
                                 fn(string $search) =>
                                 User::where('name', 'like', "%{$search}%")
