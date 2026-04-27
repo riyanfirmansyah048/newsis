@@ -104,14 +104,10 @@ class ServiceForm
                             ->columnSpanFull(),
                         Select::make('ic_id')
                             ->label('PIC yang mengerjakan')
-                            ->getSearchResultsUsing(
-                                fn(string $search) =>
-                                User::role('admin')
-                                    ->where('name', 'like', "%{$search}%")
-                                    ->limit(20)
-                                    ->get()
-                                    ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
-                            )
+                            ->options(fn() => User::role('admin')
+                                ->orderBy('name')
+                                ->get()
+                                ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK]))
                             ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
                             ->columnSpanFull()
                             ->visible(fn(Get $get) => auth()->user()->can('update-service') && $get('status_id') !== 2)
