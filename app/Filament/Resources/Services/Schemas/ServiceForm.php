@@ -106,7 +106,8 @@ class ServiceForm
                             ->label('PIC yang mengerjakan')
                             ->getSearchResultsUsing(
                                 fn(string $search) =>
-                                User::where('name', 'like', "%{$search}%")
+                                User::role('admin')
+                                    ->where('name', 'like', "%{$search}%")
                                     ->limit(20)
                                     ->get()
                                     ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
