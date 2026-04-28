@@ -153,13 +153,13 @@
                         <center><b>Atasan Pemohon</b></center>
                     </td>
                     <td style="width: 3cm">
-                        <center><b>Staf IT Penerima</b></center>
+                        <center><b>IT Admin</b></center>
                     </td>
                     <td style="width: 3cm">
-                        <center><b>Staf Supervisor IT</b></center>
+                        <center><b>Staff IT</b></center>
                     </td>
                     <td style="width: 3cm">
-                        <center><b>Staf IT</b></center>
+                        <center><b>IT Admin</b></center>
                     </td>
                     <td style="width: 3cm">
                         <center><b>Penerima</b></center>
