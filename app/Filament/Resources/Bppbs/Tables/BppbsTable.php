@@ -134,13 +134,6 @@ class BppbsTable
                     ->multiple(),
             ])
             ->recordActions([
-                ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make()
-                        ->visible(fn($record) => auth()->user()->hasRole('admin') || in_array($record->status_id, [1, 2, 3])),
-                    DeleteAction::make()
-                        ->visible(fn($record) => auth()->user()->hasRole('admin') || in_array($record->status_id, [1, 2, 3])),
-                ]),
                 Action::make('Print')
                     ->label('Print')
                     ->icon('heroicon-o-printer')
@@ -186,6 +179,13 @@ class BppbsTable
                             ->success()
                             ->send();
                     }),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->visible(fn($record) => auth()->user()->hasRole('admin') || in_array($record->status_id, [1, 2, 3])),
+                    DeleteAction::make()
+                        ->visible(fn($record) => auth()->user()->hasRole('admin') || in_array($record->status_id, [1, 2, 3])),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
