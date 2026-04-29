@@ -26,7 +26,7 @@ class BppbsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
+            // ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->query(function () {
 
                 $query = auth()->user()->hasRole('admin')
