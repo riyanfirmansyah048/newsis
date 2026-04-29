@@ -9,6 +9,7 @@ use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
@@ -46,6 +47,11 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                     ->label('Qty Dipesan')
                     ->alignCenter(),
 
+                TextColumn::make('description')
+                    ->label('Keterangan')
+                    ->formatStateUsing(fn (?string $state) => filled(trim((string) $state)) ? trim((string) $state) : '-')
+                    ->wrap(),
+
                 TextColumn::make('processed')
                     ->label('Qty Diproses')
                     ->alignCenter()
@@ -70,6 +76,7 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                     })
                     ->fillForm(fn($record) => [
                         'qty' => $record['qty'],
+                        'description' => $record['description'],
                     ])
                     ->schema([
                         TextInput::make('qty')
@@ -77,6 +84,10 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                             ->numeric()
                             ->required()
                             ->minValue(1),
+                        Textarea::make('description')
+                            ->label('Keterangan')
+                            ->rows(3)
+                            ->placeholder('Masukkan keterangan jika diperlukan'),
                     ])
                     ->action(function (array $data, $record) {
                         if ($record['processed'] > 0) {
@@ -89,10 +100,16 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                             return;
                         }
 
+                        $currentQty = (int) $record['qty'];
                         $newQty = (int) $data['qty'];
+                        $newDescription = trim((string) ($data['description'] ?? ''));
+                        $newDescription = $newDescription !== '' ? $newDescription : null;
 
                         if ($record['type'] === 'Item') {
-                            $firstRow = Bppb_item::where('bppb_id', $this->bppbId)
+                            $baseQuery = Bppb_item::where('bppb_id', $this->bppbId)
+                                ->where('item_id', $record['id']);
+
+                            $firstRow = (clone $baseQuery)
                                 ->where('item_id', $record['id'])
                                 ->first();
 
@@ -105,23 +122,36 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                                 return;
                             }
 
-                            Bppb_item::where('bppb_id', $this->bppbId)
-                                ->where('item_id', $record['id'])
-                                ->delete();
+                            $baseQuery->update([
+                                'description' => $newDescription,
+                            ]);
 
-                            for ($i = 0; $i < $newQty; $i++) {
-                                Bppb_item::create([
-                                    'bppb_id' => $this->bppbId,
-                                    'item_id' => $record['id'],
-                                    'purchase_order_id' => null,
-                                    'qty' => 1,
-                                    'description' => $firstRow->description,
-                                ]);
+                            if ($newQty > $currentQty) {
+                                for ($i = 0; $i < ($newQty - $currentQty); $i++) {
+                                    Bppb_item::create([
+                                        'bppb_id' => $this->bppbId,
+                                        'item_id' => $record['id'],
+                                        'purchase_order_id' => null,
+                                        'qty' => 1,
+                                        'description' => $newDescription,
+                                    ]);
+                                }
+                            } elseif ($newQty < $currentQty) {
+                                $rowsToDelete = (clone $baseQuery)
+                                    ->whereNull('purchase_order_id')
+                                    ->latest('id')
+                                    ->take($currentQty - $newQty)
+                                    ->get();
+
+                                $rowsToDelete->each->delete();
                             }
                         }
 
                         if ($record['type'] === 'Ink') {
-                            $firstRow = Bppb_ink::where('bppb_id', $this->bppbId)
+                            $baseQuery = Bppb_ink::where('bppb_id', $this->bppbId)
+                                ->where('ink_id', $record['id']);
+
+                            $firstRow = (clone $baseQuery)
                                 ->where('ink_id', $record['id'])
                                 ->first();
 
@@ -134,23 +164,36 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                                 return;
                             }
 
-                            Bppb_ink::where('bppb_id', $this->bppbId)
-                                ->where('ink_id', $record['id'])
-                                ->delete();
+                            $baseQuery->update([
+                                'description' => $newDescription,
+                            ]);
 
-                            for ($i = 0; $i < $newQty; $i++) {
-                                Bppb_ink::create([
-                                    'bppb_id' => $this->bppbId,
-                                    'ink_id' => $record['id'],
-                                    'purchase_order_id' => null,
-                                    'qty' => 1,
-                                    'description' => $firstRow->description,
-                                ]);
+                            if ($newQty > $currentQty) {
+                                for ($i = 0; $i < ($newQty - $currentQty); $i++) {
+                                    Bppb_ink::create([
+                                        'bppb_id' => $this->bppbId,
+                                        'ink_id' => $record['id'],
+                                        'purchase_order_id' => null,
+                                        'qty' => 1,
+                                        'description' => $newDescription,
+                                    ]);
+                                }
+                            } elseif ($newQty < $currentQty) {
+                                $rowsToDelete = (clone $baseQuery)
+                                    ->whereNull('purchase_order_id')
+                                    ->latest('id')
+                                    ->take($currentQty - $newQty)
+                                    ->get();
+
+                                $rowsToDelete->each->delete();
                             }
                         }
 
                         if ($record['type'] === 'Software') {
-                            $firstRow = Bppb_software::where('bppb_id', $this->bppbId)
+                            $baseQuery = Bppb_software::where('bppb_id', $this->bppbId)
+                                ->where('software_id', $record['id']);
+
+                            $firstRow = (clone $baseQuery)
                                 ->where('software_id', $record['id'])
                                 ->first();
 
@@ -163,24 +206,34 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                                 return;
                             }
 
-                            Bppb_software::where('bppb_id', $this->bppbId)
-                                ->where('software_id', $record['id'])
-                                ->delete();
+                            $baseQuery->update([
+                                'description' => $newDescription,
+                            ]);
 
-                            for ($i = 0; $i < $newQty; $i++) {
-                                Bppb_software::create([
-                                    'bppb_id' => $this->bppbId,
-                                    'software_id' => $record['id'],
-                                    'purchase_order_id' => null,
-                                    'qty' => 1,
-                                    'description' => $firstRow->description,
-                                    'noBppbPemohon' => $firstRow->noBppbPemohon,
-                                    'pemohonIT' => $firstRow->pemohonIT,
-                                    'userPemohon' => $firstRow->userPemohon,
-                                    'departementPemohon' => $firstRow->departementPemohon,
-                                    'lokasiPemohon' => $firstRow->lokasiPemohon,
-                                    'serialNumber' => $firstRow->serialNumber,
-                                ]);
+                            if ($newQty > $currentQty) {
+                                for ($i = 0; $i < ($newQty - $currentQty); $i++) {
+                                    Bppb_software::create([
+                                        'bppb_id' => $this->bppbId,
+                                        'software_id' => $record['id'],
+                                        'purchase_order_id' => null,
+                                        'qty' => 1,
+                                        'description' => $newDescription,
+                                        'noBppbPemohon' => $firstRow->noBppbPemohon,
+                                        'pemohonIT' => $firstRow->pemohonIT,
+                                        'userPemohon' => $firstRow->userPemohon,
+                                        'departementPemohon' => $firstRow->departementPemohon,
+                                        'lokasiPemohon' => $firstRow->lokasiPemohon,
+                                        'serialNumber' => $firstRow->serialNumber,
+                                    ]);
+                                }
+                            } elseif ($newQty < $currentQty) {
+                                $rowsToDelete = (clone $baseQuery)
+                                    ->whereNull('purchase_order_id')
+                                    ->latest('id')
+                                    ->take($currentQty - $newQty)
+                                    ->get();
+
+                                $rowsToDelete->each->delete();
                             }
                         }
 
@@ -249,6 +302,7 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                     'processed' => 0,
                     'type' => 'Item',
                     'id' => $item->item_id,
+                    'description' => $item->description,
                 ];
                 $nullCounts[$item->item_id] = 0;
             }
@@ -285,6 +339,7 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                     'processed' => 0,
                     'type' => 'Ink',
                     'id' => $ink->ink_id,
+                    'description' => $ink->description,
                 ];
                 $nullCounts[$ink->ink_id] = 0;
             }
@@ -321,6 +376,7 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
                     'processed' => 0,
                     'type' => 'Software',
                     'id' => $software->software_id,
+                    'description' => $software->description,
                 ];
                 $nullCounts[$software->software_id] = 0;
             }
@@ -342,6 +398,6 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
 
     public function render(): View
     {
-        return view('livewire.bppb-purchase-order-table');
+        return view('livewire.bppb-list');
     }
 }
