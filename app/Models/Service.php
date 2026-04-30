@@ -70,7 +70,7 @@ class Service extends Model
 
         static::creating(function ($model) {
             if (!app()->runningInConsole()) {
-                $kodeSubDepartemen = Auth::user()?->subdepartment?->code ?? 'XXX';
+                $kodeDepartemen = Auth::user()?->department?->code ?? 'XXX';
                 $kodeRegional = Auth::user()?->regional?->code ?? 'XXX';
 
                 $bulan = Carbon::now()->month;
@@ -78,9 +78,9 @@ class Service extends Model
                 $tahun = Carbon::now()->format('y');
 
                 // Hitung jumlah BPPB yang sudah dibuat untuk kode departemen, bulan, dan tahun yang sama
-                $jumlahBppb = self::whereHas('user', function ($query) use ($kodeSubDepartemen) {
-                    $query->whereHas('subdepartment', function ($q) use ($kodeSubDepartemen) {
-                        $q->where('code', $kodeSubDepartemen);
+                $jumlahBppb = self::whereHas('user', function ($query) use ($kodeDepartemen) {
+                    $query->whereHas('department', function ($q) use ($kodeDepartemen) {
+                        $q->where('code', $kodeDepartemen);
                     });
                 })
                     ->whereMonth('created_at', Carbon::now()->month)
@@ -92,7 +92,7 @@ class Service extends Model
 
                 // Gabungkan menjadi format yg diinginkan
                 $model->number = $nomorUrut;
-                $model->noService = "{$nomorUrut}/{$kodeSubDepartemen}{$kodeRegional}/SER/{$bulan}/{$tahun}";
+                $model->noService = "{$nomorUrut}/{$kodeDepartemen}{$kodeRegional}/SER/{$bulan}/{$tahun}";
 
                 // Simpan user_id dari user yang sedang login
                 // $model->user_id = Auth::id();
