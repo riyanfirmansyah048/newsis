@@ -92,7 +92,7 @@ class Service extends Model
 
                 // Gabungkan menjadi format yg diinginkan
                 $model->number = $nomorUrut;
-                $model->noService = "{$nomorUrut}/{$kodeDepartemen}{$kodeRegional}/SER/{$bulan}/{$tahun}";
+                $model->noService = "{$nomorUrut}/{$kodeDepartemen}-{$kodeRegional}/SER/{$bulan}/{$tahun}";
 
                 // Simpan user_id dari user yang sedang login
                 // $model->user_id = Auth::id();
