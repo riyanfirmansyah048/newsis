@@ -65,27 +65,27 @@
                             <tr>
                                 <td><b>Pemohon</b></td>
                                 <td>:</td>
-                                <td>{{ $service->user->NIK . ' / ' . $service->user->name }}</td>
+                                <td>{{ ($service->user?->NIK ?? '-') . ' / ' . ($service->user?->name ?? '-') }}</td>
                             </tr>
                             <tr>
                                 <td><b>Jabatan</b></td>
                                 <td>:</td>
-                                <td>{{ $service->user->position->positionName }}</td>
+                                <td>{{ $service->user?->position?->positionName ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <td><b>Departement</b></td>
                                 <td>:</td>
-                                <td>{{ $service->user->department->departmentName }}</td>
+                                <td>{{ $service->user?->department?->departmentName ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <td><b>Sub. Departement </b></td>
                                 <td>:</td>
-                                <td>{{ $service->user->subdepartment->subDepartmentName }}</td>
+                                <td>{{ $service->user?->subdepartment?->subDepartmentName ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <td><b>No. Ext</b></td>
                                 <td>:</td>
-                                <td>{{ $service->user->ext }}</td>
+                                <td>{{ $service->user?->ext ?? '-' }}</td>
                             </tr>
                         </table>
                     </td>
@@ -106,10 +106,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <center>{{ $service->item->name }}</center>
+                            <center>{{ $service->item?->name ?? '-' }}</center>
                         </td>
                         <td>
-                            <center>{{ $service->analisa }}</center>
+                            <center>{{ $service->analisa ?? '-' }}</center>
                         </td>
                     </tr>
                     <tr>
@@ -122,13 +122,11 @@
                     </tr>
                     <tr>
                         <td>
-                            <center>{{ $service->problem }}</center>
+                            <center>{{ $service->problem ?? '-' }}</center>
                         </td>
                         <td>
                             <center>
-                                @if ($service->solution_id != null)
-                                    {{ $service->serviceSolution->name }}
-                                @endif
+                                {{ $service->solution_id != null ? ($service->serviceSolution?->name ?? '-') : '-' }}
                             </center>
                         </td>
                     </tr>
@@ -139,11 +137,11 @@
             <table style="width: 18cm;" border="1">
                 <tr>
                     <td colspan="2">Tanggal pemohon :
-                        {{ \Carbon\Carbon::parse($service->created_at)->translatedFormat('d F Y') }}</td>
+                        {{ $service->created_at ? \Carbon\Carbon::parse($service->created_at)->translatedFormat('d F Y') : '-' }}</td>
                     <td colspan="2">Tanggal penerimaan :
-                        {{ \Carbon\Carbon::parse($service->received_date)->translatedFormat('d F Y') }}</td>
+                        {{ $service->received_date ? \Carbon\Carbon::parse($service->received_date)->translatedFormat('d F Y') : '-' }}</td>
                     <td colspan="2">Tanggal Selesai :
-                        {{ \Carbon\Carbon::parse($service->finish_date)->translatedFormat('d F Y') }}</td>
+                        {{ $service->finish_date ? \Carbon\Carbon::parse($service->finish_date)->translatedFormat('d F Y') : '-' }}</td>
                 </tr>
                 <tr>
                     <td style="width: 3cm">
@@ -175,7 +173,7 @@
                 </tr>
                 <tr>
                     <td style="width: 3cm">
-                        <center>{{ '(' . $service->user->name . ')' }}</center>
+                        <center>{{ '(' . ($service->user?->name ?? '-') . ')' }}</center>
                     </td>
                     <td style="width: 3cm">
                         <center>(__________)</center>
@@ -190,7 +188,7 @@
                         <center>(__________)</center>
                     </td>
                     <td style="width: 3cm">
-                        <center>{{ '(' . $service->user->name . ')' }}</center>
+                        <center>{{ '(' . ($service->user?->name ?? '-') . ')' }}</center>
                     </td>
                 </tr>
                 <tr>
