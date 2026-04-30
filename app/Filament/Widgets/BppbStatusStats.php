@@ -30,7 +30,7 @@ class BppbStatusStats extends StatsOverviewWidget
                         ->color('primary'),
 
                     Stat::make('Tambah Service', '')
-                        ->url(ServiceResource::getUrl('create'))
+                        ->url(ServiceResource::getUrl('index'))
                         ->icon('heroicon-o-wrench')
                         ->label('Tambah Service'),
 
@@ -45,7 +45,7 @@ class BppbStatusStats extends StatsOverviewWidget
                         ->label('Pengajuan Email'),
 
                     Stat::make('Booking Order', '')
-                        ->url(BookingOrderResource::getUrl('create'))
+                        ->url(BookingOrderResource::getUrl('index'))
                         ->icon('heroicon-o-calendar-days')
                         ->label('Booking Order'),
                 ])
@@ -120,3 +120,4 @@ class BppbStatusStats extends StatsOverviewWidget
         ];
     }
 }
+

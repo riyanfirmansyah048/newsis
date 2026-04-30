@@ -15,12 +15,10 @@ class ListBookingOrders extends ListRecords
     {
         parent::mount();
 
-        $email = trim((string) auth()->user()?->email);
-
-        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+        if (! BookingOrderResource::hasValidProfileContact()) {
             Notification::make()
-                ->title('Email profile belum valid')
-                ->body('Lengkapi email pada profile Anda terlebih dahulu agar proses Booking Order berjalan normal. Anda akan diarahkan ke halaman profile.')
+                ->title('Profil belum lengkap')
+                ->body('Lengkapi data Anda seperti Email, ext, dan Departemen terlebih dahulu agar proses Booking Order berjalan normal. Anda akan diarahkan ke halaman profile.')
                 ->warning()
                 ->persistent()
                 ->send();

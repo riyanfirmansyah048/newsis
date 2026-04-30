@@ -89,11 +89,17 @@ class BookingOrderResource extends Resource
         return 'danger';
     }
     //---------------------------------------------------------------------------------------------------------
-    protected static function hasValidProfileEmail(): bool
+    public static function hasValidProfileContact(): bool
     {
         $email = trim((string) auth()->user()?->email);
+        $ext = trim((string) auth()->user()?->ext);
+        $departmentId = auth()->user()?->idDepartment;
 
-        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        $hasValidEmail = filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        $hasValidExt = $ext !== '' && ! in_array($ext, ['0', '-'], true);
+        $hasDepartment = filled($departmentId);
+
+        return $hasValidEmail && $hasValidExt && $hasDepartment;
     }
     public static function canAccess(): bool
     {
@@ -101,26 +107,22 @@ class BookingOrderResource extends Resource
     }
     public static function canCreate(): bool
     {
-        // return auth()->user()->can('create-booking-order');
         return auth()->user()->can('create-booking-order')
-            && static::hasValidProfileEmail();
+            && static::hasValidProfileContact();
     }
     public static function canView(Model $record): bool
     {
-        // return auth()->user()->can('read-booking-order', $record);
         return auth()->user()->can('read-booking-order', $record)
-            && static::hasValidProfileEmail();
+            && static::hasValidProfileContact();
     }
     public static function canEdit(Model $record): bool
     {
-        // return auth()->user()->can('update-booking-order', $record);
         return auth()->user()->can('update-booking-order', $record)
-            && static::hasValidProfileEmail();
+            && static::hasValidProfileContact();
     }
     public static function canDelete(Model $record): bool
     {
-        // return auth()->user()->can('delete-booking-order', $record);
         return auth()->user()->can('delete-booking-order', $record)
-            && static::hasValidProfileEmail();
+            && static::hasValidProfileContact();
     }
 }

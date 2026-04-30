@@ -73,9 +73,24 @@ class ServiceResource extends Resource
     {
         return auth()->user()->can('access-service');
     }
+
+    public static function hasValidProfileContact(): bool
+    {
+        $email = trim((string) auth()->user()?->email);
+        $ext = trim((string) auth()->user()?->ext);
+        $departmentId = auth()->user()?->idDepartment;
+
+        $hasValidEmail = filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+        $hasValidExt = $ext !== '' && ! in_array($ext, ['0', '-'], true);
+        $hasDepartment = filled($departmentId);
+
+        return $hasValidEmail && $hasValidExt && $hasDepartment;
+    }
+
     public static function canCreate(): bool
     {
-        return auth()->user()->can('create-service');
+        return auth()->user()->can('create-service')
+            && static::hasValidProfileContact();
     }
     public static function canView(Model $record): bool
     {
