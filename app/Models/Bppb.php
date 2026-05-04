@@ -95,8 +95,14 @@ class Bppb extends Model
                 if (!empty($model->noBppb)) {
                     $model->status_id = 3;
                 } else {
-                    $user = Auth::user();
-                    $departmentId = $user?->idDepartment;
+                    // Pemohon BPPB: dari user_id (mis. user_service_id dari form Service), bukan admin yang membuatkan
+                    $applicantId = $model->user_id;
+                    $user = $applicantId
+                        ? User::query()->with('department')->find($applicantId)
+                        : null;
+                    if (! $user) {
+                        $user = Auth::user();
+                    }
 
                     $bulan = Carbon::now()->month;
                     $tahun = Carbon::now()->year;
@@ -104,9 +110,7 @@ class Bppb extends Model
                     $jumlahBppb = self::withTrashed()
                         ->whereMonth('created_at', $bulan)
                         ->whereYear('created_at', $tahun)
-                        ->whereHas('user', function ($query) use ($departmentId) {
-                            $query->where('idDepartment', $departmentId);
-                        })
+                        ->where('user_id', $user?->id)
                         ->count();
 
                     $nomorUrut = str_pad($jumlahBppb + 1, 3, '0', STR_PAD_LEFT);
