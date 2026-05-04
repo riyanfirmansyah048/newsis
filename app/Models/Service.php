@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+use App\Mail\ServiceCompletedAtItMail;
 use Carbon\Carbon;
 use Spatie\Activitylog\LogOptions;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 
 class Service extends Model
 {
@@ -64,6 +67,14 @@ class Service extends Model
         return $this->belongsTo(Service_solusi::class, 'solution_id');
     }
 
+    /**
+     * Service aktif untuk badge PIC: status Barang diterima IT (4) atau Proses Service (5).
+     */
+    public function scopeActiveForPic(Builder $query, int $userId): Builder
+    {
+        return $query->where('ic_id', $userId)->whereIn('status_id', [4, 5]);
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -100,6 +111,32 @@ class Service extends Model
                 // default status 3 menunggu konfirmasi IT
                 $model->status_id = 3;
             }
+        });
+
+        static::saving(function (Service $service): void {
+            $solutionId = $service->solution_id;
+            if (
+                $solutionId !== null
+                && (int) $solutionId !== 6
+                && (int) $service->status_id === 4
+            ) {
+                $service->status_id = 5;
+            }
+        });
+
+        static::updated(function (Service $service): void {
+            if (! $service->wasChanged('status_id') || (int) $service->status_id !== 6) {
+                return;
+            }
+
+            $service->loadMissing(['user', 'item', 'status']);
+
+            $email = trim((string) ($service->user?->email ?? ''));
+            if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                return;
+            }
+
+            Mail::to($email)->send(new ServiceCompletedAtItMail($service));
         });
     }
 }

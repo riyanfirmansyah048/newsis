@@ -60,6 +60,28 @@ class ServiceResource extends Resource
         ];
     }
 
+    public static function getNavigationBadge(): ?string
+    {
+        if (! auth()->user()?->can('update-service')) {
+            return null;
+        }
+
+        $count = Service::query()
+            ->activeForPic((int) auth()->id())
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        if (! auth()->user()?->can('update-service')) {
+            return null;
+        }
+
+        return 'danger';
+    }
+
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()

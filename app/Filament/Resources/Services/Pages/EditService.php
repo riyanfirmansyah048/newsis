@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Services\Pages;
 
 use Carbon\Carbon;
+use App\Mail\ServiceAssignedToPicMail;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\RestoreAction;
@@ -10,6 +12,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\Services\ServiceResource;
+use Illuminate\Support\Facades\Mail;
 
 class EditService extends EditRecord
 {
@@ -35,7 +38,7 @@ class EditService extends EditRecord
                 ->label('Selesai (Barang di IT)')
                 ->action('finishRecord')
                 ->color('success')
-                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 4),
+                ->visible(fn() => auth()->user()->hasRole('admin') && in_array($this->record->status_id, [4, 5], true)),
             Action::make('finishall')
                 ->label('Selesai (Barang Sudah Diserahkan)')
                 ->action('finishAllRecord')
@@ -91,5 +94,27 @@ class EditService extends EditRecord
             ->success()
             ->send();
         $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record->getKey()]));
+    }
+
+    protected function afterSave(): void
+    {
+        if (! $this->record->wasChanged('ic_id')) {
+            return;
+        }
+
+        $picId = $this->record->ic_id;
+        if (! $picId) {
+            return;
+        }
+
+        $pic = User::query()->find($picId);
+        $email = trim((string) ($pic?->email ?? ''));
+        if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            return;
+        }
+
+        $this->record->loadMissing(['user', 'item', 'status', 'icUser']);
+
+        Mail::to($email)->send(new ServiceAssignedToPicMail($this->record));
     }
 }

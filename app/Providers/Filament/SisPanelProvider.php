@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\LoginCustom;
+use App\Filament\Resources\Services\ServiceResource;
+use App\Models\Service;
 use App\Filament\Pages\Auth\RegisterCustom;
 use App\Filament\Pages\Auth\RequestPasswordResetCustom;
 use App\Filament\Pages\EditProfileCustom;
@@ -82,7 +84,31 @@ class SisPanelProvider extends PanelProvider
     }
 </style>
 HTML,
-            )            ->plugin(
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                function (): string {
+                    if (! auth()->check() || ! auth()->user()->hasRole('admin')) {
+                        return '';
+                    }
+
+                    $pendingItCount = Service::query()->where('status_id', 3)->count();
+                    if ($pendingItCount === 0) {
+                        return '';
+                    }
+
+                    $path = parse_url(ServiceResource::getUrl('index'), PHP_URL_PATH);
+                    if (! is_string($path) || $path === '') {
+                        $path = '/sis/services';
+                    }
+
+                    return view('filament.hooks.service-sidebar-pending-it-badge', [
+                        'count' => $pendingItCount,
+                        'path' => $path,
+                    ])->render();
+                },
+            )
+            ->plugin(
                 AuthDesignerPlugin::make()
                     ->defaults(
                         fn($config) => $config
