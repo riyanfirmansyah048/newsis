@@ -195,7 +195,7 @@
                         <center>(_________)</center>
                     </td>
                     <td style="width: 2cm">
-                        <center>(__________)</center>
+                        <center>(_________)</center>
                     </td>
                     <td style="width: 3cm">
                         <center>{{ '(' . ($service->user?->name ?? '-') . ')' }}</center>
