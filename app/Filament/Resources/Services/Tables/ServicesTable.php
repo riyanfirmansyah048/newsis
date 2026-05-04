@@ -37,9 +37,11 @@ class ServicesTable
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->label('Nama Karyawan')
+                    ->color('info')
                     ->sortable(),
                 TextColumn::make('icUser.name')
                     ->label('PIC yang mengerjakan')
+                    ->color('primary')
                     ->sortable(),
                 TextColumn::make('item.name')
                     ->label('Nama Barang')
