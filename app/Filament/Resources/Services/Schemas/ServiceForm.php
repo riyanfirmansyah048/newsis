@@ -56,6 +56,8 @@ class ServiceForm
                                 'position' => $record?->user?->position?->positionName,
                                 'ext' => $record?->user?->ext,
                                 'created_at' => $record?->created_at,
+                                'service_status_name' => $record?->status?->name,
+                                'pending' => $record?->pending,
                             ]),
                     ]),
                 Section::make('Info Service')

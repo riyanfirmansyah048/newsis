@@ -9,6 +9,7 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ForceDeleteAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\Services\ServiceResource;
@@ -38,7 +39,31 @@ class EditService extends EditRecord
                 ->label('Selesai (Barang di IT)')
                 ->action('finishRecord')
                 ->color('success')
-                ->visible(fn() => auth()->user()->hasRole('admin') && in_array($this->record->status_id, [4, 5], true)),
+                ->visible(fn() => auth()->user()->hasRole('admin') && in_array($this->record->status_id, [4, 5, 8], true)),
+            Action::make('markPending')
+                ->label('Pending')
+                ->icon('heroicon-o-pause-circle')
+                ->color('warning')
+                ->visible(fn() => auth()->user()->hasRole('admin') && in_array($this->record->status_id, [4, 5], true))
+                ->schema([
+                    Textarea::make('pending_reason')
+                        ->label('Alasan service di-pending')
+                        ->placeholder('Contoh: menunggu part / MR dipesan terlebih dahulu')
+                        ->required()
+                        ->rows(5)
+                        ->columnSpanFull(),
+                ])
+                ->action(function (array $data): void {
+                    $this->record->update([
+                        'status_id' => 8,
+                        'pending' => $data['pending_reason'],
+                    ]);
+                    Notification::make()
+                        ->title('Service ditandai sebagai Pending')
+                        ->success()
+                        ->send();
+                    $this->redirect($this->getResource()::getUrl('edit', ['record' => $this->record->getKey()]));
+                }),
             Action::make('finishall')
                 ->label('Selesai (Barang Sudah Diserahkan)')
                 ->action('finishAllRecord')
@@ -77,6 +102,7 @@ class EditService extends EditRecord
     {
         $this->record->update([
             'status_id' => 6,
+            'pending' => null,
         ]);
         Notification::make()
             ->title('Selesai (Barang di IT)')

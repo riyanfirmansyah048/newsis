@@ -126,7 +126,7 @@
                         </td>
                         <td>
                             <center>
-                                {{ $service->solution_id != null ? ($service->serviceSolution?->name ?? '-') : '-' }}
+                                {{ $service->solution_id != null ? $service->serviceSolution?->name ?? '-' : '-' }}
                             </center>
                         </td>
                     </tr>
@@ -137,26 +137,32 @@
             <table style="width: 18cm;" border="1">
                 <tr>
                     <td colspan="2">Tanggal pemohon :
-                        {{ $service->created_at ? \Carbon\Carbon::parse($service->created_at)->translatedFormat('d F Y') : '-' }}</td>
+                        {{ $service->created_at ? \Carbon\Carbon::parse($service->created_at)->translatedFormat('d F Y') : '-' }}
+                    </td>
                     <td colspan="2">Tanggal penerimaan :
-                        {{ $service->received_date ? \Carbon\Carbon::parse($service->received_date)->translatedFormat('d F Y') : '-' }}</td>
-                    <td colspan="2">Tanggal Selesai :
-                        {{ $service->finish_date ? \Carbon\Carbon::parse($service->finish_date)->translatedFormat('d F Y') : '-' }}</td>
+                        {{ $service->received_date ? \Carbon\Carbon::parse($service->received_date)->translatedFormat('d F Y') : '-' }}
+                    </td>
+                    <td colspan="3">Tanggal Selesai :
+                        {{ $service->finish_date ? \Carbon\Carbon::parse($service->finish_date)->translatedFormat('d F Y') : '-' }}
+                    </td>
                 </tr>
                 <tr>
                     <td style="width: 3cm">
                         <center><b>Pemohon</b></center>
                     </td>
-                    <td style="width: 3cm">
+                    <td style="width: 2.5cm">
                         <center><b>Atasan Pemohon</b></center>
                     </td>
-                    <td style="width: 3cm">
+                    <td style="width: 2cm">
                         <center><b>IT Admin</b></center>
                     </td>
-                    <td style="width: 3cm">
-                        <center><b>Staff IT</b></center>
+                    <td style="width: 2cm">
+                        <center><b>Staff IT (PIC)</b></center>
                     </td>
-                    <td style="width: 3cm">
+                    <td style="width: 2cm">
+                        <center><b>Staff IT (PIC)</b></center>
+                    </td>
+                    <td style="width: 2.5cm">
                         <center><b>IT Admin</b></center>
                     </td>
                     <td style="width: 3cm">
@@ -170,22 +176,26 @@
                     <td><br><br><br><br><br></td>
                     <td><br><br><br><br><br></td>
                     <td><br><br><br><br><br></td>
+                    <td><br><br><br><br><br></td>
                 </tr>
                 <tr>
                     <td style="width: 3cm">
                         <center>{{ '(' . ($service->user?->name ?? '-') . ')' }}</center>
                     </td>
-                    <td style="width: 3cm">
-                        <center>(__________)</center>
+                    <td style="width: 2cm">
+                        <center>(_________)</center>
                     </td>
-                    <td style="width: 3cm">
-                        <center>(__________)</center>
+                    <td style="width: 2cm">
+                        <center>(_________)</center>
                     </td>
-                    <td style="width: 3cm">
-                        <center>(__________)</center>
+                    <td style="width:2cm">
+                        <center>(_________)</center>
                     </td>
-                    <td style="width: 3cm">
-                        <center>(__________)</center>
+                    <td style="width: 2cm">
+                        <center>(_________)</center>
+                    </td>
+                    <td style="width: 2cm">
+                        <center>(_________)</center>
                     </td>
                     <td style="width: 3cm">
                         <center>{{ '(' . ($service->user?->name ?? '-') . ')' }}</center>
@@ -195,16 +205,19 @@
                     <td style="width: 3cm">
                         <center>Nama Jelas</center>
                     </td>
-                    <td style="width: 3cm">
+                    <td style="width: 2cm">
                         <center>Nama Jelas</center>
                     </td>
-                    <td style="width: 3cm">
+                    <td style="width: 2cm">
                         <center>Nama Jelas</center>
                     </td>
-                    <td style="width: 3cm">
+                    <td style="width: 2cm">
                         <center>Nama Jelas</center>
                     </td>
-                    <td style="width: 3cm">
+                    <td style="width: 2cm">
+                        <center>Nama Jelas</center>
+                    </td>
+                    <td style="width: 2cm">
                         <center>Nama Jelas</center>
                     </td>
                     <td style="width: 3cm">

@@ -54,4 +54,16 @@
         <td><center>:</center></td>
         <td>{{ $position }}</td>
     </tr>
+    <tr>
+        <td><b>Status Service</b></td>
+        <td><center>:</center></td>
+        <td>{{ $service_status_name ?? '-' }}</td>
+    </tr>
+    @if (filled($pending ?? null))
+        <tr>
+            <td><b>Keterangan Pending</b></td>
+            <td><center>:</center></td>
+            <td>{{ $pending }}</td>
+        </tr>
+    @endif
 </table>

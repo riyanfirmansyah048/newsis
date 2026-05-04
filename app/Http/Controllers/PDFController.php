@@ -239,7 +239,7 @@ class PDFController extends Controller
 
     public function servicePrint($id)
     {
-        $service = Service::with('user', 'item', 'serviceSolution')->find($id);
+        $service = Service::with('user', 'item', 'serviceSolution', 'icUser')->find($id);
         if (!$service) {
             return redirect()->back()->with('error', 'Data Service tidak ditemukan.');
         }

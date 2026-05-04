@@ -50,6 +50,7 @@ class ServicesTable
                         5 => 'gray',
                         6 => 'info',
                         7 => 'gray',
+                        8 => 'warning',
                         default => 'default',
                     }),
                 TextColumn::make('serviceSolution.name')
