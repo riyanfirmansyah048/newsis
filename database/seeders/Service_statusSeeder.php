@@ -41,9 +41,5 @@ class Service_statusSeeder extends Seeder
             'id' => 7,
             'name' => 'Selesai (Barang Sudah Diserahkan)',
         ]);
-        Service_status::create([
-            'id' => 8,
-            'name' => 'Pending',
-        ]);
     }
 }
