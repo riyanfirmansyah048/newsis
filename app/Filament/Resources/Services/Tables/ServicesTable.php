@@ -30,11 +30,16 @@ class ServicesTable
                     : Service::query()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
             )
             ->columns([
+                TextColumn::make('noService')
+                    ->searchable(),
                 TextColumn::make('user.NIK')
                     ->label('NIK Karyawan')
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->label('Nama Karyawan')
+                    ->sortable(),
+                TextColumn::make('icUser.name')
+                    ->label('PIC yang mengerjakan')
                     ->sortable(),
                 TextColumn::make('item.name')
                     ->label('Nama Barang')
@@ -55,11 +60,6 @@ class ServicesTable
                     }),
                 TextColumn::make('serviceSolution.name')
                     ->label('Solusi Service')
-                    ->sortable(),
-                TextColumn::make('noService')
-                    ->searchable(),
-                TextColumn::make('icUser.name')
-                    ->label('PIC yang mengerjakan')
                     ->sortable(),
                 TextColumn::make('deleted_at')
                     ->dateTime()
