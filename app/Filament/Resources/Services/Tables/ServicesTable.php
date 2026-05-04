@@ -58,7 +58,7 @@ class ServicesTable
                 TextColumn::make('noService')
                     ->searchable(),
                 TextColumn::make('icUser.name')
-                    ->label('IC yang mengerjakan')
+                    ->label('PIC yang mengerjakan')
                     ->sortable(),
                 TextColumn::make('deleted_at')
                     ->dateTime()
