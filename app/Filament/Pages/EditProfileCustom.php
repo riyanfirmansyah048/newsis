@@ -59,6 +59,7 @@ class EditProfileCustom extends BaseEditProfile
                     TextInput::make('NIK')
                         ->label('NIK')
                         ->required()
+                        ->helperText('Pastikan NIK adalah NIK karyawan terbaru/terupdate')
                         ->unique(ignoreRecord: true),
 
                     TextInput::make('name')
