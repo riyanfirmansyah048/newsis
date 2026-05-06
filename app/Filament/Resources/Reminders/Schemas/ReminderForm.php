@@ -21,9 +21,10 @@ class ReminderForm
                     ->label('Nama Barang / Lisensi')
                     ->searchable()
                     ->preload()
-                    ->options(fn () => Item::query()->orderBy('name')->pluck('name', 'id'))
+                    ->options(fn() => Item::query()->orderBy('name')->pluck('name', 'id'))
                     ->required()
-                    ->getOptionLabelUsing(fn ($value): ?string => Item::find($value)?->name),
+                    ->columnSpanFull()
+                    ->getOptionLabelUsing(fn($value): ?string => Item::find($value)?->name),
                 DatePicker::make('expire_date')
                     ->label('Tanggal Expired')
                     ->required(),
@@ -32,14 +33,14 @@ class ReminderForm
                     ->email()
                     ->required()
                     ->maxLength(255)
-                    ->default(fn (?Reminder $record) => $record?->email ?? auth()->user()?->email),
+                    ->default(fn(?Reminder $record) => $record?->email ?? auth()->user()?->email),
                 Repeater::make('reminderDates')
                     ->relationship('reminderDates')
                     ->label('Tanggal Reminder')
                     ->schema([
                         DatePicker::make('reminder_date')
                             ->label('Tanggal Pengingat')
-                            ->maxDate(fn (Get $get) => $get('../../expire_date'))
+                            ->maxDate(fn(Get $get) => $get('../../expire_date'))
                             ->required(),
                     ])
                     ->defaultItems(1)
