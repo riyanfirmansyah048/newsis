@@ -35,6 +35,8 @@ class BppbForm
     public static function configure(Schema $schema): Schema
     {
         $record = $schema->getRecord();
+        $requestedItemName = trim((string) request()->query('item_name'));
+        $prefilledItemId = self::resolvePrefilledItemId($requestedItemName);
         return $schema
             ->components([
                 Section::make('Informasi BPPB')
@@ -251,7 +253,13 @@ class BppbForm
                                     })
                                     ->searchable(),
                             ])
-                            ->default([])
+                            ->default(fn () => ($record === null && $prefilledItemId)
+                                ? [[
+                                    'item_id' => $prefilledItemId,
+                                    'qty' => 1,
+                                    'description' => null,
+                                ]]
+                                : [])
                             ->columns(2)
                             ->maxItems(15)
                             ->createItemButtonLabel('Tambah Barang'),
@@ -404,4 +412,21 @@ class BppbForm
                     ])
             ]);
     }
+
+    protected static function resolvePrefilledItemId(?string $itemName): ?int
+    {
+        $itemName = trim((string) $itemName);
+
+        if ($itemName === '') {
+            return null;
+        }
+
+        return Item::query()
+            ->whereRaw('LOWER(name) = ?', [strtolower($itemName)])
+            ->value('id')
+            ?? Item::query()
+                ->where('name', 'like', "%{$itemName}%")
+                ->value('id');
+    }
 }
+
