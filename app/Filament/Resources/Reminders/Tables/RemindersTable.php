@@ -41,11 +41,11 @@ class RemindersTable
                     ->color('info'),
                 TextColumn::make('delivery_status')
                     ->label('Status Pengiriman')
-                    ->getStateUsing(fn (Reminder $record) => $record->reminderDates->where('is_sent', false)->isNotEmpty()
+                    ->getStateUsing(fn(Reminder $record) => $record->reminderDates->where('is_sent', false)->isNotEmpty()
                         ? 'Belum Terkirim'
                         : 'Terkirim')
                     ->badge()
-                    ->color(fn (string $state) => $state === 'Belum Terkirim' ? 'warning' : 'success'),
+                    ->color(fn(string $state) => $state === 'Belum Terkirim' ? 'warning' : 'success'),
                 TextColumn::make('creator.name')
                     ->label('Dibuat Oleh')
                     ->toggleable(),
@@ -58,8 +58,10 @@ class RemindersTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
-                    DeleteAction::make(),
+                    EditAction::make()
+                        ->visible(auth()->user()->can('update-reminder')),
+                    DeleteAction::make()
+                        ->visible(auth()->user()->can('delete-reminder')),
                 ]),
             ]);
     }
