@@ -14,6 +14,10 @@ class CreateReminder extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['created_by'] = auth()->id();
+        $data['email'] = filled(trim((string) ($data['email'] ?? null)))
+            ? trim((string) $data['email'])
+            : \App\Models\Reminder::DEFAULT_TO_EMAIL;
+        $data['cc'] = $this->normalizeCc($data['cc'] ?? null);
 
         $this->validateReminderDates($data);
 
@@ -37,5 +41,32 @@ class CreateReminder extends CreateRecord
                 ]);
             }
         }
+    }
+
+    protected function normalizeCc(?string $value): ?string
+    {
+        $emails = collect(explode(',', (string) $value))
+            ->map(fn (string $email) => trim($email))
+            ->filter()
+            ->unique()
+            ->values();
+
+        $invalidEmails = $emails
+            ->filter(fn (string $email) => ! filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->values();
+
+        if ($invalidEmails->isNotEmpty()) {
+            Notification::make()
+                ->title('CC email tidak valid')
+                ->body('Pastikan semua email CC dipisah dengan koma dan menggunakan format email yang benar.')
+                ->danger()
+                ->send();
+
+            throw ValidationException::withMessages([
+                'cc' => 'Terdapat email CC yang tidak valid: ' . $invalidEmails->implode(', '),
+            ]);
+        }
+
+        return $emails->isNotEmpty() ? $emails->implode(', ') : null;
     }
 }

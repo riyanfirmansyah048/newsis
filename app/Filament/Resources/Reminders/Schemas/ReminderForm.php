@@ -7,6 +7,7 @@ use App\Models\Reminder;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
@@ -33,7 +34,14 @@ class ReminderForm
                     ->email()
                     ->required()
                     ->maxLength(255)
-                    ->default(fn(?Reminder $record) => $record?->email ?? auth()->user()?->email),
+                    ->default(fn(?Reminder $record) => $record?->email ?? Reminder::DEFAULT_TO_EMAIL),
+                Textarea::make('cc')
+                    ->label('CC Email')
+                    ->rows(3)
+                    ->placeholder("contoh:\nriyanfirmansyah@sanbe-farma.com, riyan_firmansyah048@gmail.com")
+                    ->helperText('Pisahkan beberapa email dengan koma. Email Anda akan terisi otomatis sebagai default CC.')
+                    ->default(fn(?Reminder $record) => $record?->cc ?? (auth()->user()?->email ?: ''))
+                    ->columnSpanFull(),
                 Repeater::make('reminderDates')
                     ->relationship('reminderDates')
                     ->label('Tanggal Reminder')

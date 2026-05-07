@@ -34,6 +34,10 @@ class RemindersTable
                 TextColumn::make('email')
                     ->label('Email Tujuan')
                     ->searchable(),
+                TextColumn::make('cc')
+                    ->label('CC Email')
+                    ->limit(50)
+                    ->toggleable(),
                 TextColumn::make('reminder_dates_count')
                     ->label('Total Reminder')
                     ->counts('reminderDates')

@@ -39,9 +39,13 @@ class SendDailyReminderNotifications extends Command
                 'item_name' => $reminder->item?->name,
             ]));
 
-            Mail::to($reminder->email)->send(
-                new ReminderNotificationMail($reminder, $reminderDate, $bppbUrl)
-            );
+            $mail = Mail::to($reminder->email);
+
+            if (! empty($reminder->cc_recipients)) {
+                $mail->cc($reminder->cc_recipients);
+            }
+
+            $mail->send(new ReminderNotificationMail($reminder, $reminderDate, $bppbUrl));
 
             $reminderDate->update([
                 'is_sent' => true,

@@ -11,11 +11,23 @@ class Reminder extends Model
 {
     use HasFactory, LogsActivity;
 
+    public const DEFAULT_TO_EMAIL = 'it-admin@gmail.com';
+
     protected $guarded = [];
 
     protected $casts = [
         'expire_date' => 'date',
     ];
+
+    public function getCcRecipientsAttribute(): array
+    {
+        return collect(explode(',', (string) $this->cc))
+            ->map(fn (string $email) => trim($email))
+            ->filter(fn (string $email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->unique()
+            ->values()
+            ->all();
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
