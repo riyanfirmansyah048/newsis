@@ -26,17 +26,21 @@ class ItemsTable
                 TextColumn::make('category.name')
                     ->label('Kategori')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('brand.name')
                     ->label('Merek')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('name')
                     ->label('Nama Barang')
                     ->searchable()
+                    ->copyable()
                     ->sortable(),
                 TextColumn::make('description')
                     ->label('Keterangan')
+                    ->copyable()
                     ->searchable()
                     ->sortable(),
             ])
@@ -46,7 +50,7 @@ class ItemsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
-                        ->url(fn ($record) => ItemResource::getUrl('view', ['record' => $record])),
+                        ->url(fn($record) => ItemResource::getUrl('view', ['record' => $record])),
                     EditAction::make(),
                     DeleteAction::make(),
                 ]),
