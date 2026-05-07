@@ -19,6 +19,7 @@ class CreateReminder extends CreateRecord
             : \App\Models\Reminder::DEFAULT_TO_EMAIL;
         $data['cc'] = $this->normalizeCc($data['cc'] ?? null);
 
+        $this->normalizeReminderTarget($data);
         $this->validateReminderDates($data);
 
         return $data;
@@ -40,6 +41,31 @@ class CreateReminder extends CreateRecord
                     "reminderDates.{$index}.reminder_date" => 'Tanggal reminder tidak boleh melewati tanggal expired.',
                 ]);
             }
+        }
+    }
+
+    protected function normalizeReminderTarget(array &$data): void
+    {
+        $targetType = ($data['target_type'] ?? null) ?: (filled($data['software_id'] ?? null) ? 'software' : 'item');
+
+        if ($targetType === 'software') {
+            $data['item_id'] = null;
+
+            if (blank($data['software_id'] ?? null)) {
+                throw ValidationException::withMessages([
+                    'software_id_picker' => 'Pilih software / lisensi terlebih dahulu.',
+                ]);
+            }
+
+            return;
+        }
+
+        $data['software_id'] = null;
+
+        if (blank($data['item_id'] ?? null)) {
+            throw ValidationException::withMessages([
+                'item_id_picker' => 'Pilih barang terlebih dahulu.',
+            ]);
         }
     }
 

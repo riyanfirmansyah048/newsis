@@ -23,7 +23,7 @@ class ReminderNotificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reminder Expired Item - ' . ($this->reminder->item?->name ?? 'Item'),
+            subject: 'Reminder Expired Item - ' . $this->reminder->target_name,
         );
     }
 

@@ -7,7 +7,8 @@
 </p>
 
 <p>
-    Nama Barang / Lisensi : {{ $reminder->item?->name ?? '-' }}<br>
+    Jenis : {{ $reminder->target_type === 'software' ? 'Software / Lisensi' : 'Barang' }}<br>
+    Nama Barang / Lisensi : {{ $reminder->target_name }}<br>
     Tanggal Expired : {{ $reminder->expire_date?->translatedFormat('d F Y') ?? '-' }}<br>
     Tanggal Reminder : {{ $reminderDate->reminder_date?->translatedFormat('d F Y') ?? '-' }}
 </p>

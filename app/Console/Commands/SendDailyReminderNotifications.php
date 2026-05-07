@@ -17,7 +17,7 @@ class SendDailyReminderNotifications extends Command
     public function handle(): int
     {
         $dueReminderDates = ReminderDate::query()
-            ->with('reminder.item')
+            ->with('reminder.item', 'reminder.software')
             ->whereDate('reminder_date', today())
             ->where('is_sent', false)
             ->get();
@@ -36,7 +36,11 @@ class SendDailyReminderNotifications extends Command
             }
 
             $bppbUrl = url(BppbResource::getUrl('create', [
-                'item_name' => $reminder->item?->name,
+                'reminder_target_type' => $reminder->target_type,
+                'reminder_target_id' => $reminder->target_type === 'software'
+                    ? $reminder->software_id
+                    : $reminder->item_id,
+                'item_name' => $reminder->target_name,
             ]));
 
             $mail = Mail::to($reminder->email);

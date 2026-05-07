@@ -35,8 +35,15 @@ class BppbForm
     public static function configure(Schema $schema): Schema
     {
         $record = $schema->getRecord();
+        $requestedReminderTargetType = trim((string) request()->query('reminder_target_type'));
+        $requestedReminderTargetId = request()->query('reminder_target_id');
         $requestedItemName = trim((string) request()->query('item_name'));
-        $prefilledItemId = self::resolvePrefilledItemId($requestedItemName);
+        $prefilledItemId = $requestedReminderTargetType === 'item'
+            ? self::normalizeReminderTargetId($requestedReminderTargetId)
+            : self::resolvePrefilledItemId($requestedItemName);
+        $prefilledSoftwareId = $requestedReminderTargetType === 'software'
+            ? self::normalizeReminderTargetId($requestedReminderTargetId)
+            : null;
         return $schema
             ->components([
                 Section::make('Informasi BPPB')
@@ -405,7 +412,13 @@ class BppbForm
                                     })
                                     ->searchable(),
                             ])
-                            ->default([])
+                            ->default(fn () => ($record === null && $prefilledSoftwareId)
+                                ? [[
+                                    'software_id' => $prefilledSoftwareId,
+                                    'qty' => 1,
+                                    'description' => null,
+                                ]]
+                                : [])
                             ->columns(2)
                             ->maxItems(15)
                             ->createItemButtonLabel('Tambah Software'),
@@ -427,6 +440,13 @@ class BppbForm
             ?? Item::query()
                 ->where('name', 'like', "%{$itemName}%")
                 ->value('id');
+    }
+
+    protected static function normalizeReminderTargetId(mixed $value): ?int
+    {
+        $value = is_numeric($value) ? (int) $value : null;
+
+        return filled($value) ? $value : null;
     }
 }
 

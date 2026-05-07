@@ -45,6 +45,23 @@ class Reminder extends Model
         return $this->belongsTo(Item::class, 'item_id');
     }
 
+    public function software()
+    {
+        return $this->belongsTo(Software::class, 'software_id');
+    }
+
+    public function getTargetTypeAttribute(): string
+    {
+        return filled($this->software_id) ? 'software' : 'item';
+    }
+
+    public function getTargetNameAttribute(): string
+    {
+        return $this->item?->name
+            ?? $this->software?->name
+            ?? '-';
+    }
+
     public function reminderDates()
     {
         return $this->hasMany(ReminderDate::class, 'reminder_id');

@@ -19,14 +19,23 @@ class RemindersTable
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->query(
                 auth()->user()->hasRole('admin')
-                    ? Reminder::query()->with('item', 'creator', 'reminderDates')
-                    : Reminder::query()->with('item', 'creator', 'reminderDates')->where('created_by', auth()->id())
+                    ? Reminder::query()->with('item', 'software', 'creator', 'reminderDates')
+                    : Reminder::query()->with('item', 'software', 'creator', 'reminderDates')->where('created_by', auth()->id())
             )
             ->columns([
-                TextColumn::make('item.name')
-                    ->label('Nama Barang / Lisensi')
-                    ->searchable()
+                TextColumn::make('target_name')
+                    ->label('Nama Barang / Software')
+                    ->searchable(query: function ($query, string $search) {
+                        $query
+                            ->whereHas('item', fn ($itemQuery) => $itemQuery->where('name', 'like', "%{$search}%"))
+                            ->orWhereHas('software', fn ($softwareQuery) => $softwareQuery->where('name', 'like', "%{$search}%"));
+                    })
                     ->wrap(),
+                TextColumn::make('target_type')
+                    ->label('Jenis')
+                    ->formatStateUsing(fn (string $state) => $state === 'software' ? 'Software' : 'Barang')
+                    ->badge()
+                    ->color(fn (string $state) => $state === 'software' ? 'info' : 'gray'),
                 TextColumn::make('expire_date')
                     ->label('Tanggal Expired')
                     ->date('d F Y')
