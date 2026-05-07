@@ -11,7 +11,7 @@ class Reminder extends Model
 {
     use HasFactory, LogsActivity;
 
-    public const DEFAULT_TO_EMAIL = 'it-admin@gmail.com';
+    public const DEFAULT_TO_EMAIL = 'it-admin@sanbe-farma.com';
 
     protected $guarded = [];
 
@@ -22,8 +22,8 @@ class Reminder extends Model
     public function getCcRecipientsAttribute(): array
     {
         return collect(explode(',', (string) $this->cc))
-            ->map(fn (string $email) => trim($email))
-            ->filter(fn (string $email) => filter_var($email, FILTER_VALIDATE_EMAIL))
+            ->map(fn(string $email) => trim($email))
+            ->filter(fn(string $email) => filter_var($email, FILTER_VALIDATE_EMAIL))
             ->unique()
             ->values()
             ->all();
