@@ -5,6 +5,7 @@ sis equipment
 - log activity spatie
 - laravel-dompdf
 - picqer/php-barcode-generator (untuk membuat barcode di halaman service)
+- endroid/qr-code (untuk membuat qr code)
 - Auth Designer (plugin untuk tampilan Auth)
 
 

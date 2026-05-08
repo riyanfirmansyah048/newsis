@@ -66,6 +66,16 @@
                     </td>
                     <td style="text-align: center;">
                         <h2>BON PERMINTAAN PEMBELIAN BARANG<br>( BPPB )</h2>
+                    @php
+                        $bppbEditUrl = rtrim((string) config('app.url'), '/') . '/sis/bppbs/' . $bppb->id . '/edit';
+                        $bppbEditQr = (new \Endroid\QrCode\Builder\Builder(
+                            writer: new \Endroid\QrCode\Writer\PngWriter(),
+                            data: $bppbEditUrl,
+                            size: 120,
+                            margin: 2,
+                        ))->build()->getDataUri();
+                    @endphp
+                    <img src="{{ $bppbEditQr }}" alt="QR Edit BPPB" style="width: 100px; height: 100px; margin-top: 6px;">
                     </td>
                 </tr>
             </table>

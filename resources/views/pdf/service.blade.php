@@ -23,6 +23,17 @@
                     <td>
                         <div align="center">
                             <h2>Pengajuan Service</h2>
+                            @php
+                                $serviceEditUrl = rtrim((string) config('app.url'), '/') . '/sis/services/' . $service->id . '/edit';
+                                $serviceEditQr = (new \Endroid\QrCode\Builder\Builder(
+                                    writer: new \Endroid\QrCode\Writer\PngWriter(),
+                                    data: $serviceEditUrl,
+                                    size: 120,
+                                    margin: 2,
+                                ))->build()->getDataUri();
+                            @endphp
+                            <img src="{{ $serviceEditQr }}" alt="QR Edit Service"
+                                style="width: 100px; height: 100px; margin-top: 6px;">
                         </div>
                     </td>
                 </tr>
