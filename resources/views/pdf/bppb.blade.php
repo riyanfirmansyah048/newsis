@@ -14,94 +14,131 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 10pt;
-            /* ukuran default */
+            line-height: 1.35;
         }
 
         table {
             font-size: 10pt;
+            border-collapse: collapse;
         }
 
         h2 {
             font-size: 14pt;
             font-weight: bold;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .doc-wrap {
+            width: 18cm;
+        }
+
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+
+        .mb-12 {
+            margin-bottom: 12px;
+        }
+
+        .meta-table td {
+            vertical-align: top;
+            padding: 1px 2px;
+        }
+
+        .item-table th,
+        .item-table td,
+        .sign-table td {
+            padding: 4px 6px;
         }
     </style>
 
     <body>
-        <div>
-            {{-- <font face='Arial, Helvetica, sans-serif'> --}}
-            <table style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
+        <div class="doc-wrap">
+            <table class="mb-10" style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td>
-                        <center>
-                            {{-- <img src="{{ asset('img/sanbe-logo.gif') }}" alt="SANBE"> --}}
-                            <img src="{{ public_path('img/sanbe-logo.gif') }}">
-                            {{-- <img src="{{ asset('img/sanbe-logo.gif') }}"> --}}
-                        </center>
+                    <td style="width: 4.5cm; text-align: center;">
+                        <img src="{{ public_path('img/sanbe-logo.gif') }}" alt="SANBE">
                     </td>
-                    <td>
-                        <div align="center">
-                            <h2>BON PERMINTAAN PEMBELIAN BARANG<br />
-                                ( BPPB )</h2>
-                                @php
-                                    $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-                                    $barcode = $generator->getBarcode(
-                                        $bppb->noBppb,
-                                        $generator::TYPE_CODE_128,
-                                    );
-                                @endphp
-                                <div style="width: 18cm; margin-bottom: 8px;">
-                                    <img src="data:image/png;base64,{{ base64_encode($barcode) }}" alt="Barcode"
-                                        style="width: 200px; height: 60px;">
-                                </div>
-                        </div>
+                    <td style="text-align: center;">
+                        <h2>BON PERMINTAAN PEMBELIAN BARANG<br>( BPPB )</h2>
                     </td>
                 </tr>
             </table>
-            <br>
-            <table style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
+
+            <table class="meta-table mb-8" style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td>No. BPPB</td>
-                    <td>:</td>
-                    <td>{{ $bppb->noBppb }}</td>
-                    <td></td>
-                    <td>Sub. Departement</td>
-                    <td>:</td>
-                    <td>{{ $bppb->user->subdepartment->subDepartmentName ?? '-' }}</td>
+                    <td style="width: 7cm; padding: 6px;">
+                        <table style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td><b>No. BPPB</b></td>
+                                <td>:</td>
+                                <td>
+                                    {{ $bppb->noBppb }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    @php
+                                        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+                                        $barcode = $generator->getBarcode($bppb->noBppb, $generator::TYPE_CODE_128);
+                                    @endphp
+                                    <div class="mb-8" style="margin-top: 4px;">
+                                        <img src="data:image/png;base64,{{ base64_encode($barcode) }}" alt="Barcode"
+                                            style="width: 200px; height: 60px;">
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width: 11cm; padding: 6px;">
+                        <table style="width: 100%;" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td><b>Pemohon</b></td>
+                                <td>:</td>
+                                <td>{{ ($bppb->user?->NIK ?? '-') . ' / ' . ($bppb->user?->name ?? '-') }}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Jabatan</b></td>
+                                <td>:</td>
+                                <td>{{ $bppb->user?->position?->positionName ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Departement</b></td>
+                                <td>:</td>
+                                <td>{{ $bppb->user?->department?->departmentName ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Sub. Departement </b></td>
+                                <td>:</td>
+                                <td>{{ $bppb->user?->subdepartment?->subDepartmentName ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td><b>No. Ext</b></td>
+                                <td>:</td>
+                                <td>{{ $bppb->user?->ext ?? '-' }}</td>
+                            </tr>
+                        </table>
+                    </td>
                 </tr>
+            </table>
+
+            <table class="meta-table mb-12" style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
                 <tr>
-                    <td>Tanggal BPPB</td>
-                    <td>:</td>
-                    <td>{{ $bppb->created_at->format('d F Y') }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>NIK / Pemesan</td>
-                    <td>:</td>
-                    <td>{{ $bppb->user->NIK }} / {{ $bppb->user->name }}</td>
-                    <td></td>
-                    <td>No. Phone / Ext</td>
-                    <td>:</td>
-                    <td>{{ $bppb->user->hp }} / {{ $bppb->user->ext }}</td>
-                </tr>
-                <tr>
-                    <td>Keterangan</td>
+                    <td style="width: 2cm;"><b>Keterangan</b></td>
                     <td>:</td>
                     <td>{{ $bppb->description }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
                 </tr>
             </table>
-            <br>
-            <table style="width: 18cm;" border="1" cellpadding="0" cellspacing="0">
+
+            <table class="item-table" style="width: 18cm;" border="1" cellpadding="0" cellspacing="0">
                 <thead>
                     <tr>
-                        <th style="width: 12cm">Nama Barang</th>
+                        <th style="width: 12.35cm">Nama Barang</th>
                         <th style="width: 6cm">Banyaknya</th>
                     </tr>
                 </thead>
@@ -182,7 +219,8 @@
                     @endforeach
                 </tbody>
             </table>
-            <table style="width: 18cm;" border="1" cellpadding="0" cellspacing="0">
+            <br>
+            <table class="sign-table" style="width: 18cm;" border="1" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="width: 6cm">
                         <center><b>Pemesan</b></center>
@@ -225,7 +263,6 @@
             <p>
                 Tgl. diterima BPPB {{ \Carbon\Carbon::parse($bppb->received_date)->translatedFormat('d F Y') }}
             </p>
-            {{-- </font> --}}
         </div>
         @if ($bppb->bppb_software !== null && count($bppb->bppb_software) > 0 && auth()->user()->hasRole('admin'))
             <div style="page-break-before: always;"></div>
