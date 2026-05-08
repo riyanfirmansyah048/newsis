@@ -43,6 +43,17 @@
                         <div align="center">
                             <h2>BON PERMINTAAN PEMBELIAN BARANG<br />
                                 ( BPPB )</h2>
+                                @php
+                                    $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+                                    $barcode = $generator->getBarcode(
+                                        $bppb->noBppb,
+                                        $generator::TYPE_CODE_128,
+                                    );
+                                @endphp
+                                <div style="width: 18cm; margin-bottom: 8px;">
+                                    <img src="data:image/png;base64,{{ base64_encode($barcode) }}" alt="Barcode"
+                                        style="width: 200px; height: 60px;">
+                                </div>
                         </div>
                     </td>
                 </tr>
