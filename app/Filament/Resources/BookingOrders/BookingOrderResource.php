@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\BookingOrders\Pages\EditBookingOrder;
 use App\Filament\Resources\BookingOrders\Pages\ListBookingOrders;
 use App\Filament\Resources\BookingOrders\Pages\CreateBookingOrder;
+use App\Filament\Resources\BookingOrders\Pages\CalendarView;
 use App\Filament\Resources\BookingOrders\Schemas\BookingOrderForm;
 use App\Filament\Resources\BookingOrders\Tables\BookingOrdersTable;
 use Illuminate\Database\Eloquent\Model;
@@ -51,6 +52,7 @@ class BookingOrderResource extends Resource
             'index' => ListBookingOrders::route('/'),
             'create' => CreateBookingOrder::route('/create'),
             'edit' => EditBookingOrder::route('/{record}/edit'),
+            'calendar' => CalendarView::route('/calendar'),
         ];
     }
 

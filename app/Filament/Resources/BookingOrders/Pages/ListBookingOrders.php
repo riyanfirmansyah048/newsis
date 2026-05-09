@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\BookingOrders\Pages;
 
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
@@ -31,6 +32,11 @@ class ListBookingOrders extends ListRecords
     {
         return [
             CreateAction::make(),
+            Action::make('calendar')
+                ->label('Tampilan Kalender')
+                ->icon('heroicon-o-calendar-days')
+                ->color('success')
+                ->url(BookingOrderResource::getUrl('calendar')),
         ];
     }
 }
