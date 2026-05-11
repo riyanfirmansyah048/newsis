@@ -13,6 +13,7 @@ use App\Filament\Widgets\BppbStatusStats;
 use App\Filament\Widgets\DashboardOverviewStats;
 use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
 use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -41,6 +42,12 @@ class SisPanelProvider extends PanelProvider
             ->brandName('Sistem Informasi Sanbe')
             ->favicon(asset('img/logo.png'))
             ->darkMode(true, isForced: true)
+            ->userMenuItems([
+                'home' => Action::make('home')
+                    ->label('Home')
+                    ->icon('heroicon-o-home')
+                    ->url('/'),
+            ])
             ->colors([
                 'primary' => '#36b9cc',
             ])
