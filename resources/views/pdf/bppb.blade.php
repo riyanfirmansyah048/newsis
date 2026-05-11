@@ -66,6 +66,7 @@
                     </td>
                     <td style="text-align: center;">
                         <h2>BON PERMINTAAN PEMBELIAN BARANG<br>( BPPB )</h2>
+                    {{-- QR LINK
                     @php
                         $bppbEditUrl = rtrim((string) config('app.url'), '/') . '/sis/bppbs/' . $bppb->id . '/edit';
                         $bppbEditQr = (new \Endroid\QrCode\Builder\Builder(
@@ -76,6 +77,7 @@
                         ))->build()->getDataUri();
                     @endphp
                     <img src="{{ $bppbEditQr }}" alt="QR Edit BPPB" style="width: 100px; height: 100px; margin-top: 6px;">
+                    --}}
                     </td>
                 </tr>
             </table>
@@ -94,12 +96,16 @@
                             <tr>
                                 <td colspan="3">
                                     @php
-                                        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
-                                        $barcode = $generator->getBarcode($bppb->noBppb, $generator::TYPE_CODE_128);
+                                        $bppbQr = (new \Endroid\QrCode\Builder\Builder(
+                                            writer: new \Endroid\QrCode\Writer\PngWriter(),
+                                            data: $bppb->noBppb,
+                                            size: 100,
+                                            margin: 2,
+                                        ))->build()->getDataUri();
                                     @endphp
                                     <div class="mb-8" style="margin-top: 4px;">
-                                        <img src="data:image/png;base64,{{ base64_encode($barcode) }}" alt="Barcode"
-                                            style="width: 200px; height: 60px;">
+                                        <img src="{{ $bppbQr }}" alt="QR Code"
+                                            style="width: 100px; height: 100px;">
                                     </div>
                                 </td>
                             </tr>
