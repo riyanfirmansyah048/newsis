@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\BookingOrders\Tables;
 
 use App\Models\BookingOrder;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -74,11 +75,14 @@ class BookingOrdersTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make()
-                    ->visible(fn() => auth()->user()->can('update-booking-order')),
-                DeleteAction::make()
-                    ->visible(fn() => auth()->user()->can('update-booking-order')),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->visible(fn() => auth()->user()->can('update-booking-order')),
+                    DeleteAction::make()
+                        ->visible(fn() => auth()->user()->can('update-booking-order')),
+                ]),
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
