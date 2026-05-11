@@ -23,7 +23,6 @@
                     <td>
                         <div align="center">
                             <h2>Pengajuan Service</h2>
-                            {{-- QR LINK
                             @php
                                 $serviceEditUrl = rtrim((string) config('app.url'), '/') . '/sis/services/' . $service->id . '/edit';
                                 $serviceEditQr = (new \Endroid\QrCode\Builder\Builder(
@@ -35,7 +34,6 @@
                             @endphp
                             <img src="{{ $serviceEditQr }}" alt="QR Edit Service"
                                 style="width: 100px; height: 100px; margin-top: 6px;">
-                            --}}
                         </div>
                     </td>
                 </tr>
@@ -60,16 +58,15 @@
                                         alt="Barcode" style="width: 200px; height: 60px;"> --}}
 
                                     @php
-                                        $serviceQr = (new \Endroid\QrCode\Builder\Builder(
-                                            writer: new \Endroid\QrCode\Writer\PngWriter(),
-                                            data: $service->noService,
-                                            size: 100,
-                                            margin: 2,
-                                        ))->build()->getDataUri();
+                                        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+                                        $barcode = $generator->getBarcode(
+                                            $service->noService,
+                                            $generator::TYPE_CODE_128,
+                                        );
                                     @endphp
 
-                                    <img src="{{ $serviceQr }}" alt="QR Code"
-                                        style="width: 100px; height: 100px; margin-top: 4px;">
+                                    <img src="data:image/png;base64,{{ base64_encode($barcode) }}" alt="Barcode"
+                                        style="width: 200px; height: 60px;">
                                 </td>
                             </tr>
                         </table>

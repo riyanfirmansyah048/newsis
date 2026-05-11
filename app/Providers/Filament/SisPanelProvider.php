@@ -11,7 +11,6 @@ use App\Filament\Pages\EditProfileCustom;
 // use App\Filament\Widgets\AssetsItemsWidget;
 use App\Filament\Widgets\BppbStatusStats;
 use App\Filament\Widgets\DashboardOverviewStats;
-use App\Filament\Widgets\ScanQrWidget;
 use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
 use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
 use Filament\Actions\Action;
@@ -59,7 +58,6 @@ class SisPanelProvider extends PanelProvider
             ])
             ->widgets([
                 DashboardOverviewStats::class,
-                ScanQrWidget::class,
                 BppbStatusStats::class,
             ])
             ->middleware([
@@ -93,15 +91,6 @@ class SisPanelProvider extends PanelProvider
     }
 </style>
 HTML,
-            )
-            ->renderHook(
-                PanelsRenderHook::BODY_END,
-                function (): string {
-                    if (! auth()->check() || ! auth()->user()->hasRole('admin')) {
-                        return '';
-                    }
-                    return view('filament.hooks.qr-scanner-js')->render();
-                },
             )
             ->renderHook(
                 PanelsRenderHook::BODY_END,
