@@ -1,6 +1,5 @@
 <x-filament-panels::page>
     @push('styles')
-        <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet" />
         <style>
             #calendar {
                 max-width: 100%;
@@ -152,7 +151,7 @@
     @endpush
 
     @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js">
+        <script src="{{ asset('fullcalendar/index.global.min.js') }}">
         </script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
