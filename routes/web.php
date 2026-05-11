@@ -2,12 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\QrScanController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::post('/qr-scan/search', [QrScanController::class, 'search'])->name('qr-scan.search');
     Route::get('/bppb/{id}/print', [PDFController::class, 'bppbPrint'])->name('bppb.print');
     Route::get('/bpb/{id}/print', [PDFController::class, 'bpbPrint'])->name('bpb.print');
     Route::get('/permohonanemail/{id}/print', [PDFController::class, 'permohonanEmailPrint'])->name('permohonanemail.print');
