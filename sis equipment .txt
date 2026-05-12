@@ -7,6 +7,7 @@ sis equipment
 - picqer/php-barcode-generator (untuk membuat barcode di halaman service)
 - endroid/qr-code (untuk membuat qr code)
 - Auth Designer (plugin untuk tampilan Auth)
+- scan native Android + handleQrScan bridge
 
 
 comand

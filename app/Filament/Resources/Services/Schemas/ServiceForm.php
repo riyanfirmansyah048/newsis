@@ -64,8 +64,18 @@ class ServiceForm
                     ->columnSpanFull()
                     ->description('')
                     ->schema([
+                        Select::make('ic_id')
+                            ->label('PIC yang mengerjakan')
+                            ->options(fn() => User::role('admin')
+                                ->orderBy('name')
+                                ->get()
+                                ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK]))
+                            ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
+                            ->columnSpanFull()
+                            ->visible(fn(Get $get) => auth()->user()->can('update-service') && $get('status_id') !== 2)
+                            ->searchable(),
                         Select::make('user_id')
-                            ->label('Nama Karyawan')
+                            ->label('Nama Karyawan Pemohon')
                             ->searchable()
                             ->getSearchResultsUsing(
                                 fn(string $search) =>
@@ -104,16 +114,6 @@ class ServiceForm
                         TextInput::make('serialNumberItem')
                             ->label('No. Seri Barang')
                             ->columnSpanFull(),
-                        Select::make('ic_id')
-                            ->label('PIC yang mengerjakan')
-                            ->options(fn() => User::role('admin')
-                                ->orderBy('name')
-                                ->get()
-                                ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK]))
-                            ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
-                            ->columnSpanFull()
-                            ->visible(fn(Get $get) => auth()->user()->can('update-service') && $get('status_id') !== 2)
-                            ->searchable(),
                         // Grid::make(3)
                         //     ->schema([
                         //         Select::make('category_id')
