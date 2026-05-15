@@ -106,18 +106,19 @@ class Bppb extends Model
 
                     $bulan = Carbon::now()->month;
                     $tahun = Carbon::now()->year;
+                    $kodeDepartemen = $user?->department?->code ?? 'XXX';
 
                     $jumlahBppb = self::withTrashed()
                         ->whereMonth('created_at', $bulan)
                         ->whereYear('created_at', $tahun)
-                        ->where('user_id', $user?->id)
+                        ->whereHas('user.department', function ($q) use ($kodeDepartemen) {
+                            $q->where('code', $kodeDepartemen);
+                        })
                         ->count();
 
                     $nomorUrut = str_pad($jumlahBppb + 1, 3, '0', STR_PAD_LEFT);
 
                     $model->number = $nomorUrut;
-
-                    $kodeDepartemen = $user?->department?->code ?? 'XXX';
                     $bulanRomawi = self::convertToRoman($bulan);
                     $tahunShort = Carbon::now()->format('y');
 
