@@ -39,7 +39,7 @@ class ServicePicStats extends StatsOverviewWidget
 
         return [
             Section::make('Statistik PIC')
-                ->description('Ringkasan kinerja PIC dalam menangani Service / Memo IT')
+                ->description('Ringkasan Service / Memo IT')
                 ->schema([
                     Stat::make('Total PIC', number_format($totalPic))
                         ->description('Jumlah PIC yang pernah ditugaskan')
