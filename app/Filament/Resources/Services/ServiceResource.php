@@ -16,6 +16,10 @@ use App\Filament\Resources\Services\Pages\ListServices;
 use App\Filament\Resources\Services\Pages\CreateService;
 use App\Filament\Resources\Services\Schemas\ServiceForm;
 use App\Filament\Resources\Services\Tables\ServicesTable;
+use App\Filament\Widgets\ServiceMonthlyTrendChart;
+use App\Filament\Widgets\ServicePerPicChart;
+use App\Filament\Widgets\ServicePicStats;
+use App\Filament\Widgets\ServicePicStatusChart;
 
 class ServiceResource extends Resource
 {
@@ -48,6 +52,16 @@ class ServiceResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            ServicePicStats::class,
+            ServicePerPicChart::class,
+            ServicePicStatusChart::class,
+            ServiceMonthlyTrendChart::class,
         ];
     }
 
