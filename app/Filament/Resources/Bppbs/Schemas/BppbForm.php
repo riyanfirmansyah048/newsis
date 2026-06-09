@@ -68,42 +68,51 @@ class BppbForm
                                 'received_date' => $record->received_date ?? '',
                                 'status' => $record->status->name ?? '',
                                 'status_id' => $record->status_id ?? '',
-                                'bppb_items' => $record ? $record->bppb_item->map(function ($item) {
-                                    return [
-                                        'id' => $item->id,
-                                        'item_id' => $item->item_id,
-                                        'category' => $item->category->name ?? '',
-                                        'brand' => $item->brand->name ?? '',
-                                        'name' => $item->item->name ?? '',
-                                        'qty' => $item->qty,
-                                        'purchase_order_id' => $item->purchase_order_id,
-                                        'description' => $item->description,
-                                    ];
-                                })->toArray() : [],
-                                'bppb_inks' => $record ? $record->bppb_ink->map(function ($ink) {
-                                    return [
-                                        'id' => $ink->id,
-                                        'ink_id' => $ink->ink_id,
-                                        'category' => $ink->category->name ?? '',
-                                        'brand' => $ink->brand->name ?? '',
-                                        'name' => $ink->ink->name ?? '',
-                                        'qty' => $ink->qty,
-                                        'purchase_order_id' => $ink->purchase_order_id,
-                                        'description' => $ink->description,
-                                    ];
-                                })->toArray() : [],
-                                'bppb_softwares' => $record ? $record->bppb_software->map(function ($software) {
-                                    return [
-                                        'id' => $software->id,
-                                        'software_id' => $software->software_id,
-                                        'category' => $software->category->name ?? '',
-                                        'brand' => $software->brand->name ?? '',
-                                        'name' => $software->software->name ?? '',
-                                        'qty' => $software->qty,
-                                        'purchase_order_id' => $software->purchase_order_id,
-                                        'description' => $software->description,
-                                    ];
-                                })->toArray() : [],
+                                'bppb_items' => $record ? $record->bppb_item()
+                                    ->with(['category', 'brand', 'item' => fn($q) => $q->withTrashed()])
+                                    ->get()
+                                    ->map(function ($item) {
+                                        return [
+                                            'id' => $item->id,
+                                            'item_id' => $item->item_id,
+                                            'category' => $item->category?->name ?? '',
+                                            'brand' => $item->brand?->name ?? '',
+                                            'name' => $item->item?->name ?? '',
+                                            'qty' => $item->qty,
+                                            'purchase_order_id' => $item->purchase_order_id,
+                                            'description' => $item->description,
+                                        ];
+                                    })->toArray() : [],
+                                'bppb_inks' => $record ? $record->bppb_ink()
+                                    ->with(['category', 'brand', 'ink' => fn($q) => $q->withTrashed()])
+                                    ->get()
+                                    ->map(function ($ink) {
+                                        return [
+                                            'id' => $ink->id,
+                                            'ink_id' => $ink->ink_id,
+                                            'category' => $ink->category?->name ?? '',
+                                            'brand' => $ink->brand?->name ?? '',
+                                            'name' => $ink->ink?->name ?? '',
+                                            'qty' => $ink->qty,
+                                            'purchase_order_id' => $ink->purchase_order_id,
+                                            'description' => $ink->description,
+                                        ];
+                                    })->toArray() : [],
+                                'bppb_softwares' => $record ? $record->bppb_software()
+                                    ->with(['category', 'brand', 'software' => fn($q) => $q->withTrashed()])
+                                    ->get()
+                                    ->map(function ($software) {
+                                        return [
+                                            'id' => $software->id,
+                                            'software_id' => $software->software_id,
+                                            'category' => $software->category?->name ?? '',
+                                            'brand' => $software->brand?->name ?? '',
+                                            'name' => $software->software?->name ?? '',
+                                            'qty' => $software->qty,
+                                            'purchase_order_id' => $software->purchase_order_id,
+                                            'description' => $software->description,
+                                        ];
+                                    })->toArray() : [],
                                 'purchase_orders' => $record ? $record->purchase_orders->map(function ($po) {
                                     return [
                                         'id' => $po->id,

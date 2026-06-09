@@ -58,14 +58,14 @@ class ViewPurchaseOrder extends ViewRecord
 
                                 return $this->record
                                     ->bppb_items()
-                                    ->with('item') // eager load langsung dari query
+                                    ->with(['item' => fn($q) => $q->withTrashed()])
                                     ->get()
                                     ->groupBy('item_id')
                                     ->map(function ($group) {
 
                                         return [
-                                            'name' => $group->first()->item->name ?? '-',
-                                            'total_qty' => $group->count(), // atau sum('qty')
+                                            'name' => $group->first()->item?->name ?? '[Item telah dihapus]',
+                                            'total_qty' => $group->count(),
                                         ];
                                     })
                                     ->values()
@@ -92,14 +92,14 @@ class ViewPurchaseOrder extends ViewRecord
 
                                 return $this->record
                                     ->bppb_inks()
-                                    ->with('ink')
+                                    ->with(['ink' => fn($q) => $q->withTrashed()])
                                     ->get()
                                     ->groupBy('ink_id')
                                     ->map(function ($group) {
 
                                         return [
-                                            'name' => $group->first()->ink->name ?? '-',
-                                            'total_qty' => $group->count(), // atau sum('qty')
+                                            'name' => $group->first()->ink?->name ?? '[Tinta telah dihapus]',
+                                            'total_qty' => $group->count(),
                                         ];
                                     })
                                     ->values()
@@ -126,14 +126,14 @@ class ViewPurchaseOrder extends ViewRecord
 
                                 return $this->record
                                     ->bppb_softwares()
-                                    ->with('software')
+                                    ->with(['software' => fn($q) => $q->withTrashed()])
                                     ->get()
                                     ->groupBy('software_id')
                                     ->map(function ($group) {
 
                                         return [
-                                            'name' => $group->first()->software->name ?? '-',
-                                            'total_qty' => $group->count(), // atau sum('qty')
+                                            'name' => $group->first()->software?->name ?? '[Software telah dihapus]',
+                                            'total_qty' => $group->count(),
                                         ];
                                     })
                                     ->values()

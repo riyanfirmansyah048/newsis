@@ -162,9 +162,9 @@
                     @php
                         $items = [];
                         foreach ($bppb->bppb_item as $item) {
-                            if (isset($items[$item->item->id])) {
+                            if ($item->item && isset($items[$item->item->id])) {
                                 $items[$item->item->id]->qty += $item->qty;
-                            } else {
+                            } elseif ($item->item) {
                                 $items[$item->item->id] = clone $item;
                             }
                         }
@@ -172,7 +172,7 @@
                     @foreach ($items as $item)
                         <tr>
                             <td>
-                                {{ $item->item->name }}
+                                {{ $item->item?->name ?? '[Item telah dihapus]' }}
                                 @if (!empty($item->description))
                                     <br>
                                     <b>keterangan : </b> {{ $item->description }}
@@ -187,9 +187,9 @@
                     @php
                         $inks = [];
                         foreach ($bppb->bppb_ink as $ink) {
-                            if (isset($inks[$ink->ink->id])) {
+                            if ($ink->ink && isset($inks[$ink->ink->id])) {
                                 $inks[$ink->ink->id]->qty += $ink->qty;
-                            } else {
+                            } elseif ($ink->ink) {
                                 $inks[$ink->ink->id] = clone $ink;
                             }
                         }
@@ -197,7 +197,7 @@
                     @foreach ($inks as $ink)
                         <tr>
                             <td>
-                                {{ $ink->ink->name }}
+                                {{ $ink->ink?->name ?? '[Tinta telah dihapus]' }}
                                 @if (!empty($ink->description))
                                     <br>
                                     <b>keterangan : </b> {{ $ink->description }}
@@ -212,9 +212,9 @@
                     @php
                         $softwareList = [];
                         foreach ($bppb->bppb_software as $software) {
-                            if (isset($softwareList[$software->software->id])) {
+                            if ($software->software && isset($softwareList[$software->software->id])) {
                                 $softwareList[$software->software->id]->qty += $software->qty;
-                            } else {
+                            } elseif ($software->software) {
                                 $softwareList[$software->software->id] = clone $software;
                             }
                         }
@@ -222,7 +222,7 @@
                     @foreach ($softwareList as $software)
                         <tr>
                             <td>
-                                {{ $software->software->name }}
+                                {{ $software->software?->name ?? '[Software telah dihapus]' }}
                                 @if (!empty($software->description))
                                     <br>
                                     <b>keterangan : </b> {{ $software->description }}
@@ -301,7 +301,7 @@
                         @foreach ($bppb->bppb_software as $software)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $software->software->name }}</td>
+                                <td>{{ $software->software?->name ?? '[Software telah dihapus]' }}</td>
                                 <td>{{ $software->noBppbPemohon }}</td>
                                 <td>{{ $software->user->name ?? ' ' }}</td>
                                 <td>{{ $software->userPemohon }}</td>

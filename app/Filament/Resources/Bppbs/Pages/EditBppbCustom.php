@@ -125,7 +125,7 @@ class EditBppbCustom extends Page implements HasForms
                 ->exists(),
 
             'bppb_items' => $record?->bppb_item()
-                ->with(['category', 'brand', 'item'])
+                ->with(['category', 'brand', 'item' => fn($q) => $q->withTrashed()])
                 ->withoutTrashed()
                 ->get()
                 ->map(fn($item) => [
@@ -140,7 +140,7 @@ class EditBppbCustom extends Page implements HasForms
                 ])->toArray(),
 
             'bppb_inks' => $record?->bppb_ink()
-                ->with(['category', 'brand', 'ink'])
+                ->with(['category', 'brand', 'ink' => fn($q) => $q->withTrashed()])
                 ->withoutTrashed()
                 ->get()
                 ->map(fn($ink) => [
@@ -155,7 +155,7 @@ class EditBppbCustom extends Page implements HasForms
                 ])->toArray(),
 
             'bppb_softwares' => $record?->bppb_software()
-                ->with(['category', 'brand', 'software', 'user'])
+                ->with(['category', 'brand', 'software' => fn($q) => $q->withTrashed(), 'user'])
                 ->withoutTrashed()
                 ->get()
                 ->map(fn($software) => [
@@ -202,7 +202,7 @@ class EditBppbCustom extends Page implements HasForms
         }
 
         $sourceBppb = Bppb::query()
-            ->with(['user', 'bppb_software.software'])
+            ->with(['user', 'bppb_software' => fn($q) => $q->with(['software' => fn($q2) => $q2->withTrashed()])])
             ->find($sourceBppbId);
 
         if (! $sourceBppb) {
@@ -273,7 +273,7 @@ class EditBppbCustom extends Page implements HasForms
         }
 
         $sourceRows = Bppb_software::query()
-            ->with('software')
+            ->with(['software' => fn($q) => $q->withTrashed()])
             ->where('bppb_id', $sourceBppb->id)
             ->where('software_id', $softwareId)
             ->whereNull('purchase_order_id')

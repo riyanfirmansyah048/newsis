@@ -72,14 +72,14 @@
                     $inks = [];
                     $softwares = [];
                     foreach ($bpb->purchase_order->bppb_items as $item) {
-                        $itemId = $item->item->id;
+                        $itemId = $item->item?->id;
                         $description = trim((string) $item->description);
                         $normalizedDescription = match ($description) {
                             '', '-', '0' => null,
                             default => $description,
                         };
 
-                        if (isset($items[$itemId])) {
+                        if ($item->item && isset($items[$itemId])) {
                             $items[$itemId]['qty'] += $item->qty;
 
                             if (
@@ -88,7 +88,7 @@
                             ) {
                                 $items[$itemId]['descriptions'][] = $normalizedDescription;
                             }
-                        } else {
+                        } elseif ($item->item) {
                             $items[$itemId] = [
                                 'name' => $item->item->name,
                                 'qty' => $item->qty,
@@ -98,14 +98,14 @@
                     }
 
                     foreach ($bpb->purchase_order->bppb_inks as $ink) {
-                        $inkId = $ink->ink->id;
+                        $inkId = $ink->ink?->id;
                         $description = trim((string) $ink->description);
                         $normalizedDescription = match ($description) {
                             '', '-', '0' => null,
                             default => $description,
                         };
 
-                        if (isset($inks[$inkId])) {
+                        if ($ink->ink && isset($inks[$inkId])) {
                             $inks[$inkId]['qty'] += $ink->qty;
 
                             if (
@@ -114,7 +114,7 @@
                             ) {
                                 $inks[$inkId]['descriptions'][] = $normalizedDescription;
                             }
-                        } else {
+                        } elseif ($ink->ink) {
                             $inks[$inkId] = [
                                 'name' => $ink->ink->name,
                                 'qty' => $ink->qty,
@@ -124,14 +124,14 @@
                     }
 
                     foreach ($bpb->purchase_order->bppb_softwares as $software) {
-                        $softwareId = $software->software->id;
+                        $softwareId = $software->software?->id;
                         $description = trim((string) $software->description);
                         $normalizedDescription = match ($description) {
                             '', '-', '0' => null,
                             default => $description,
                         };
 
-                        if (isset($softwares[$softwareId])) {
+                        if ($software->software && isset($softwares[$softwareId])) {
                             $softwares[$softwareId]['qty'] += $software->qty;
 
                             if (
@@ -140,7 +140,7 @@
                             ) {
                                 $softwares[$softwareId]['descriptions'][] = $normalizedDescription;
                             }
-                        } else {
+                        } elseif ($software->software) {
                             $softwares[$softwareId] = [
                                 'name' => $software->software->name,
                                 'qty' => $software->qty,

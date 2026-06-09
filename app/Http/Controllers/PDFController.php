@@ -89,7 +89,13 @@ class PDFController extends Controller
 
     public function bppbPrint($id)
     {
-        $bppb = Bppb::with('bppb_item', 'bppb_ink', 'bppb_software', 'user', 'status',)->find($id);
+        $bppb = Bppb::with([
+            'bppb_item' => fn($q) => $q->with(['item' => fn($q2) => $q2->withTrashed()]),
+            'bppb_ink' => fn($q) => $q->with(['ink' => fn($q2) => $q2->withTrashed()]),
+            'bppb_software' => fn($q) => $q->with(['software' => fn($q2) => $q2->withTrashed()]),
+            'user',
+            'status',
+        ])->find($id);
         if (!$bppb) {
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');
         }
@@ -129,9 +135,9 @@ class PDFController extends Controller
             'user',
             'purchase_order.vendor',
             'purchase_order.bppb.user.department',
-            'purchase_order.bppb_items.item',
-            'purchase_order.bppb_inks.ink',
-            'purchase_order.bppb_softwares.software',
+            'purchase_order.bppb_items' => fn($q) => $q->with(['item' => fn($q2) => $q2->withTrashed()]),
+            'purchase_order.bppb_inks' => fn($q) => $q->with(['ink' => fn($q2) => $q2->withTrashed()]),
+            'purchase_order.bppb_softwares' => fn($q) => $q->with(['software' => fn($q2) => $q2->withTrashed()]),
         ])->find($id);
         if (!$bpb) {
             return redirect()->back()->with('error', 'Data BPPB tidak ditemukan.');

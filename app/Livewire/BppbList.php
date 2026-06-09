@@ -287,7 +287,7 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
         | ITEM
         |--------------------------------------------------------------------------
         */
-        $items = Bppb_item::with('item')
+        $items = Bppb_item::with(['item' => fn($q) => $q->withTrashed()])
             ->where('bppb_id', $this->bppbId)
             ->get();
 
@@ -324,7 +324,7 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
         | INK
         |--------------------------------------------------------------------------
         */
-        $inks = \App\Models\Bppb_ink::with('ink')
+        $inks = \App\Models\Bppb_ink::with(['ink' => fn($q) => $q->withTrashed()])
             ->where('bppb_id', $this->bppbId)
             ->get();
 
@@ -361,7 +361,7 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
         | SOFTWARE
         |--------------------------------------------------------------------------
         */
-        $softwares = \App\Models\Bppb_software::with('software')
+        $softwares = \App\Models\Bppb_software::with(['software' => fn($q) => $q->withTrashed()])
             ->where('bppb_id', $this->bppbId)
             ->get();
 

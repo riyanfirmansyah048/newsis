@@ -80,12 +80,12 @@ class PurchaseOrderForm
                                                 $q->orWhere('item_id', $currentItemId);
                                             }
                                         })
-                                        ->with('item')
+                                        ->with(['item' => fn($q) => $q->withTrashed()])
                                         ->get()
                                         ->groupBy('item_id')
                                         ->map(
                                             fn($group) =>
-                                            $group->first()->item->name .
+                                            ($group->first()->item?->name ?? '[Item telah dihapus]') .
                                                 ' (Qty belum diproses: ' . $group->count() . ')'
                                         )
                                         ->toArray();
@@ -165,12 +165,12 @@ class PurchaseOrderForm
                                                 $q->orWhere('ink_id', $currentInkId);
                                             }
                                         })
-                                        ->with('ink')
+                                        ->with(['ink' => fn($q) => $q->withTrashed()])
                                         ->get()
                                         ->groupBy('ink_id')
                                         ->map(
                                             fn($group) =>
-                                            $group->first()->ink->name .
+                                            ($group->first()->ink?->name ?? '[Tinta telah dihapus]') .
                                                 ' (Qty belum diproses: ' . $group->count() . ')'
                                         )
                                         ->toArray();
@@ -248,12 +248,12 @@ class PurchaseOrderForm
                                                 $q->orWhere('software_id', $currentSoftwareId);
                                             }
                                         })
-                                        ->with('software')
+                                        ->with(['software' => fn($q) => $q->withTrashed()])
                                         ->get()
                                         ->groupBy('software_id')
                                         ->map(
                                             fn($group) =>
-                                            $group->first()->software->name .
+                                            ($group->first()->software?->name ?? '[Software telah dihapus]') .
                                                 ' (Qty belum diproses: ' . $group->count() . ')'
                                         )
                                         ->toArray();
