@@ -113,14 +113,6 @@ class BppbForm
                                             'description' => $software->description,
                                         ];
                                     })->toArray() : [],
-                                'linkedSoftwareProcessed' => $record && $record->noBppb
-                                    ? \App\Models\Bppb_software::where('noBppbPemohon', $record->noBppb)
-                                        ->whereNotNull('purchase_order_id')
-                                        ->get()
-                                        ->groupBy('software_id')
-                                        ->map(fn($rows) => $rows->sum('qty'))
-                                        ->toArray()
-                                    : [],
                                 'purchase_orders' => $record ? $record->purchase_orders->map(function ($po) {
                                     return [
                                         'id' => $po->id,

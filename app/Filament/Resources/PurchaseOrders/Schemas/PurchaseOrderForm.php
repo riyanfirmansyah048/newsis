@@ -238,17 +238,6 @@ class PurchaseOrderForm
                                 ->options(function (callable $get) {
                                     $bppbId = $get('../../bppb_id');
                                     $currentSoftwareId = $get('software_id');
-                                    $bppb = $bppbId ? Bppb::find($bppbId) : null;
-
-                                    $pulledByAdminCounts = [];
-                                    if ($bppb && $bppb->noBppb) {
-                                        $pulledByAdminCounts = Bppb_software::query()
-                                            ->where('noBppbPemohon', $bppb->noBppb)
-                                            ->get()
-                                            ->groupBy('software_id')
-                                            ->map(fn($rows) => $rows->sum('qty'))
-                                            ->toArray();
-                                    }
 
                                     return Bppb_software::query()
                                         ->where('bppb_id', $bppbId)
@@ -265,9 +254,7 @@ class PurchaseOrderForm
                                         ->map(
                                             fn($group) =>
                                             ($group->first()->software?->name ?? '[Software telah dihapus]') .
-                                                ' (Qty belum diproses: ' .
-                                                max(0, $group->count() - ($pulledByAdminCounts[$group->first()->software_id] ?? 0)) .
-                                                ')'
+                                                ' (Qty belum diproses: ' . $group->count() . ')'
                                         )
                                         ->toArray();
                                 })
@@ -306,19 +293,8 @@ class PurchaseOrderForm
                                                 })
                                                 ->count();
 
-                                            $bppb = Bppb::find($bppbId);
-                                            $pulledByAdmin = 0;
-                                            if ($bppb && $bppb->noBppb) {
-                                                $pulledByAdmin = Bppb_software::query()
-                                                    ->where('noBppbPemohon', $bppb->noBppb)
-                                                    ->where('software_id', $softwareId)
-                                                    ->count();
-                                            }
-
-                                            $available = max(0, $sisaQty - $pulledByAdmin);
-
-                                            if ($value > $available) {
-                                                $fail("Qty melebihi jumlah yang belum diproses. Sisa tersedia: {$available}");
+                                            if ($value > $sisaQty) {
+                                                $fail("Qty melebihi jumlah yang belum diproses. Sisa tersedia: {$sisaQty}");
                                             }
                                         };
                                     },

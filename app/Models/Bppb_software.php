@@ -52,6 +52,11 @@ class Bppb_software extends Model
         return $this->belongsTo(User::class, 'pemohonIT');
     }
 
+    public function sourceSoftware()
+    {
+        return $this->belongsTo(self::class, 'source_bppb_software_id');
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -67,9 +72,10 @@ class Bppb_software extends Model
                     for ($i = 1; $i < $software->qty; $i++) {
                         $software->bppb->bppb_software()->create([
                             'bppb_id'    => $software->bppb->id,
-                            'software_id' => $software->software_id, // Pastikan ini sesuai dengan kolom di database
+                            'software_id' => $software->software_id,
                             'qty'        => 1,
                             'description' => $software->description,
+                            'source_bppb_software_id' => $software->source_bppb_software_id,
                         ]);
                     }
                     $software->update(['qty' => 1]);
@@ -81,9 +87,10 @@ class Bppb_software extends Model
                     for ($i = 1; $i < $software->qty; $i++) {
                         $software->bppb->bppb_software()->create([
                             'bppb_id'    => $software->bppb->id,
-                            'software_id' => $software->software_id, // Pastikan ini sesuai dengan kolom di database
+                            'software_id' => $software->software_id,
                             'qty'        => 1,
                             'description' => $software->description,
+                            'source_bppb_software_id' => $software->source_bppb_software_id,
                         ]);
                     }
                     $software->update(['qty' => 1]);

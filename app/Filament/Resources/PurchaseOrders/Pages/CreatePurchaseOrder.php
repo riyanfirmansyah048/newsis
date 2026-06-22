@@ -63,15 +63,22 @@ class CreatePurchaseOrder extends CreateRecord
 
         // Softwares
         collect($poSoftwares)->each(function ($software) {
-            Bppb_software::where('software_id', $software['software_id'])
+            $records = Bppb_software::where('software_id', $software['software_id'])
                 ->where('bppb_id', $this->record->bppb_id)
                 ->whereNull('purchase_order_id')
                 ->limit($software['qty'])
-                ->get()
-                ->each(function ($bppbSoftware) {
-                    $bppbSoftware->purchase_order_id = $this->record->id;
-                    $bppbSoftware->save();
-                });
+                ->get();
+
+            $records->each(function ($bppbSoftware) {
+                $bppbSoftware->purchase_order_id = $this->record->id;
+                $bppbSoftware->save();
+
+                if ($bppbSoftware->source_bppb_software_id) {
+                    Bppb_software::where('id', $bppbSoftware->source_bppb_software_id)
+                        ->whereNull('purchase_order_id')
+                        ->update(['purchase_order_id' => $this->record->id]);
+                }
+            });
         });
     }
 }

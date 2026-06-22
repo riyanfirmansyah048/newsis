@@ -49,6 +49,25 @@ class EditBppbSoftware extends EditRecord
         return static::$resource::getUrl('edit', ['record' => $this->record]);
     }
 
+    protected function afterSave(): void
+    {
+        $record = $this->record;
+
+        if (! $record->source_bppb_software_id) {
+            return;
+        }
+
+        \App\Models\Bppb_software::withoutEvents(function () use ($record) {
+            \App\Models\Bppb_software::where('id', $record->source_bppb_software_id)
+                ->update($record->only([
+                    'userPemohon',
+                    'departementPemohon',
+                    'lokasiPemohon',
+                    'serialNumber',
+                ]));
+        });
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema

@@ -47,6 +47,20 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
         return $value !== '' ? $value : '-';
     }
 
+    protected function syncToSource(Bppb_software $record, string $field, ?string $value): void
+    {
+        if (! $record->source_bppb_software_id) {
+            return;
+        }
+
+        $normalized = $this->normalizeInlineValue($value);
+
+        Bppb_software::withoutEvents(function () use ($record, $field, $normalized) {
+            Bppb_software::where('id', $record->source_bppb_software_id)
+                ->update([$field => $normalized]);
+        });
+    }
+
     protected function getLinkedBppbNumbers(Bppb_software $record): string
     {
         $currentNoBppb = $record->bppb?->noBppb;
@@ -92,19 +106,28 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
                     ->default('-')
                     ->rules(['max:255'])
                     ->disabled(fn () => ! $this->canInlineEdit())
-                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['userPemohon' => $this->normalizeInlineValue($state)])),
+                    ->updateStateUsing(function (Bppb_software $record, ?string $state) {
+                        $record->update(['userPemohon' => $this->normalizeInlineValue($state)]);
+                        $this->syncToSource($record, 'userPemohon', $state);
+                    }),
                 TextInputColumn::make('departementPemohon')
                     ->label('Departemen')
                     ->default('-')
                     ->rules(['max:255'])
                     ->disabled(fn () => ! $this->canInlineEdit())
-                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['departementPemohon' => $this->normalizeInlineValue($state)])),
+                    ->updateStateUsing(function (Bppb_software $record, ?string $state) {
+                        $record->update(['departementPemohon' => $this->normalizeInlineValue($state)]);
+                        $this->syncToSource($record, 'departementPemohon', $state);
+                    }),
                 TextInputColumn::make('lokasiPemohon')
                     ->label('Lokasi')
                     ->default('-')
                     ->rules(['max:255'])
                     ->disabled(fn () => ! $this->canInlineEdit())
-                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['lokasiPemohon' => $this->normalizeInlineValue($state)])),
+                    ->updateStateUsing(function (Bppb_software $record, ?string $state) {
+                        $record->update(['lokasiPemohon' => $this->normalizeInlineValue($state)]);
+                        $this->syncToSource($record, 'lokasiPemohon', $state);
+                    }),
                 TextColumn::make('noBppbPemohon')
                     ->label('No. BPPB Pemohon')
                     ->default('-')
@@ -117,8 +140,12 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
                     ->label('Serial Number')
                     ->default('-')
                     ->rules(['max:255'])
+                    ->visible(fn() => Auth::user()?->hasRole('admin'))
                     ->disabled(fn () => ! $this->canInlineEdit())
-                    ->updateStateUsing(fn (Bppb_software $record, ?string $state) => $record->update(['serialNumber' => $this->normalizeInlineValue($state)])),
+                    ->updateStateUsing(function (Bppb_software $record, ?string $state) {
+                        $record->update(['serialNumber' => $this->normalizeInlineValue($state)]);
+                        $this->syncToSource($record, 'serialNumber', $state);
+                    }),
             ])
             ->recordActions([
                 Action::make('edit')

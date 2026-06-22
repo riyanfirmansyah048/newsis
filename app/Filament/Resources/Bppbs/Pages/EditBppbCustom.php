@@ -302,20 +302,21 @@ class EditBppbCustom extends Page implements HasForms
             return;
         }
 
-        $firstRow = $sourceRows->first();
+        $rowsToPull = $sourceRows->skip($alreadyLinked)->take($qty);
 
-        DB::transaction(function () use ($qty, $firstRow, $sourceBppb, $details) {
-            for ($i = 0; $i < $qty; $i++) {
+        DB::transaction(function () use ($rowsToPull, $sourceBppb, $details) {
+            foreach ($rowsToPull as $i => $sourceRow) {
                 $detail = $details[$i] ?? [];
 
                 Bppb_software::create([
                     'bppb_id' => $this->record->id,
-                    'software_id' => $firstRow->software_id,
+                    'software_id' => $sourceRow->software_id,
                     'purchase_order_id' => null,
                     'qty' => 1,
-                    'description' => $firstRow->description,
+                    'description' => $sourceRow->description,
                     'noBppbPemohon' => $sourceBppb->noBppb,
                     'pemohonIT' => $sourceBppb->user_id,
+                    'source_bppb_software_id' => $sourceRow->id,
                     'userPemohon' => $this->normalizeDetailValue($detail['userPemohon'] ?? null),
                     'departementPemohon' => $this->normalizeDetailValue($detail['departementPemohon'] ?? null),
                     'lokasiPemohon' => $this->normalizeDetailValue($detail['lokasiPemohon'] ?? null),

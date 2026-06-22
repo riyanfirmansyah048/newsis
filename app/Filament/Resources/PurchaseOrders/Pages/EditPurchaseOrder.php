@@ -142,6 +142,12 @@ class EditPurchaseOrder extends EditRecord
 
             foreach ($rows as $row) {
                 $row->update(['purchase_order_id' => $record->id]);
+
+                if ($row->source_bppb_software_id) {
+                    Bppb_software::where('id', $row->source_bppb_software_id)
+                        ->whereNull('purchase_order_id')
+                        ->update(['purchase_order_id' => $record->id]);
+                }
             }
         }
     }
