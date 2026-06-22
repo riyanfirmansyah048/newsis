@@ -367,6 +367,21 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
 
         $merged = [];
         $nullCounts = [];
+        $currentBppb = $this->bppbId ? \App\Models\Bppb::find($this->bppbId) : null;
+        $linkedProcessed = [];
+
+        if ($currentBppb && $currentBppb->noBppb) {
+            $linkedRows = \App\Models\Bppb_software::where('noBppbPemohon', $currentBppb->noBppb)
+                ->whereNotNull('purchase_order_id')
+                ->get();
+
+            foreach ($linkedRows as $row) {
+                if (!isset($linkedProcessed[$row->software_id])) {
+                    $linkedProcessed[$row->software_id] = 0;
+                }
+                $linkedProcessed[$row->software_id] += $row->qty;
+            }
+        }
 
         foreach ($softwares as $software) {
             if (!isset($merged[$software->software_id])) {
@@ -389,7 +404,8 @@ class BppbList extends Component implements HasActions, HasSchemas, HasTable
         }
 
         foreach ($merged as $id => $software) {
-            $software['processed'] = $software['qty'] - $nullCounts[$id];
+            $baseProcessed = $software['qty'] - $nullCounts[$id];
+            $software['processed'] = $baseProcessed + ($linkedProcessed[$id] ?? 0);
             $data[] = $software;
         }
 

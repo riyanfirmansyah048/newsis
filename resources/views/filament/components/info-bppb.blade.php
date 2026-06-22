@@ -207,6 +207,7 @@
         <?php
         $mergedSoftware = [];
         $nullCounts = [];
+        $linkedSoftwareProcessed = $linkedSoftwareProcessed ?? [];
 
         foreach ($bppb_softwares as $software) {
             if (isset($mergedSoftware[$software['software_id']])) {
@@ -220,7 +221,11 @@
                 $nullCounts[$software['software_id']] += 1;
             }
         }
-        foreach ($mergedSoftware as $software) { ?>
+        foreach ($mergedSoftware as $software) {
+            $baseProcessed = $software['qty'] - $nullCounts[$software['software_id']];
+            $linkedProcessed = $linkedSoftwareProcessed[$software['software_id']] ?? 0;
+            $totalProcessed = $baseProcessed + $linkedProcessed;
+        ?>
             <tr>
                 <td>{{ $software['name'] }}</td>
                 <td>
@@ -228,13 +233,13 @@
                 </td>
                 <td>
                     <?php
-                    if ($software['qty'] == $software['qty'] - $nullCounts[$software['software_id']]) {
+                    if ($software['qty'] == $totalProcessed) {
                     ?>
-                        <center style="color: green"><b>{{ $software['qty'] - $nullCounts[$software['software_id']] }}</b></center>
+                        <center style="color: green"><b>{{ $totalProcessed }}</b></center>
                     <?php
                     } else {
                     ?>
-                        <center style="color: red"><b>{{ $software['qty'] - $nullCounts[$software['software_id']] }}</b></center>
+                        <center style="color: red"><b>{{ $totalProcessed }}</b></center>
                     <?php
                     }
                     ?>
