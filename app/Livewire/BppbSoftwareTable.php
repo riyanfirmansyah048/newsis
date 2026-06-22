@@ -140,7 +140,7 @@ class BppbSoftwareTable extends Component implements HasActions, HasSchemas, Has
                     ->label('Serial Number')
                     ->default('-')
                     ->rules(['max:255'])
-                    ->visible(fn() => Auth::user()?->hasRole('admin'))
+                    ->visible(fn() => Auth::user()?->can('read-bppb-software'))
                     ->disabled(fn () => ! $this->canInlineEdit())
                     ->updateStateUsing(function (Bppb_software $record, ?string $state) {
                         $record->update(['serialNumber' => $this->normalizeInlineValue($state)]);
