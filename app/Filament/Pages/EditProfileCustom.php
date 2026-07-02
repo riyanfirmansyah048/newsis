@@ -21,6 +21,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Illuminate\Support\Facades\Hash;
 use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use Filament\Schemas\Components\Section as FormSection;
 use Livewire\Form;
@@ -201,37 +202,16 @@ class EditProfileCustom extends BaseEditProfile
                     // ======================
                     // FOTO PROFIL
                     // ======================
-                    //upload foto
-
-                    // FileUpload::make('image')
-                    //     ->label('Foto Profile')
-                    //     ->image()
-                    //     ->imageEditor()
-                    //     ->avatar()
-                    //     ->directory('profiles')
-                    //     ->visibility('public')
-                    //     ->columnSpanFull(),
-
-                    // FileUpload::make('image')
-                    //     ->label('Foto Profile')
-                    //     ->image()
-                    //     ->imageEditor()
-                    //     ->avatar()
-                    //     ->disk('photo_profiles') // 🔥 disk custom
-                    //     ->directory('/')          // langsung ke folder itu
-                    //     ->visibility('public')
-                    //     ->columnSpanFull(),
-
-                    // FileUpload::make('image')
-                    //     ->label('Foto Profile')
-                    //     ->image()
-                    //     ->avatar()
-                    //     ->imageEditor()
-                    //     ->disk('public')
-                    //     ->directory('photo-profiles')
-                    //     ->visibility('public')
-                    //     ->maxSize(2048)
-                    //     ->columnSpanFull(),
+                    FileUpload::make('image')
+                        ->label('Foto Profile')
+                        ->image()
+                        ->avatar()
+                        ->imageEditor()
+                        ->disk('photo_profiles')
+                        ->directory('/')
+                        ->visibility('public')
+                        ->maxSize(500)
+                        ->columnSpanFull(),
 
                     // ======================
                     // PASSWORD
@@ -239,12 +219,13 @@ class EditProfileCustom extends BaseEditProfile
                     TextInput::make('password')
                         ->label('Password')
                         ->password()
-                        ->required(),
+                        ->dehydrateStateUsing(fn($state) => filled($state) ? Hash::make($state) : null)
+                        ->dehydrated(fn($state) => filled($state)),
 
                     TextInput::make('password_confirmation')
                         ->label('Konfirmasi Password')
                         ->password()
-                        ->required(),
+                        ->dehydrated(false),
                 ]),
         ]);
     }

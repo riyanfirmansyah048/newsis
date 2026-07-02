@@ -115,22 +115,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->exists;
     }
 
-    // public function getFilamentAvatarUrl(): ?string
-    // {
-    //     return $this->image ? asset('storage/' . $this->image) : null;
-    // }
-
     public function getFilamentAvatarUrl(): ?string
     {
+        if ($this->image) {
+            return asset('photo-profiles/' . $this->image);
+        }
         return asset('img/profile.png');
     }
-
-    // public function getFilamentAvatarUrl(): ?string
-    // {
-    //     return $this->image
-    //         ? Storage::url($this->image)
-    //         : null;
-    // }
 
     // set user registration default role
     protected static function boot()
@@ -147,10 +138,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
         static::updating(function ($user) {
             if ($user->isDirty('image')) {
-                $oldImage = $user->getOriginal('image'); // Ambil path file lama
+                $oldImage = $user->getOriginal('image');
                 if ($oldImage) {
-                    Storage::disk('public')->delete($oldImage);
+                    Storage::disk('photo_profiles')->delete($oldImage);
                 }
+            }
+        });
+
+        static::deleting(function ($user) {
+            if ($user->image) {
+                Storage::disk('photo_profiles')->delete($user->image);
             }
         });
     }
