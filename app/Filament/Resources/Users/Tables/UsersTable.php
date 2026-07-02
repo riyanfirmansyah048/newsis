@@ -25,7 +25,16 @@ class UsersTable
             // ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
             ->columns([
                 Split::make([
-                    // Avatar + Name + Email
+                    // Avatar
+                    ImageColumn::make('image')
+                        ->disk('photo_profiles')
+                        ->circular()
+                        ->width(64)
+                        ->height(64)
+                        ->defaultImageUrl(asset('img/profile.png'))
+                        ->grow(false),
+
+                    // Name + Email
                     Stack::make([
                         TextColumn::make('name')
                             ->label('Nama')
