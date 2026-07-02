@@ -76,7 +76,7 @@ class SisPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => <<<'HTML'
+                fn(): string => <<<'HTML'
 <style>
     .fi-ta-actions,
     .fi-ta-actions > div,
