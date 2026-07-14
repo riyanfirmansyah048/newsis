@@ -15,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Filament\Actions\ActionGroup;
 
 class BpbsTable
 {
@@ -46,6 +47,10 @@ class BpbsTable
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->sortable(),
+                TextColumn::make('purchase_order.vendor.vendorName')
+                    ->label('Vendor')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('dateBpb')
                     ->dateTime()
                     ->date('d F Y H:i')
@@ -67,29 +72,31 @@ class BpbsTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make()
-                    ->visible(fn($record) => auth()->user()->hasRole('admin') && ! $record->trashed()),
-                Action::make('print')
-                    ->label('Print BPB')
-                    ->icon('heroicon-m-printer')
-                    ->color('info')
-                    ->schema(fn(Bpb $record) => $record->print_count > 0 ? [
-                        Textarea::make('reason')
-                            ->label('Alasan Print Ulang')
-                            ->required()
-                            ->rows(4)
-                            ->placeholder('Masukkan alasan kenapa dokumen ini diprint ulang'),
-                    ] : [])
-                    ->action(function (array $data, Bpb $record) {
-                        $params = [];
+                ActionGroup::make([
+                    EditAction::make()
+                        ->visible(fn($record) => auth()->user()->hasRole('admin') && ! $record->trashed()),
+                    Action::make('print')
+                        ->label('Print BPB')
+                        ->icon('heroicon-m-printer')
+                        ->color('info')
+                        ->schema(fn(Bpb $record) => $record->print_count > 0 ? [
+                            Textarea::make('reason')
+                                ->label('Alasan Print Ulang')
+                                ->required()
+                                ->rows(4)
+                                ->placeholder('Masukkan alasan kenapa dokumen ini diprint ulang'),
+                        ] : [])
+                        ->action(function (array $data, Bpb $record) {
+                            $params = [];
 
-                        if ($record->print_count > 0) {
-                            $params['reason'] = trim((string) ($data['reason'] ?? ''));
-                        }
+                            if ($record->print_count > 0) {
+                                $params['reason'] = trim((string) ($data['reason'] ?? ''));
+                            }
 
-                        return redirect()->to(route('bpb.print', ['id' => $record->id] + $params));
-                    })
-                    ->visible(fn($record) => auth()->user()->hasRole('admin') && ! $record->trashed()),
+                            return redirect()->to(route('bpb.print', ['id' => $record->id] + $params));
+                        })
+                        ->visible(fn($record) => auth()->user()->hasRole('admin') && ! $record->trashed()),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
