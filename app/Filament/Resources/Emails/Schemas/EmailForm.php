@@ -11,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Collection;
+use Illuminate\Validation\Rule;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 
@@ -35,7 +36,21 @@ class EmailForm
                     ->default(auth()->id())
                     ->required()
                     ->reactive()
-                    ->unique(ignoreRecord: true)
+                    ->rules(function ($record) {
+                        if (auth()->user()?->hasRole('admin')) {
+                            return [];
+                        }
+
+                        $rule = Rule::unique('emails', 'idUser');
+                        if ($record) {
+                            $rule->ignore($record->id);
+                        }
+
+                        return [$rule];
+                    })
+                    ->validationMessages([
+                        'unique' => 'User ini sudah memiliki email',
+                    ])
                     ->disabled(fn() => !auth()->user()->hasRole('admin'))
                     ->columnSpanFull(),
 
