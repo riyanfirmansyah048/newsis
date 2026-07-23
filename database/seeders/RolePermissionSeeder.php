@@ -117,11 +117,11 @@ class RolePermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'update-all-service', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'delete-all-service', 'guard_name' => 'web']);
 
-        Permission::firstOrCreate(['name' => 'access-all-service-by-region', 'guard_name' => 'web']);
-        Permission::firstOrCreate(['name' => 'create-all-service-by-region', 'guard_name' => 'web']);
-        Permission::firstOrCreate(['name' => 'read-all-service-by-region', 'guard_name' => 'web']);
-        Permission::firstOrCreate(['name' => 'update-all-service-by-region', 'guard_name' => 'web']);
-        Permission::firstOrCreate(['name' => 'delete-all-service-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'access-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'create-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'read-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'update-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'delete-all-by-region', 'guard_name' => 'web']);
 
         // membuat role
         Role::firstOrCreate(['id' => 2, 'name' => 'admin', 'guard_name' => 'web']); //Super User
