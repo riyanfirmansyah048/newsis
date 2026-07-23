@@ -32,7 +32,9 @@ class ServicesTable
                 }
 
                 if ($user->can('access-all-service-by-region')) {
-                    return Service::query()->whereHas('user', fn($q) =>
+                    return Service::query()->whereHas(
+                        'user',
+                        fn($q) =>
                         $q->where('idRegional', $user->idRegional)
                     );
                 }
@@ -52,6 +54,7 @@ class ServicesTable
                 TextColumn::make('user.regional.regionalName')
                     ->label('Regional')
                     ->sortable(),
+
                 TextColumn::make('icUser.name')
                     ->label('PIC yang mengerjakan')
                     ->color('primary')
