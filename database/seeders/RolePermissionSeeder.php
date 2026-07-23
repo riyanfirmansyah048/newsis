@@ -111,6 +111,18 @@ class RolePermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'update-bppb-software', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'delete-bppb-software', 'guard_name' => 'web']);
 
+        Permission::firstOrCreate(['name' => 'access-all-service', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'create-all-service', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'read-all-service', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'update-all-service', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'delete-all-service', 'guard_name' => 'web']);
+
+        Permission::firstOrCreate(['name' => 'access-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'create-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'read-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'update-all-by-region', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'delete-all-by-region', 'guard_name' => 'web']);
+
         // membuat role
         Role::firstOrCreate(['id' => 2, 'name' => 'admin', 'guard_name' => 'web']); //Super User
         Role::firstOrCreate(['id' => 4, 'name' => 'guest', 'guard_name' => 'web']); //Bebas
@@ -219,6 +231,12 @@ class RolePermissionSeeder extends Seeder
             'read-bppb-software',
             'update-bppb-software',
             'delete-bppb-software',
+
+            'access-all-service',
+            'create-all-service',
+            'read-all-service',
+            'update-all-service',
+            'delete-all-service',
         ]);
         // end admin_________________________________________________________
         $roleUser->syncPermissions([

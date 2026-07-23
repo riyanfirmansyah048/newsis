@@ -80,18 +80,23 @@ class ServiceForm
                             ->getSearchResultsUsing(
                                 fn(string $search) =>
                                 User::where('name', 'like', "%{$search}%")
+                                    ->when(
+                                        auth()->user()->can('access-all-service-by-region') && !auth()->user()->can('access-all-service'),
+                                        fn($q) => $q->where('idRegional', auth()->user()->idRegional)
+                                    )
                                     ->limit(20)
                                     ->get()
                                     ->mapWithKeys(fn($u) => [$u->id => $u->name . ' - ' . $u->NIK])
                             )
                             ->getOptionLabelUsing(fn($value) => User::find($value)?->name)
-                            ->default(fn() => auth()->id()) // admin awalnya pakai dirinya sendiri
+                            ->default(fn() => auth()->id())
                             ->afterStateHydrated(function ($state, $set) {
-                                if (!auth()->user()->hasRole('admin')) {
+                                $user = auth()->user();
+                                if (!$user->can('access-all-service') && !$user->can('access-all-service-by-region')) {
                                     $set('user_id', auth()->id());
                                 }
                             })
-                            ->disabled(fn() => !auth()->user()->hasRole('admin'))
+                            ->disabled(fn() => !auth()->user()->can('access-all-service') && !auth()->user()->can('access-all-service-by-region'))
                             ->dehydrated()
                             ->required(),
                         // Select::make('user_id')

@@ -29,22 +29,22 @@ class EditService extends EditRecord
                 ->label('Reject')
                 ->action('rejectRecord')
                 ->color('warning')
-                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 3),
+                ->visible(fn() => auth()->user()->can('update-service') && $this->record->status_id === 3),
             Action::make('approve')
                 ->label('Approve')
                 ->action('approveRecord')
                 ->color('success')
-                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 3),
+                ->visible(fn() => auth()->user()->can('update-service') && $this->record->status_id === 3),
             Action::make('finish')
                 ->label('Selesai (Barang di IT)')
                 ->action('finishRecord')
                 ->color('success')
-                ->visible(fn() => auth()->user()->hasRole('admin') && in_array($this->record->status_id, [4, 5, 8], true)),
+                ->visible(fn() => auth()->user()->can('update-service') && in_array($this->record->status_id, [4, 5, 8], true)),
             Action::make('markPending')
                 ->label('Pending')
                 ->icon('heroicon-o-pause-circle')
                 ->color('warning')
-                ->visible(fn() => auth()->user()->hasRole('admin') && in_array($this->record->status_id, [4, 5], true))
+                ->visible(fn() => auth()->user()->can('update-service') && in_array($this->record->status_id, [4, 5], true))
                 ->schema([
                     Textarea::make('pending_reason')
                         ->label('Alasan service di-pending')
@@ -68,7 +68,7 @@ class EditService extends EditRecord
                 ->label('Selesai (Barang Sudah Diserahkan)')
                 ->action('finishAllRecord')
                 ->color('success')
-                ->visible(fn() => auth()->user()->hasRole('admin') && $this->record->status_id === 6),
+                ->visible(fn() => auth()->user()->can('update-service') && $this->record->status_id === 6),
         ];
     }
 

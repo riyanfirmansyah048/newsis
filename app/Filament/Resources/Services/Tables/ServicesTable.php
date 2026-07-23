@@ -24,11 +24,21 @@ class ServicesTable
     {
         return $table
             ->recordActionsPosition(RecordActionsPosition::BeforeColumns)
-            ->query(
-                auth()->user()->hasRole('admin') // Periksa apakah user memiliki role "admin"
-                    ? Service::query() // Jika admin, tampilkan semua data
-                    : Service::query()->where('user_id', auth()->id()) // Jika bukan admin, hanya tampilkan miliknya sendiri
-            )
+            ->query(function () {
+                $user = auth()->user();
+
+                if ($user->can('access-all-service')) {
+                    return Service::query();
+                }
+
+                if ($user->can('access-all-service-by-region')) {
+                    return Service::query()->whereHas('user', fn($q) =>
+                        $q->where('idRegional', $user->idRegional)
+                    );
+                }
+
+                return Service::query()->where('user_id', $user->id);
+            })
             ->columns([
                 TextColumn::make('noService')
                     ->searchable(),
@@ -38,6 +48,9 @@ class ServicesTable
                 TextColumn::make('user.name')
                     ->label('Nama Karyawan')
                     ->color('info')
+                    ->sortable(),
+                TextColumn::make('user.regional.regionalName')
+                    ->label('Regional')
                     ->sortable(),
                 TextColumn::make('icUser.name')
                     ->label('PIC yang mengerjakan')
@@ -95,9 +108,9 @@ class ServicesTable
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make()
-                        ->visible(fn($record) => auth()->user()->hasRole('admin')),
+                        ->visible(fn() => auth()->user()->can('update-service')),
                     DeleteAction::make()
-                        ->visible(fn($record) => auth()->user()->hasRole('admin')),
+                        ->visible(fn() => auth()->user()->can('delete-service')),
                 ]),
                 Action::make('Print')
                     ->url(fn(Service $record) => route('service.print', $record->id))

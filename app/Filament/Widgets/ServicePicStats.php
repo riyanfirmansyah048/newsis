@@ -15,7 +15,7 @@ class ServicePicStats extends StatsOverviewWidget
     protected function getStats(): array
     {
         $user = Auth::user();
-        if (! $user?->hasRole('admin')) {
+        if (! $user?->can('access-all-service')) {
             return [];
         }
 

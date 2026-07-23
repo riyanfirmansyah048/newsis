@@ -35,7 +35,7 @@ class ListServices extends ListRecords
     {
         $user = auth()->user();
 
-        if (! $user?->hasRole('admin')) {
+        if (! $user?->can('access-all-service')) {
             return [];
         }
 
