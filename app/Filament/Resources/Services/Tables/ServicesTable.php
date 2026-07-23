@@ -54,7 +54,6 @@ class ServicesTable
                 TextColumn::make('user.regional.regionalName')
                     ->label('Regional')
                     ->sortable(),
-
                 TextColumn::make('icUser.name')
                     ->label('PIC yang mengerjakan')
                     ->color('primary')
