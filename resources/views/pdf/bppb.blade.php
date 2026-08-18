@@ -62,7 +62,7 @@
             <table class="mb-10" style="width: 18cm;" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="width: 4.5cm; text-align: center;">
-                        <img src="{{ public_path('img/sanbe-logo.gif') }}" alt="SANBE">
+                        <img src="{{ public_path('img/' . ($bppb->user?->company?->image ?? 'sanbe-logo.gif')) }}" alt="{{ $bppb->user?->company?->companyName ?? 'SANBE' }}">
                     </td>
                     <td style="text-align: center;">
                         <h2>BON PERMINTAAN PEMBELIAN BARANG<br>( BPPB )</h2>

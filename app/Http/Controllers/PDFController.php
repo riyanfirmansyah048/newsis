@@ -93,7 +93,7 @@ class PDFController extends Controller
             'bppb_item' => fn($q) => $q->with(['item' => fn($q2) => $q2->withTrashed()]),
             'bppb_ink' => fn($q) => $q->with(['ink' => fn($q2) => $q2->withTrashed()]),
             'bppb_software' => fn($q) => $q->with(['software' => fn($q2) => $q2->withTrashed()]),
-            'user',
+            'user.company',
             'status',
         ])->find($id);
         if (!$bppb) {
