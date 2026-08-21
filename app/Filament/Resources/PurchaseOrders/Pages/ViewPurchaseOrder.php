@@ -124,16 +124,25 @@ class ViewPurchaseOrder extends ViewRecord
                             ->label('List Software')
                             ->state(function () {
 
+                                $purchaseOrderId = $this->record->id;
+                                $bppbId = $this->record->bppb_id;
+
                                 return $this->record
                                     ->bppb_softwares()
-                                    ->with(['software' => fn($q) => $q->withTrashed()])
+                                    ->where('bppb_id', $bppbId)
+                                    ->where('purchase_order_id', $purchaseOrderId)
+                                    ->with([
+                                        'software' => fn($q) => $q->withTrashed()
+                                    ])
                                     ->get()
                                     ->groupBy('software_id')
                                     ->map(function ($group) {
 
                                         return [
-                                            'name' => $group->first()->software?->name ?? '[Software telah dihapus]',
-                                            'total_qty' => $group->count(),
+                                            'name' => $group->first()->software?->name
+                                                ?? '[Software telah dihapus]',
+
+                                            'total_qty' => $group->sum('qty'),
                                         ];
                                     })
                                     ->values()

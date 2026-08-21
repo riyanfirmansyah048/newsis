@@ -124,27 +124,46 @@
                     }
 
                     foreach ($bpb->purchase_order->bppb_softwares as $software) {
+
+                        if (
+                            $software->bppb_id !== $bpb->purchase_order->bppb_id ||
+                            $software->purchase_order_id !== $bpb->purchase_order->id
+                        ) {
+                            continue;
+                        }
+
                         $softwareId = $software->software?->id;
+
                         $description = trim((string) $software->description);
+
                         $normalizedDescription = match ($description) {
                             '', '-', '0' => null,
                             default => $description,
                         };
 
                         if ($software->software && isset($softwares[$softwareId])) {
+
                             $softwares[$softwareId]['qty'] += $software->qty;
 
                             if (
                                 $normalizedDescription !== null &&
-                                !in_array($normalizedDescription, $softwares[$softwareId]['descriptions'], true)
+                                !in_array(
+                                    $normalizedDescription,
+                                    $softwares[$softwareId]['descriptions'],
+                                    true
+                                )
                             ) {
                                 $softwares[$softwareId]['descriptions'][] = $normalizedDescription;
                             }
+
                         } elseif ($software->software) {
+
                             $softwares[$softwareId] = [
                                 'name' => $software->software->name,
                                 'qty' => $software->qty,
-                                'descriptions' => $normalizedDescription !== null ? [$normalizedDescription] : [],
+                                'descriptions' => $normalizedDescription !== null
+                                    ? [$normalizedDescription]
+                                    : [],
                             ];
                         }
                     }
