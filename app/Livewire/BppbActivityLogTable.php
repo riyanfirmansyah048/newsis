@@ -21,6 +21,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
+use App\Models\Bppb_status;
 
 class BppbActivityLogTable extends Component implements HasActions, HasSchemas, HasTable
 {
@@ -226,10 +227,13 @@ class BppbActivityLogTable extends Component implements HasActions, HasSchemas, 
 
         if ($activity->description === 'updated') {
             if (isset($attributes['status_id'])) {
-                $from = $old['status_id'] ?? '-';
-                $to = $attributes['status_id'] ?? '-';
+                $fromId = $old['status_id'] ?? null;
+                $toId = $attributes['status_id'] ?? null;
 
-                return "Status berubah dari {$from} ke {$to}";
+                $fromName = $fromId ? (Bppb_status::withTrashed()->find($fromId)?->name ?? $fromId) : '-';
+                $toName = $toId ? (Bppb_status::withTrashed()->find($toId)?->name ?? $toId) : '-';
+
+                return "Status berubah dari {$fromName} ke {$toName}";
             }
 
             $changedFields = array_keys($attributes);
