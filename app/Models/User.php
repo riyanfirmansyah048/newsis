@@ -104,6 +104,21 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->belongsTo(Position::class, 'idPosition');
     }
 
+    public function assetsItems()
+    {
+        return $this->hasMany(Assets_item::class, 'user_id');
+    }
+
+    public function assetsInks()
+    {
+        return $this->hasMany(Assets_ink::class, 'user_id');
+    }
+
+    public function assetsSoftwares()
+    {
+        return $this->hasMany(Assets_software::class, 'user_id');
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

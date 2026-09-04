@@ -14,6 +14,9 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Schemas\UserForm;
 use App\Filament\Resources\Users\Tables\UsersTable;
+use App\Filament\Resources\Users\RelationManagers\AssetsItemsRelationManager;
+use App\Filament\Resources\Users\RelationManagers\AssetsInksRelationManager;
+use App\Filament\Resources\Users\RelationManagers\AssetsSoftwareRelationManager;
 
 class UserResource extends Resource
 {
@@ -45,7 +48,9 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AssetsItemsRelationManager::class,
+            AssetsInksRelationManager::class,
+            AssetsSoftwareRelationManager::class,
         ];
     }
 
