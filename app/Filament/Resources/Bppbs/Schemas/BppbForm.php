@@ -214,7 +214,7 @@ class BppbForm
                                     ->getSearchResultsUsing(function (string $search): array {
                                         return Item::query()
                                             ->where('name', 'like', "%{$search}%")
-                                            ->limit(20)
+                                            // ->limit(20)
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
@@ -269,7 +269,7 @@ class BppbForm
                                     })
                                     ->searchable(),
                             ])
-                            ->default(fn () => ($record === null && $prefilledItemId)
+                            ->default(fn() => ($record === null && $prefilledItemId)
                                 ? [[
                                     'item_id' => $prefilledItemId,
                                     'qty' => 1,
@@ -298,7 +298,7 @@ class BppbForm
                                     ->getSearchResultsUsing(function (string $search): array {
                                         return Ink::query()
                                             ->where('name', 'like', "%{$search}%")
-                                            ->limit(20)
+                                            // ->limit(20)
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
@@ -371,7 +371,7 @@ class BppbForm
                                     ->getSearchResultsUsing(function (string $search): array {
                                         return Software::query()
                                             ->where('name', 'like', "%{$search}%")
-                                            ->limit(20)
+                                            // ->limit(20)
                                             ->pluck('name', 'id')
                                             ->toArray();
                                     })
@@ -421,7 +421,7 @@ class BppbForm
                                     })
                                     ->searchable(),
                             ])
-                            ->default(fn () => ($record === null && $prefilledSoftwareId)
+                            ->default(fn() => ($record === null && $prefilledSoftwareId)
                                 ? [[
                                     'software_id' => $prefilledSoftwareId,
                                     'qty' => 1,
@@ -447,8 +447,8 @@ class BppbForm
             ->whereRaw('LOWER(name) = ?', [strtolower($itemName)])
             ->value('id')
             ?? Item::query()
-                ->where('name', 'like', "%{$itemName}%")
-                ->value('id');
+            ->where('name', 'like', "%{$itemName}%")
+            ->value('id');
     }
 
     protected static function normalizeReminderTargetId(mixed $value): ?int
@@ -458,4 +458,3 @@ class BppbForm
         return filled($value) ? $value : null;
     }
 }
-
