@@ -93,7 +93,7 @@
             Jl.Tamansari No.10
             <br>
             <br>
-            <b>Hal : Permohonan Pembuatan Email Sanbe Farma</b>
+            <b>Hal : Permohonan Pembuatan Email {{ $email->company->companyName }}</b>
         </p>
         <p style="text-align: justify;">
             Dengan hormat,
