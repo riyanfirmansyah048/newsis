@@ -40,10 +40,10 @@ class ListServices extends ListRecords
         }
 
         return [
-            ServicePicStats::class,
-            ServicePerPicChart::class,
-            ServicePicStatusChart::class,
-            ServiceMonthlyTrendChart::class,
+            // ServicePicStats::class,
+            // ServicePerPicChart::class,
+            // ServicePicStatusChart::class,
+            // ServiceMonthlyTrendChart::class,
         ];
     }
 

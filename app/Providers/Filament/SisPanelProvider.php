@@ -57,8 +57,8 @@ class SisPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->widgets([
-                DashboardOverviewStats::class,
-                BppbStatusStats::class,
+                // DashboardOverviewStats::class,
+                // BppbStatusStats::class,
             ])
             ->middleware([
                 EncryptCookies::class,
