@@ -3,7 +3,6 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Service;
-use Filament\Schemas\Components\Section;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
@@ -35,34 +34,43 @@ class ServicePicStats extends StatsOverviewWidget
             ->selectRaw('AVG(DATEDIFF(finish_date, received_date)) as avg_days')
             ->value('avg_days');
 
-        $avgDaysFormatted = $avgDays ? number_format((float) $avgDays, 1) . ' hari' : '-';
+        $avgDaysFormatted = $avgDays ? number_format((float) $avgDays, 1).' hari' : '-';
 
         return [
-            Section::make('Statistik PIC')
-                ->description('Ringkasan Service / Memo IT')
-                ->schema([
-                    Stat::make('Total PIC', number_format($totalPic))
-                        ->description('Jumlah PIC yang pernah ditugaskan')
-                        ->icon('heroicon-o-users')
-                        ->color('primary'),
+            Stat::make('Total PIC', number_format($totalPic))
+                ->description('Jumlah PIC yang pernah ditugaskan')
+                ->icon('heroicon-o-users')
+                ->color('primary'),
 
-                    Stat::make('Service Ditangani', number_format($totalHandled))
-                        ->description('Total service yang memiliki PIC')
-                        ->icon('heroicon-o-wrench-screwdriver')
-                        ->color('info'),
+            Stat::make('Service Ditangani', number_format($totalHandled))
+                ->description('Total service yang memiliki PIC')
+                ->icon('heroicon-o-wrench-screwdriver')
+                ->color('info'),
 
-                    Stat::make('Sedang Dikerjakan', number_format($activeServices))
-                        ->description('Status Barang di IT / Proses Service')
-                        ->icon('heroicon-o-arrow-path')
-                        ->color('warning'),
+            Stat::make('Sedang Dikerjakan', number_format($activeServices))
+                ->description('Status Barang di IT / Proses Service')
+                ->icon('heroicon-o-arrow-path')
+                ->color('warning'),
 
-                    Stat::make('Rata-rata Penyelesaian', $avgDaysFormatted)
-                        ->description('Dari received_date ke finish_date')
-                        ->icon('heroicon-o-clock')
-                        ->color('success'),
-                ])
-                ->columns(4)
-                ->columnSpanFull(),
+            Stat::make('Rata-rata Penyelesaian', $avgDaysFormatted)
+                ->description('Dari received_date ke finish_date')
+                ->icon('heroicon-o-clock')
+                ->color('success'),
         ];
+    }
+
+    protected function getHeading(): ?string
+    {
+        return 'Statistik PIC';
+    }
+
+    protected function getDescription(): ?string
+    {
+        return 'Ringkasan Service / Memo IT';
+    }
+
+    protected function getColumns(): int|array|null
+    {
+        return 4;
     }
 }

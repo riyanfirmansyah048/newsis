@@ -10,7 +10,6 @@ use App\Models\BookingOrder;
 use App\Models\Bppb;
 use App\Models\Email;
 use App\Models\Service;
-use Filament\Schemas\Components\Section;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
@@ -57,35 +56,46 @@ class DashboardOverviewStats extends StatsOverviewWidget
         $activeEmails = (clone $emailQuery)->where('activeStatus', 1)->count();
 
         return [
-            Section::make('Ringkasan Dashboard')
-                ->description($isAdmin ? 'Ringkasan seluruh pengajuan yang perlu dipantau.' : 'Ringkasan pengajuan yang paling relevan untuk Anda.')
-                ->schema([
-                    Stat::make('BPPB', number_format($totalBppb))
-                        ->description("Pending {$pendingBppb} • Selesai {$completedBppb}")
-                        ->icon('heroicon-o-shopping-cart')
-                        ->color('primary')
-                        ->url(BppbResource::getUrl('index')),
+            Stat::make('BPPB', number_format($totalBppb))
+                ->description("Pending {$pendingBppb} • Selesai {$completedBppb}")
+                ->icon('heroicon-o-shopping-cart')
+                ->color('primary')
+                ->url(BppbResource::getUrl('index')),
 
-                    Stat::make('Booking Order', number_format($totalBookingOrders))
-                        ->description("Pending {$pendingBookingOrders} • Approved {$approvedBookingOrders}")
-                        ->icon('heroicon-o-calendar-days')
-                        ->color('warning')
-                        ->url(BookingOrderResource::getUrl('index')),
+            Stat::make('Booking Order', number_format($totalBookingOrders))
+                ->description("Pending {$pendingBookingOrders} • Approved {$approvedBookingOrders}")
+                ->icon('heroicon-o-calendar-days')
+                ->color('warning')
+                ->url(BookingOrderResource::getUrl('index')),
 
-                    Stat::make('Service', number_format($totalServices))
-                        ->description("Open {$openServices} • Selesai {$completedServices}")
-                        ->icon('heroicon-o-wrench-screwdriver')
-                        ->color('success')
-                        ->url(ServiceResource::getUrl('index')),
+            Stat::make('Service', number_format($totalServices))
+                ->description("Open {$openServices} • Selesai {$completedServices}")
+                ->icon('heroicon-o-wrench-screwdriver')
+                ->color('success')
+                ->url(ServiceResource::getUrl('index')),
 
-                    Stat::make('Email', number_format($totalEmails))
-                        ->description("Pending {$pendingEmails} • Active {$activeEmails}")
-                        ->icon('heroicon-o-envelope')
-                        ->color('info')
-                        ->url(EmailResource::getUrl('index')),
-                ])
-                ->columns(4)
-                ->columnSpanFull(),
+            Stat::make('Email', number_format($totalEmails))
+                ->description("Pending {$pendingEmails} • Active {$activeEmails}")
+                ->icon('heroicon-o-envelope')
+                ->color('info')
+                ->url(EmailResource::getUrl('index')),
         ];
+    }
+
+    protected function getHeading(): ?string
+    {
+        return 'Ringkasan Dashboard';
+    }
+
+    protected function getDescription(): ?string
+    {
+        return Auth::user()?->hasRole('admin')
+            ? 'Ringkasan seluruh pengajuan yang perlu dipantau.'
+            : 'Ringkasan pengajuan yang paling relevan untuk Anda.';
+    }
+
+    protected function getColumns(): int|array|null
+    {
+        return 4;
     }
 }

@@ -3,14 +3,15 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\LoginCustom;
-use App\Filament\Resources\Services\ServiceResource;
-use App\Models\Service;
 use App\Filament\Pages\Auth\RegisterCustom;
 use App\Filament\Pages\Auth\RequestPasswordResetCustom;
 use App\Filament\Pages\EditProfileCustom;
+use App\Filament\Resources\Services\ServiceResource;
+use App\Filament\Widgets\BppbFastAccessStats;
 // use App\Filament\Widgets\AssetsItemsWidget;
 use App\Filament\Widgets\BppbStatusStats;
 use App\Filament\Widgets\DashboardOverviewStats;
+use App\Models\Service;
 use Caresome\FilamentAuthDesigner\AuthDesignerPlugin;
 use Caresome\FilamentAuthDesigner\Enums\MediaPosition;
 use Filament\Actions\Action;
@@ -57,8 +58,9 @@ class SisPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->widgets([
-                // DashboardOverviewStats::class,
-                // BppbStatusStats::class,
+                DashboardOverviewStats::class,
+                BppbFastAccessStats::class,
+                BppbStatusStats::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -76,7 +78,7 @@ class SisPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn(): string => <<<'HTML'
+                fn (): string => <<<'HTML'
 <style>
     .fi-ta-actions,
     .fi-ta-actions > div,
@@ -98,6 +100,7 @@ HTML,
                     if (! auth()->check() || ! auth()->user()->hasRole('admin')) {
                         return '';
                     }
+
                     return view('filament.hooks.qr-scanner-js')->render();
                 },
             )
@@ -127,27 +130,27 @@ HTML,
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->defaults(
-                        fn($config) => $config
+                        fn ($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(1)
                     )
                     ->login(
-                        fn($config) => $config
+                        fn ($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(1)
                             ->usingPage(LoginCustom::class)
                     )
                     ->registration(
-                        fn($config) => $config
+                        fn ($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Right)
                             ->blur(1)
                             ->usingPage(RegisterCustom::class)
                     )
                     ->passwordReset(
-                        fn($config) => $config
+                        fn ($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(1)
