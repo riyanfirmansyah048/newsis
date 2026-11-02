@@ -78,7 +78,7 @@ class SisPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => <<<'HTML'
+                fn(): string => <<<'HTML'
 <style>
     .fi-ta-actions,
     .fi-ta-actions > div,
@@ -130,27 +130,27 @@ HTML,
             ->plugin(
                 AuthDesignerPlugin::make()
                     ->defaults(
-                        fn ($config) => $config
+                        fn($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(1)
                     )
                     ->login(
-                        fn ($config) => $config
+                        fn($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(1)
                             ->usingPage(LoginCustom::class)
                     )
                     ->registration(
-                        fn ($config) => $config
+                        fn($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Right)
                             ->blur(1)
                             ->usingPage(RegisterCustom::class)
                     )
                     ->passwordReset(
-                        fn ($config) => $config
+                        fn($config) => $config
                             ->media(asset('img/login_background.jpg'))
                             ->mediaPosition(MediaPosition::Cover)
                             ->blur(1)
