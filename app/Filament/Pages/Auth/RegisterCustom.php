@@ -16,6 +16,7 @@ use Illuminate\Support\Collection;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -172,6 +173,15 @@ class RegisterCustom extends Register
                         $this->getPasswordConfirmationFormComponent()->columnSpanFull(),
                     ]),
             ]);
+    }
+
+    protected function getEmailFormComponent(): Component
+    {
+        return TextInput::make('email')
+            ->label(__('filament-panels::auth/pages/register.form.email.label'))
+            ->email()
+            ->maxLength(255)
+            ->unique($this->getUserModel());
     }
 
     /* =======================
